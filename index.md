@@ -40,7 +40,9 @@ When launching in PS2 mode, commands sent to *sd2psx* are monitored. Since PS1 s
 
 While in general this should be safe behavior, if *sd2psx* is used mainly in PS1, manual mode selection is recommended.
 
-{% include toast_warning.liquid %} If sd2psx is connected to a PS1 in PS2 mode, there is always a risk of damaging your PS1 console. You have been warned! {% include toast_warning_end.liquid %} {% include toast_warning.liquid %} Do not use *sd2psx* in dynamic mode on a PS1 multitap, as this **WILL** damage your PS1 multitap device. {% include toast_warning_end.liquid %}
+{% include toast_warning.liquid %} If sd2psx is connected to a PS1 in PS2 mode, there is always a risk of damaging your PS1 console. You have been warned! {% include toast_warning_end.liquid %}
+
+{% include toast_warning.liquid %} Do not use *sd2psx* in dynamic mode on a PS1 multitap, as this **WILL** damage your PS1 multitap device. {% include toast_warning_end.liquid %}
 
 
 ## PS2: MMCEMAN and MMCEDRV Support
@@ -61,8 +63,10 @@ Very helpful for PlayStation 2 models with simpler OSDSYS programs, that result 
 
 Support for card sizes between 1 and 64 MB has been added. Cards larger than 8 MB rely heavily on quick SD card access, so on older or lower-quality SD cards, these larger cards may become corrupt.
 
-> [!NOTE]
->  While the feature has been extensively tested, it is still recommended to use 8MB cards, as this is the official specification for memory cards.
+
+{% include toast_note.liquid %}
+While the feature has been extensively tested, it is still recommended to use 8MB cards, as this is the official specification for memory cards.
+{% include toast_note_end.liquid %}
 
 ## PS2: Support for Developer, Arcade and Prototype PS2s
 
@@ -72,9 +76,11 @@ PS2 memory cards have been used in variations of PS2 like: *DevKits*, *TestKits*
 
 These PlayStation 2 variations use different magicgate keysets to ensure their memory cards are inaccessible in other devices (eg: Opening developer memory card on normal PS2). that's why SD2PSX has to actively support them
 
-> [!NOTE]
-> **Devkit/DTL-H owners**:
-> as you may notice, SD2PSX has no `DEVELOPER` mode, this is because sd2psxtd is mimicking the behavior of licensed retail card. to use the device on developer hardware, set the card on `RETAIL` mode [^1]
+{% include toast_note.liquid %}
+
+Devkit/testkit owners: as you may notice, SD2PSX has no `DEVELOPER` mode, this is because sd2psxtd is mimicking the behavior of licensed retail card. to use the device on developer hardware, set the card on `RETAIL` mode [^1]
+
+{% include toast_note_end.liquid %}
 
 [^1]: Devkits: official retail memory cards use developer magicgate by default until the console actively requests to use retail magicgate with a dedicated command
 
