@@ -40,8 +40,20 @@ When launching in PS2 mode, commands sent to *sd2psx* are monitored. Since PS1 s
 
 While in general this should be safe behavior, if *sd2psx* is used mainly in PS1, manual mode selection is recommended.
 
+
+<div class="p-1">
+<div class="Toast Toast--warning">
+<span class="Toast-icon">
+<svg width="16" height="16" viewBox="0 0 16 16" class="octicon octicon-alert" aria-hidden="true">
+<path fill-rule="evenodd" d="M8.893 1.5c-.183-.31-.52-.5-.887-.5s-.703.19-.886.5L.138 13.499a.98.98 0 0 0 0 1.001c.193.31.53.501.886.501h13.964c.367 0 .704-.19.877-.5a1.03 1.03 0 0 0 .01-1.002L8.893 1.5zm.133 11.497H6.987v-2.003h2.039v2.003zm0-3.004H6.987V5.987h2.039v4.006z" />
+</svg>
+</span>
+<span class="Toast-content">If sd2psx is connected to a PS1 in PS2 mode, there is always a risk of damaging your PS1 console. You have been warned!</span>
+</div>
+</div>
+
 > [!CAUTION]
-> **Note 1:** If *sd2psx* is connected to a PS1 in PS2 mode, there is always a risk of damaging your PS1 console. You have been warned!
+> **Note 1:** 
 
 > [!CAUTION]
 > **Note 2:** Do not use *sd2psx* in dynamic mode on a PS1 multitap, as this **WILL** damage your PS1 multitap device.
