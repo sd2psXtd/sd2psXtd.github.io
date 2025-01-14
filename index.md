@@ -1,7 +1,10 @@
 
 <link href="https://unpkg.com/@primer/css@^20.2.4/dist/primer.css" rel="stylesheet" />
+<body data-color-mode="dark" data-light-theme="dark" data-dark-theme="dark">
 
 # sd2psXtd Firmware
+
+<button className="btn" type="button"> test button </button>
 
 sd2psXtd is an extended firmware for the popular *Multipurpose MemoryCard Emulator* sd2psx by developer @xyzz (see [here](https://github.com/sd2psx)). It combines cutting-edge extended functionality (like game ID switching, file system access, and dynamic mode selection) with the rock-solid performance of the original sd2psx firmware.
 
