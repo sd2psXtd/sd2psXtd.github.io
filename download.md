@@ -3,9 +3,9 @@
 > choose your device:
 
 <!--<div class="anim-hover-grow Box p-3">HELLO</div>-->
-
+<div class="border d-flex flex-column">
 <div class="anim-hover-grow Box d-flex flex-column flex-md-row flex-items-center flex-md-items-center" href="#url">
-    <div class="col-2 d-flex flex-items-center flex-items-center flex-md-items-start">
+    <div class="col-3 d-flex flex-items-center flex-items-center flex-md-items-start">
       <img class="width-full mb-2 mb-md-0" src="img/sd2psx-diy.png" alt="github" />
     </div>
     <div class="col-12 col-md-10 d-flex flex-column flex-justify-center flex-items-center flex-md-items-start pl-md-4">
@@ -22,7 +22,7 @@
 
 
 <div class="anim-hover-grow Box d-flex flex-column flex-md-row flex-items-center flex-md-items-center" href="#url">
-    <div class="col-2 d-flex flex-items-center flex-items-center flex-md-items-start">
+    <div class="col-3 d-flex flex-items-center flex-items-center flex-md-items-start">
       <img class="width-full mb-2 mb-md-0" src="img/psxmemcardgen2.png" alt="github" />
     </div>
     <div class="col-12 col-md-10 d-flex flex-column flex-justify-center flex-items-center flex-md-items-start pl-md-4">
@@ -38,7 +38,7 @@
 
 
 <div class="anim-hover-grow Box d-flex flex-column flex-md-row flex-items-center flex-md-items-center" href="#url">
-    <div class="col-2 d-flex flex-items-center flex-items-center flex-md-items-start">
+    <div class="col-3 d-flex flex-items-center flex-items-center flex-md-items-start">
       <img class="width-full mb-2 mb-md-0" src="img/psxmemcardgen1.png" alt="github" />
     </div>
     <div class="col-12 col-md-10 d-flex flex-column flex-justify-center flex-items-center flex-md-items-start pl-md-4">
@@ -50,4 +50,22 @@
         <a class="BtnGroup-item btn btn-outline" type="button"href="https://github.com/sd2psXtd/firmware/releases/download/1.0.0-beta12/psxmemcard-debug.uf2">Debug Firmware</a>
     </div>
     </div>
+</div>
+
+
+<div class="anim-hover-grow Box d-flex flex-column flex-sm-row flex-md-row flex-items-center flex-md-items-center" href="#url">
+    <div class="col-3 d-flex flex-items-center flex-items-center flex-md-items-start">
+      <img class="p-1" src="img/pmc+.png" alt="github" />
+    </div>
+    <div class="col-12 col-md-10 d-flex flex-column flex-justify-center flex-items-center flex-md-items-start pl-md-4">
+      <h2 class="text-normal lh-condensed">PicoMemcard+</h2>
+      <p class="h4 color-fg-muted text-normal mb-2">Made by dangiu, enhanced by SD2PSX Firmware</p>
+      <a class="color-fg-muted text-small">DIY project built on top of rp2040-zero</a>
+    <div class="BtnGroup d-block mb-2">
+        <a class="BtnGroup-item btn btn-outline" type="button" href="https://github.com/sd2psXtd/firmware/releases/download/1.0.0-beta12/pmc+.uf2">Firmware</a>
+        <a class="BtnGroup-item btn btn-outline" type="button" href="https://github.com/sd2psXtd/firmware/releases/download/1.0.0-beta12/pmc+-debug.uf2">Debug Firmware</a>
+        <a class="BtnGroup-item btn btn-outline" type="button" href="https://github.com/dangiu/PicoMemcard?tab=readme-ov-file#picomemcard-vs-picomemcard">Project GitHub</a>
+    </div>
+    </div>
+</div>
 </div>
