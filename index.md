@@ -18,6 +18,14 @@ It provides the same functionality as the official stable firmware and extends i
 - **General:** Support for other RP2040-based MMCE devices
 - **General:** Channel naming
 
+## Downloads
+
+<div class="BtnGroup d-block mb-2">
+    <a class="BtnGroup-item btn btn-outline" type="button" href="https://sd2psXtd.github.io/download">Firmware</a>
+    <a class="BtnGroup-item btn btn-outline" type="button" href="https://sd2psXtd.github.io/exploit">Exploits</a>
+    <a class="BtnGroup-item btn btn-outline" type="button" href="https://github.com/ps2-mmce/Open-PS2-Loader/releases">OPL</a>
+</div>
+
 ## PS2: Game ID Switching
 
 Like on PS1, *sd2psXtd* can detect the game ID of a PS2 console and switch to a dedicated card per game. Game ID switching can be turned off in the device settings for PS2.
