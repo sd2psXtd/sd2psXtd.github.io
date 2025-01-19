@@ -1,5 +1,3 @@
-
-
 # sd2psXtd Firmware
 
 sd2psXtd is an extended firmware for the popular *Multipurpose MemoryCard Emulator* sd2psx by developer @xyzz (see [here](https://github.com/sd2psx)). It combines cutting-edge extended functionality (like game ID switching, file system access, and dynamic mode selection) with the rock-solid performance of the original sd2psx firmware.
@@ -17,14 +15,6 @@ It provides the same functionality as the official stable firmware and extends i
 - **General:** Settings file
 - **General:** Support for other RP2040-based MMCE devices
 - **General:** Channel naming
-
-## Downloads
-
-<div class="BtnGroup d-block mb-2">
-    <a class="BtnGroup-item btn btn-outline" type="button" href="https://sd2psXtd.github.io/download">Firmware</a>
-    <a class="BtnGroup-item btn btn-outline" type="button" href="https://sd2psXtd.github.io/exploits">Exploits</a>
-    <a class="BtnGroup-item btn btn-outline" type="button" href="https://github.com/ps2-mmce/Open-PS2-Loader/releases">OPL</a>
-</div>
 
 ## PS2: Game ID Switching
 

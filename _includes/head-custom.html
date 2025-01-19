@@ -1,2 +1,46 @@
 <body data-color-mode="dark" data-light-theme="dark" data-dark-theme="dark">
 <link href="https://unpkg.com/@primer/css@^20.2.4/dist/primer.css" rel="stylesheet" />
+
+<div class="Header">
+    <!-- Text item -->
+    <div class="Header-item f4 d-flex">
+      {% if site.title and site.title != page.title %}
+        {{ site.title }}
+      {% endif %}
+    </div>
+    <!-- Form item
+    <div class="Header-item">
+        <input class="form-control Header-input"
+            type="text"/>
+    </div>  -->
+
+    <div class="position-relative d-inline-block">
+        <details class="details-reset details-overlay">
+            <summary class="btn" aria-haspopup="true">
+              Download
+            </summary>
+            <div class="SelectMenu">
+              <div class="SelectMenu-modal">
+                <div class="SelectMenu-list">
+                  <a class="SelectMenu-item" role="menuitem"  href="https://sd2psXtd.github.io/download">
+                    Firmware
+                  </a>
+                  <a class="SelectMenu-item" role="menuitem" href="https://sd2psXtd.github.io/exploits">
+                    Exploits
+                  </a>
+                  <a class="SelectMenu-item" role="menuitem" href="https://github.com/ps2-mmce/Open-PS2-Loader/releases">
+                    OPL for MMCE
+                  </a>
+                </div>
+              </div>
+            </div>
+          </details>
+    </div>
+    <!-- Image item
+    <div class="Header-item">
+        <img class="avatar" height="20"
+            alt="@octocat"
+            src="https://github.com/octocat.png"
+            width="20">
+    </div>  -->
+</div>
