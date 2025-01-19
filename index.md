@@ -22,7 +22,7 @@ It provides the same functionality as the official stable firmware and extends i
 
 <div class="BtnGroup d-block mb-2">
     <a class="BtnGroup-item btn btn-outline" type="button" href="https://sd2psXtd.github.io/download">Firmware</a>
-    <a class="BtnGroup-item btn btn-outline" type="button" href="https://sd2psXtd.github.io/exploit">Exploits</a>
+    <a class="BtnGroup-item btn btn-outline" type="button" href="https://sd2psXtd.github.io/exploits">Exploits</a>
     <a class="BtnGroup-item btn btn-outline" type="button" href="https://github.com/ps2-mmce/Open-PS2-Loader/releases">OPL</a>
 </div>
 
