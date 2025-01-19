@@ -28,7 +28,7 @@
     <div class="col-12 col-md-10 d-flex flex-column flex-justify-center flex-items-center flex-md-items-start pl-md-4">
       <h2 class="text-normal lh-condensed">PSXMemCard Gen2</h2>
       <p class="h4 color-fg-muted text-normal mb-2">SD2PSX: produced by BitFunx!</p>
-      <a class="color-fg-muted text-small">Proffesional production by a company known to make quality PS2 peripherals</a>
+      <a class="color-fg-muted text-small">Professional production by a company known to make quality PS2 peripherals</a>
     <div class="BtnGroup d-block mb-2">
         <a class="BtnGroup-item btn btn-outline" type="button"href="https://github.com/sd2psXtd/firmware/releases/download/1.0.0-beta12/sd2psx.uf2">Firmware</a>
         <a class="BtnGroup-item btn btn-outline" type="button"href="https://github.com/sd2psXtd/firmware/releases/download/1.0.0-beta12/sd2psx-debug.uf2">Debug Firmware</a>
