@@ -4,17 +4,19 @@ sd2psXtd is an extended firmware for the popular *Multipurpose MemoryCard Emulat
 
 It provides the same functionality as the official stable firmware and extends it with the following features:
 
-- {% include ps2tag.liquid %} Game ID switching
--  {% include ps2tag.liquid %} PS1 dynamic mode selection
--  {% include ps2tag.liquid %} MMCEMAN and MMCEDRV support
--  {% include ps2tag.liquid %} Instant card availability
--  {% include ps2tag.liquid %} 1-64 MB card size support
--  {% include ps2tag.liquid %} Support for developer (`DTL-H` & `DTL-T`), Arcade (`COH-H`) and Prototype (`EB`?) models is available.
-- {% include ps1tag.liquid %} BootCard mechanics
-- {% include ps1tag.liquid %} PSRAM support
-- {% include generaltag.liquid %} Settings file
-- {% include generaltag.liquid %} Support for other RP2040-based MMCE devices
-- {% include generaltag.liquid %} Channel naming
+<div class="SideNav border">
+<a class="SideNav-item" href="#ps2-game-id-switching">{% include ps2tag.liquid %} Game ID switching</a>
+<a class="SideNav-item" href="#ps2-ps1-dynamic-mode-selection">{% include ps2tag.liquid %} PS1 dynamic mode selection</a>
+<a class="SideNav-item" href="#ps2-mmceman-and-mmcedrv-support">{% include ps2tag.liquid %} MMCEMAN and MMCEDRV support</a>
+<a class="SideNav-item" href="#ps2-instant-card-availability">{% include ps2tag.liquid %} Instant card availability</a>
+<a class="SideNav-item" href="#ps2-1-64-mb-card-size-support">{% include ps2tag.liquid %} 1-64 MB card size support</a>
+<a class="SideNav-item" href="#ps2-support-for-developer-arcade-and-prototype-ps2s">{% include ps2tag.liquid %} Support for developer (`DTL-H` & `DTL-T`), Arcade (`COH-H`) and Prototype (`EB`?) models is available.</a>
+<a class="SideNav-item" href="#ps1-bootcard-mechanics">{% include ps1tag.liquid %} BootCard mechanics</a>
+<a class="SideNav-item" href="#ps1-psram-support">{% include ps1tag.liquid %} PSRAM support</a>
+<a class="SideNav-item" href="#general-settings-file">{% include generaltag.liquid %} Settings file</a>
+<a class="SideNav-item" href="#general-support-for-other-rp2040-based-mmce-devices">{% include generaltag.liquid %} Support for other RP2040-based MMCE devices</a>
+<a class="SideNav-item" href="#general-channel-naming">{% include generaltag.liquid %} Channel naming</a>
+</div>
 
 ## PS2: Game ID Switching
 
@@ -22,20 +24,26 @@ Like on PS1, *sd2psXtd* can detect the game ID of a PS2 console and switch to a 
 
 This is done in two ways:
 
-### History File Tracking
+<div class="d-flex flex-column flex-md-row flex-items-center flex-md-items-center">
+    <div class="col-12 col-md-10 d-flex flex-column flex-justify-center flex-items-center flex-md-items-start pl-md-4">
+      <h3 class="text-normal lh-condensed">History File Tracking</h3>
+      <p class="h4 color-fg-muted text-normal mb-2">When starting a game, the PS2 writes its game ID to a history file on the current memory card. sd2psXtd tracks the write to this file and detects which game ID has just been written. After that, a game card for this game is mounted and exposed to the PS2.</p>
+    </div>
+</div>
 
-When starting a game, the PS2 writes its game ID to a history file on the current memory card. *sd2psXtd* tracks the write to this file and detects which game ID has just been written. After that, a game card for this game is mounted and exposed to the PS2.
 
-### MMCEMAN Game ID
-
-*MMCEMAN* is a custom IOP module to communicate with Multipurpose Memory Card Emulators. This can be integrated with OPL so OPL can directly send the game ID of a launched game to *sd2psx*.
+<div class="d-flex flex-column flex-md-row flex-items-center flex-md-items-center">
+    <div class="col-12 col-md-10 d-flex flex-column flex-justify-center flex-items-center flex-md-items-start pl-md-4">
+      <h3 class="text-normal lh-condensed">MMCEMAN Game ID</h3>
+      <p class="h4 color-fg-muted text-normal mb-2"><strong>MMCEMAN</strong> is a custom IOP module to communicate with Multipurpose Memory Card Emulators. This can be integrated with OPL so OPL can directly send the game ID of a launched game to sd2psx.</p>
+    </div>
+</div>
 
 ## PS2: PS1 Dynamic Mode Selection
 
-When launching in PS2 mode, commands sent to *sd2psx* are monitored. Since PS1 sends controller messages on the same bus as memory card messages, if a controller message is detected, the PS2 switches to PS1 mode.
+When launching in PS2 mode, commands sent to *sd2psx* are monitored. Since PS1 sends controller messages on the same bus as memory card messages, if a controller message is detected, the *sd2psx* switches to PS1 mode.
 
 While in general this should be safe behavior, if *sd2psx* is used mainly in PS1, manual mode selection is recommended.
-
 
 <div class="d-flex">
 
@@ -55,7 +63,7 @@ Do not use *sd2psx* in dynamic mode on a PS1 multitap, as this **WILL damage** y
 
 ## PS2: MMCEMAN and MMCEDRV Support
 
-*MMCEMAN* is a PS2 module for interacting with *Multipurpose Memory Card Emulators*. Its main use cases include:
+**MMCEMAN** is a PS2 module for interacting with *Multipurpose Memory Card Emulators*. Its main use cases include:
 
 - **Card Switching:** MMCEMMAN can request a card change on *MMCEs*, such as setting a channel or selecting a specific card.
 - **Game ID Communication:** MMCEMAN can send a game ID to the *MMCE*, which may in turn switch to a dedicated card for this ID if activated.

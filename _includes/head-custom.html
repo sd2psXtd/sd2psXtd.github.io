@@ -2,6 +2,9 @@
 <link href="https://unpkg.com/@primer/css@^20.2.4/dist/primer.css" rel="stylesheet" />
 
 <div class="Header">
+    <div class="Header-item">
+        <img class="avatar" height="25" width="25" alt="@sd2psx" src="img/sd2psx-diy.png"/>
+    </div>
     <!-- Text item -->
     <div class="Header-item f4 d-flex">
       {% if site.title and site.title != page.title %}
@@ -17,7 +20,11 @@
     <div class="position-relative d-inline-block">
         <details class="details-reset details-overlay">
             <summary class="btn" aria-haspopup="true">
-              Download
+                <svg class="octicon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
+                    <path fill-rule="evenodd" d="M7.47 10.78a.75.75 0 001.06 0l3.75-3.75a.75.75 0 00-1.06-1.06L8.75 8.44V1.75a.75.75 0 00-1.5 0v6.69L4.78 5.97a.75.75 0 00-1.06 1.06l3.75 3.75zM3.75 13a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5z"></path>
+                  </svg>
+                  <span>Download</span>
+                  <span class="dropdown-caret"></span>
             </summary>
             <div class="SelectMenu">
               <div class="SelectMenu-modal">
