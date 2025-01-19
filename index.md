@@ -4,17 +4,17 @@ sd2psXtd is an extended firmware for the popular *Multipurpose MemoryCard Emulat
 
 It provides the same functionality as the official stable firmware and extends it with the following features:
 
-- **PS2:** Game ID switching
-- **PS2:** PS1 dynamic mode selection
-- **PS2:** MMCEMAN and MMCEDRV support
-- **PS2:** Instant card availability
-- **PS2:** 1-64 MB card size support
-- **PS2:** Support for developer (`DTL-H` & `DTL-T`), Arcade (`COH-H`) and Prototype (`EB`?) models is available.
-- **PS1:** BootCard mechanics
-- **PS1:** PSRAM support
-- **General:** Settings file
-- **General:** Support for other RP2040-based MMCE devices
-- **General:** Channel naming
+- {% include ps2tag.liquid %} Game ID switching
+-  {% include ps2tag.liquid %} PS1 dynamic mode selection
+-  {% include ps2tag.liquid %} MMCEMAN and MMCEDRV support
+-  {% include ps2tag.liquid %} Instant card availability
+-  {% include ps2tag.liquid %} 1-64 MB card size support
+-  {% include ps2tag.liquid %} Support for developer (`DTL-H` & `DTL-T`), Arcade (`COH-H`) and Prototype (`EB`?) models is available.
+- {% include ps1tag.liquid %} BootCard mechanics
+- {% include ps1tag.liquid %} PSRAM support
+- {% include generaltag.liquid %} Settings file
+- {% include generaltag.liquid %} Support for other RP2040-based MMCE devices
+- {% include generaltag.liquid %} Channel naming
 
 ## PS2: Game ID Switching
 
