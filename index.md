@@ -189,7 +189,12 @@ SCXS-12345=FolderName1
 SCXS-23456=FolderName2
 ```
 
-*Note: Be aware: Long folder names may not be displayed correctly and may result in stuttering of MMCE games due to scrolling.*
+{% include toast_note.liquid %}
+
+Be aware: Long folder names may not be displayed correctly and may result in stuttering of MMCE games due to scrolling.
+
+{% include toast_note_end.liquid %}
+
 
 ## Special Thanks to...
 
