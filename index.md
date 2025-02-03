@@ -10,7 +10,7 @@ It provides the same functionality as the official stable firmware and extends i
 <a class="SideNav-item" href="#ps2-mmceman-and-mmcedrv-support">{% include ps2tag.liquid %} MMCEMAN and MMCEDRV support</a>
 <a class="SideNav-item" href="#ps2-instant-card-availability">{% include ps2tag.liquid %} Instant card availability</a>
 <a class="SideNav-item" href="#ps2-1-64-mb-card-size-support">{% include ps2tag.liquid %} 1-64 MB card size support</a>
-<a class="SideNav-item" href="#ps2-support-for-developer-arcade-and-prototype-ps2s">{% include ps2tag.liquid %} Support for developer (<code>DTL-H</code> & <code>DTL-T</code>), Arcade (<code>COH-H</code>) and Prototype (<code>EB</code>?) models is available.</a>
+<a class="SideNav-item" href="#ps2-support-for-developer-arcade-and-prototype-ps2s">{% include ps2tag.liquid %} Support for developer, Arcade and Prototype PS2 models.</a>
 <a class="SideNav-item" href="#ps1-bootcard-mechanics">{% include ps1tag.liquid %} BootCard mechanics</a>
 <a class="SideNav-item" href="#ps1-psram-support">{% include ps1tag.liquid %} PSRAM support</a>
 <a class="SideNav-item" href="#general-settings-file">{% include generaltag.liquid %} Settings file</a>
