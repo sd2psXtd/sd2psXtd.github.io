@@ -34,3 +34,11 @@
     <a class="BtnGroup-item btn btn-outline" type="button" href="https://github.com/israpps/CheatDevicePS2">Github</a>
 </div>
 
+## NHDDL
+<p class="h4 color-fg-muted text-normal mb-2">Game launcher frontend for Neutrino</p>
+
+<div class="BtnGroup d-block mb-2">
+    <a class="BtnGroup-item btn btn-outline" type="button" href="https://github.com/pcm720/nhddl/releases">Download Page</a>
+    <a class="BtnGroup-item btn btn-outline" type="button" href="https://github.com/pcm720/nhddl">Github</a>
+</div>
+
