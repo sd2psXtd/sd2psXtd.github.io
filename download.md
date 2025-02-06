@@ -70,8 +70,10 @@
       <p class="h4 color-fg-muted text-normal mb-2">Made by dangiu, enhanced by SD2PSX Firmware</p>
       <a class="color-fg-muted text-small">DIY project built on top of rp2040-zero</a>
     <div class="BtnGroup d-block mb-2">
-        <a class="BtnGroup-item btn btn-outline" type="button" href="https://github.com/sd2psXtd/firmware/releases/download/1.0.0/pmc+.uf2">Firmware</a>
-        <a class="BtnGroup-item btn btn-outline" type="button" href="https://github.com/sd2psXtd/firmware/releases/download/1.0.0/pmc+-debug.uf2">Debug Firmware</a>
+        <a class="BtnGroup-item btn btn-outline" type="button" href="https://github.com/sd2psXtd/firmware/releases/download/1.0.0/pmc+.uf2">Firmware Pico</a>
+        <a class="BtnGroup-item btn btn-outline" type="button" href="https://github.com/sd2psXtd/firmware/releases/download/1.0.0/pmczero.uf2">Firmware Zero</a>
+        <a class="BtnGroup-item btn btn-outline" type="button" href="https://github.com/sd2psXtd/firmware/releases/download/1.0.0/pmc+-debug.uf2">Pico Debug Firmware</a>
+        <a class="BtnGroup-item btn btn-outline" type="button" href="https://github.com/sd2psXtd/firmware/releases/download/1.0.0/pmczero-debug.uf2">Zero Debug Firmware</a>
         <a class="BtnGroup-item btn btn-outline" type="button" href="https://github.com/dangiu/PicoMemcard?tab=readme-ov-file#picomemcard-vs-picomemcard">Project GitHub</a>
     </div>
     </div>
