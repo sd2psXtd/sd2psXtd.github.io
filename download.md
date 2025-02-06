@@ -43,7 +43,9 @@
 
 <div class="anim-hover-grow Box d-flex flex-column flex-md-row flex-items-center flex-md-items-center" href="#url">
     <div class="col-3 d-flex flex-items-center flex-items-center flex-md-items-start">
-      <img class="width-full mb-2 mb-md-0" src="img/psxmemcardgen1.png" alt="github" />
+        <a href="https://www.bitfunx.com/product/psxmemcard-ps1-memory-card-with-512mb-microsd-card-save-image-for-sony-playstation1-ps-one-console/">
+          <img class="width-full mb-2 mb-md-0" src="img/psxmemcardgen1.png" alt="github" />
+        </a>
     </div>
     <div class="col-12 col-md-10 d-flex flex-column flex-justify-center flex-items-center flex-md-items-start pl-md-4">
       <h2 class="text-normal lh-condensed">PSXMemCard Gen1</h2>
