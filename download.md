@@ -6,7 +6,7 @@
 <div class="border d-flex flex-column">
 <div class="anim-hover-grow Box d-flex flex-column flex-md-row flex-items-center flex-md-items-center" href="#url">
     <div class="col-3 d-flex flex-items-center flex-items-center flex-md-items-start">
-      <a href="https://sd2psx.net/ >
+      <a href="https://sd2psx.net/" >
           <img class="width-full mb-2 mb-md-0" src="img/sd2psx-diy.png" alt="github" />
       </a>
     </div>
