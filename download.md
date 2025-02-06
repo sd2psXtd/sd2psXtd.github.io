@@ -6,7 +6,9 @@
 <div class="border d-flex flex-column">
 <div class="anim-hover-grow Box d-flex flex-column flex-md-row flex-items-center flex-md-items-center" href="#url">
     <div class="col-3 d-flex flex-items-center flex-items-center flex-md-items-start">
-      <img class="width-full mb-2 mb-md-0" src="img/sd2psx-diy.png" alt="github" />
+      <a href="https://sd2psx.net/ >
+          <img class="width-full mb-2 mb-md-0" src="img/sd2psx-diy.png" alt="github" />
+      </a>
     </div>
     <div class="col-12 col-md-10 d-flex flex-column flex-justify-center flex-items-center flex-md-items-start pl-md-4">
       <h2 class="text-normal lh-condensed">SD2PSX</h2>
@@ -23,7 +25,9 @@
 
 <div class="anim-hover-grow Box d-flex flex-column flex-md-row flex-items-center flex-md-items-center" href="#url">
     <div class="col-3 d-flex flex-items-center flex-items-center flex-md-items-start">
-      <img class="width-full mb-2 mb-md-0" src="img/psxmemcardgen2.png" alt="github" />
+        <a href="https://www.bitfunx.com/product/psxmemcard-gen2-memory-card-for-playstation1-ps-one-playstation2-game-consoles/">
+            <img class="width-full mb-2 mb-md-0" src="img/psxmemcardgen2.png" alt="github" />
+        </a>      
     </div>
     <div class="col-12 col-md-10 d-flex flex-column flex-justify-center flex-items-center flex-md-items-start pl-md-4">
       <h2 class="text-normal lh-condensed">PSXMemCard Gen2</h2>
@@ -55,7 +59,9 @@
 
 <div class="anim-hover-grow Box d-flex flex-column flex-sm-row flex-md-row flex-items-center flex-md-items-center" href="#url">
     <div class="col-3 d-flex flex-items-center flex-items-center flex-md-items-start">
-      <img class="p-1" src="img/pmc+.png" alt="github" />
+        <a href="https://github.com/dangiu/PicoMemcard">
+          <img class="p-1" src="img/pmc+.png" alt="github" />
+        </a>
     </div>
     <div class="col-12 col-md-10 d-flex flex-column flex-justify-center flex-items-center flex-md-items-start pl-md-4">
       <h2 class="text-normal lh-condensed">PicoMemcard+</h2>
