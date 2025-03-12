@@ -81,10 +81,6 @@
       padding: 0 10px;
       font-weight: bold;
     }
-    /* Spacing for General fieldset labels */
-    fieldset.general-fieldset label {
-      margin-bottom: 10px;
-    }
     label {
       font-size: 0.95rem;
       cursor: pointer;
@@ -141,7 +137,7 @@
       transform: translate(-50%, -55%);
       font-weight: bold;
     }
-    /* Container for PS1 and PS2 checkboxes */
+    /* Container for checkbox groups to center them horizontally */
     .checkbox-container {
       display: flex;
       justify-content: space-evenly;
@@ -247,7 +243,7 @@
       <div id="dropZone">Drag and drop your INI file here, or click to browse.</div>
       <input type="file" id="iniFile" accept=".ini, .txt">
 
-      <fieldset class="general-fieldset">
+      <fieldset>
         <legend>General</legend>
         <div class="cardsize-container">
           <label for="Mode">Mode:</label>
@@ -257,7 +253,7 @@
           </select>
         </div>
         <br/>
-        <div>
+        <div class="checkbox-container">
           <label>
             <input type="checkbox" class="modern-checkbox" name="FlippedScreen" id="FlippedScreen">
             Flipped Screen
@@ -285,13 +281,13 @@
         <div class="cardsize-container">
           <label for="PS2_CardSize">CardSize:</label>
           <select name="PS2_CardSize" id="PS2_CardSize">
-            <option value="1">1</option>
-            <option value="2">2</option>
-            <option value="4">4</option>
-            <option value="8" selected>8</option>
-            <option value="16">16</option>
-            <option value="32">32</option>
-            <option value="64">64</option>
+            <option value="1">1 MB</option>
+            <option value="2">2 MB</option>
+            <option value="4">4 MB</option>
+            <option value="8" selected>8 MB</option>
+            <option value="16">16 MB</option>
+            <option value="32">32 MB</option>
+            <option value="64">64 MB</option>
           </select>
         </div>
         <div class="cardsize-container">
@@ -315,7 +311,7 @@
          </div>
       </fieldset>
 
-      <!-- PS1 Boot Cards Section remains unchanged -->
+      <!-- PS1 Boot Cards Section remains unchanged except for file renaming -->
       <fieldset id="ps1bootcards">
         <legend>PS1 Boot Cards</legend>
         <table>
@@ -547,7 +543,7 @@
         </table>
       </fieldset>
 
-      <!-- New PS2 BootCards Section formatted like PS1 BootCards -->
+      <!-- PS2 BootCards Section formatted like PS1 BootCards -->
       <fieldset id="ps2bootcards">
         <legend>PS2 BootCards</legend>
         <table>
@@ -731,12 +727,14 @@
       });
       bootCardContent += "[Settings]\n";
       bootCardContent += `MaxChannels=${maxChannels}\n`;
+      // Use PS2 CardSize for BootCard.ini as before (unchanged)
       const ps2CardSize = form.elements["PS2_CardSize"].value;
       bootCardContent += `CardSize=${ps2CardSize}\n\n`;
       zip.file("MemoryCards/PS1/BOOT/BootCard.ini", bootCardContent);
 
-      // For each selected PS1 bootcard, fetch its corresponding file.
-      for (let card of enabledCards) {
+      // For each selected PS1 bootcard, fetch its corresponding file and rename it.
+      for (let i = 0; i < enabledCards.length; i++) {
+        const card = enabledCards[i];
         const key = card.getAttribute("data-ini-key");
         const filename = bootcardFileMap[key];
         if (filename) {
@@ -745,7 +743,8 @@
             const response = await fetch(fileUrl);
             if (!response.ok) throw new Error(`Failed to fetch ${fileUrl}`);
             const fileData = await response.blob();
-            zip.file("MemoryCards/PS1/BOOT/" + filename, fileData);
+            // Rename according to its order in the ini file
+            zip.file("MemoryCards/PS1/BOOT/BootCard-" + (i + 1) + ".mcd", fileData);
           } catch (err) {
             console.error(err);
           }
