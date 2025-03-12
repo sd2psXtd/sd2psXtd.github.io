@@ -311,7 +311,7 @@
          </div>
       </fieldset>
 
-      <!-- PS1 Boot Cards Section remains unchanged except for file renaming -->
+      <!-- PS1 Boot Cards Section -->
       <fieldset id="ps1bootcards">
         <legend>PS1 Boot Cards</legend>
         <table>
@@ -428,7 +428,6 @@
                       SCPH-7000W (A) v4.1
                     </label>
                   </li>
-                  <!-- New 4.1 (1997-12-16) group -->
                   <li>
                     <label>
                       <input type="checkbox" class="modern-checkbox" name="PS1BootCards_SCPH7001_A_4.1" data-ini-key="SCPH-7001 (A) 4.1">
@@ -543,7 +542,7 @@
         </table>
       </fieldset>
 
-      <!-- PS2 BootCards Section formatted like PS1 BootCards -->
+      <!-- PS2 BootCards Section -->
       <fieldset id="ps2bootcards">
         <legend>PS2 BootCards</legend>
         <table>
@@ -685,17 +684,17 @@
     // Since the files are now local, use a relative path (assume they are in the same directory)
     const bootcardBaseUrl = "./";
 
-    // Make generateINI an async function to allow fetching bootcard files.
+    // Modified generateINI function.
     async function generateINI() {
       const form = document.getElementById('settingsForm');
       let iniContent = "";
-      // Process individual sections in the order they appear in the UI.
       const sections = {
         General: ['FlippedScreen', 'Mode'],
         PS1: ['PS1_Autoboot', 'PS1_GameID'],
         PS2: ['PS2_CardSize', 'PS2_Variant', 'PS2_Autoboot', 'PS2_GameID']
       };
-      for (let section in sections) {
+      const sectionKeys = Object.keys(sections);
+      sectionKeys.forEach((section, index) => {
         iniContent += `[${section}]\n`;
         sections[section].forEach(setting => {
           const element = form.elements[setting];
@@ -710,81 +709,86 @@
           const key = setting.replace("PS1_", "").replace("PS2_", "");
           iniContent += `${key}=${value}\n`;
         });
-        iniContent += "\n";
-      }
+        // Only add a trailing newline after the last section.
+        if (index === sectionKeys.length - 1) {
+          iniContent += "\n";
+        }
+      });
       // Generate main settings.ini
       const zip = new JSZip();
       zip.file(".sd2psx/settings.ini", iniContent);
 
-      // Generate BootCard.ini for PS1 in MemoryCards/PS1/BOOT/
+      // Generate BootCard.ini for PS1 only if at least one bootcard is selected.
       const bootCards = document.querySelectorAll("#ps1bootcards input[data-ini-key]");
       let enabledCards = Array.from(bootCards).filter(card => card.checked);
-      let maxChannels = enabledCards.length;
-      let bootCardContent = "[ChannelName]\n";
-      enabledCards.forEach((card, index) => {
-        let channelName = card.closest("label").textContent.trim();
-        bootCardContent += `${index + 1}=${channelName}\n`;
-      });
-      bootCardContent += "[Settings]\n";
-      bootCardContent += `MaxChannels=${maxChannels}\n`;
-      // Use PS2 CardSize for BootCard.ini as before (unchanged)
-      const ps2CardSize = form.elements["PS2_CardSize"].value;
-      bootCardContent += `CardSize=${ps2CardSize}\n\n`;
-      zip.file("MemoryCards/PS1/BOOT/BootCard.ini", bootCardContent);
+      if (enabledCards.length > 0) {
+        let maxChannels = enabledCards.length;
+        let bootCardContent = "[ChannelName]\n";
+        enabledCards.forEach((card, index) => {
+          let channelName = card.closest("label").textContent.trim();
+          bootCardContent += `${index + 1}=${channelName}\n`;
+        });
+        bootCardContent += "[Settings]\n";
+        bootCardContent += `MaxChannels=${maxChannels}\n`;
+        const ps2CardSize = form.elements["PS2_CardSize"].value;
+        bootCardContent += `CardSize=${ps2CardSize}\n\n`;
+        zip.file("MemoryCards/PS1/BOOT/BootCard.ini", bootCardContent);
 
-      // For each selected PS1 bootcard, fetch its corresponding file and rename it.
-      for (let i = 0; i < enabledCards.length; i++) {
-        const card = enabledCards[i];
-        const key = card.getAttribute("data-ini-key");
-        const filename = bootcardFileMap[key];
-        if (filename) {
-          const fileUrl = bootcardBaseUrl + filename;
-          try {
-            const response = await fetch(fileUrl);
-            if (!response.ok) throw new Error(`Failed to fetch ${fileUrl}`);
-            const fileData = await response.blob();
-            // Rename according to its order in the ini file
-            zip.file("MemoryCards/PS1/BOOT/BootCard-" + (i + 1) + ".mcd", fileData);
-          } catch (err) {
-            console.error(err);
+        // Add each selected PS1 bootcard file.
+        for (let i = 0; i < enabledCards.length; i++) {
+          const card = enabledCards[i];
+          const key = card.getAttribute("data-ini-key");
+          const filename = bootcardFileMap[key];
+          if (filename) {
+            const fileUrl = bootcardBaseUrl + filename;
+            try {
+              const response = await fetch(fileUrl);
+              if (!response.ok) throw new Error(`Failed to fetch ${fileUrl}`);
+              const fileData = await response.blob();
+              zip.file("MemoryCards/PS1/BOOT/BootCard-" + (i + 1) + ".mcd", fileData);
+            } catch (err) {
+              console.error(err);
+            }
+          } else {
+            console.warn(`No file mapping found for bootcard key: ${key}`);
           }
-        } else {
-          console.warn(`No file mapping found for bootcard key: ${key}`);
         }
       }
 
-      // Generate BootCard.ini for PS2 in MemoryCards/PS2/BOOT/
+      // Generate BootCard.ini for PS2 only if at least one bootcard is selected.
       const ps2BootCards = document.querySelectorAll("#ps2bootcards input[data-ini-key]");
       let enabledPS2Cards = Array.from(ps2BootCards).filter(card => card.checked);
-      let ps2MaxChannels = enabledPS2Cards.length;
-      let ps2BootCardContent = "[ChannelName]\n";
-      enabledPS2Cards.forEach((card, index) => {
-        let channelName = card.closest("label").textContent.trim();
-        ps2BootCardContent += `${index + 1}=${channelName}\n`;
-      });
-      ps2BootCardContent += "[Settings]\n";
-      ps2BootCardContent += `MaxChannels=${ps2MaxChannels}\n`;
-      const ps2CardSizeValue = form.elements["PS2_CardSize"].value;
-      ps2BootCardContent += `CardSize=${ps2CardSizeValue}\n\n`;
-      zip.file("MemoryCards/PS2/BOOT/BootCard.ini", ps2BootCardContent);
+      if (enabledPS2Cards.length > 0) {
+        let ps2MaxChannels = enabledPS2Cards.length;
+        let ps2BootCardContent = "[ChannelName]\n";
+        enabledPS2Cards.forEach((card, index) => {
+          let channelName = card.closest("label").textContent.trim();
+          ps2BootCardContent += `${index + 1}=${channelName}\n`;
+        });
+        ps2BootCardContent += "[Settings]\n";
+        ps2BootCardContent += `MaxChannels=${ps2MaxChannels}\n`;
+        const ps2CardSizeValue = form.elements["PS2_CardSize"].value;
+        ps2BootCardContent += `CardSize=${ps2CardSizeValue}\n\n`;
+        zip.file("MemoryCards/PS2/BOOT/BootCard.ini", ps2BootCardContent);
 
-      // For each selected PS2 bootcard, fetch its corresponding file and rename it.
-      for (let i = 0; i < enabledPS2Cards.length; i++) {
-        const card = enabledPS2Cards[i];
-        const key = card.getAttribute("data-ini-key");
-        const filename = ps2BootcardFileMap[key];
-        if (filename) {
-          const fileUrl = bootcardBaseUrl + filename;
-          try {
-            const response = await fetch(fileUrl);
-            if (!response.ok) throw new Error(`Failed to fetch ${fileUrl}`);
-            const fileData = await response.blob();
-            zip.file("MemoryCards/PS2/BOOT/BootCard-" + (i + 1) + ".mcd", fileData);
-          } catch (err) {
-            console.error(err);
+        // Add each selected PS2 bootcard file.
+        for (let i = 0; i < enabledPS2Cards.length; i++) {
+          const card = enabledPS2Cards[i];
+          const key = card.getAttribute("data-ini-key");
+          const filename = ps2BootcardFileMap[key];
+          if (filename) {
+            const fileUrl = bootcardBaseUrl + filename;
+            try {
+              const response = await fetch(fileUrl);
+              if (!response.ok) throw new Error(`Failed to fetch ${fileUrl}`);
+              const fileData = await response.blob();
+              zip.file("MemoryCards/PS2/BOOT/BootCard-" + (i + 1) + ".mcd", fileData);
+            } catch (err) {
+              console.error(err);
+            }
+          } else {
+            console.warn(`No file mapping found for PS2 bootcard key: ${key}`);
           }
-        } else {
-          console.warn(`No file mapping found for PS2 bootcard key: ${key}`);
         }
       }
 
