@@ -141,6 +141,12 @@
       transform: translate(-50%, -55%);
       font-weight: bold;
     }
+    /* Container for PS1 and PS2 checkboxes */
+    .checkbox-container {
+      display: flex;
+      justify-content: space-evenly;
+      align-items: center;
+    }
     /* Modernized PS1 Boot Cards Table */
     #ps1bootcards table {
       width: 100%;
@@ -261,14 +267,16 @@
 
       <fieldset>
         <legend>PS1</legend>
-        <label>
-          <input type="checkbox" class="modern-checkbox" name="PS1_Autoboot" id="PS1_Autoboot" checked>
-          Autoboot
-        </label>
-        <label>
-          <input type="checkbox" class="modern-checkbox" name="PS1_GameID" id="PS1_GameID" checked>
-          GameID
-        </label>
+        <div class="checkbox-container">
+          <label>
+            <input type="checkbox" class="modern-checkbox" name="PS1_Autoboot" id="PS1_Autoboot" checked>
+            Autoboot
+          </label>
+          <label>
+            <input type="checkbox" class="modern-checkbox" name="PS1_GameID" id="PS1_GameID" checked>
+            GameID
+          </label>
+        </div>
       </fieldset>
 
       <fieldset>
@@ -295,7 +303,7 @@
           </select>
         </div>
          <br/>
-         <div>
+         <div class="checkbox-container">
            <label>
              <input type="checkbox" class="modern-checkbox" name="PS2_Autoboot" id="PS2_Autoboot" checked>
              Autoboot
