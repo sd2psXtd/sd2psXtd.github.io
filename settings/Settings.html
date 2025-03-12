@@ -111,7 +111,7 @@
       background-color: var(--card-bg);
       color: var(--text-color);
     }
-    /* Modernized checkboxes for all */
+    /* Modernized checkboxes */
     input[type="checkbox"].modern-checkbox {
       appearance: none;
       width: 18px;
@@ -137,86 +137,28 @@
       transform: translate(-50%, -55%);
       font-weight: bold;
     }
-    /* Container for checkbox groups to center them horizontally */
+    /* Container for checkbox groups */
     .checkbox-container {
       display: flex;
       justify-content: space-evenly;
       align-items: center;
     }
-    /* Modernized PS1 Boot Cards Table */
-    #ps1bootcards table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 10px;
+    /* Container for dynamically generated bootcard lists */
+    .bootcards-container {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
     }
-    #ps1bootcards th {
-      background-color: var(--header-bg);
-      color: var(--header-text);
-      padding: 12px;
-      font-size: 1rem;
+    .bootcards-container > div {
+      flex: 1;
+    }
+    .bootcards-container h3 {
       text-align: center;
-      border-bottom: 2px solid var(--border-color);
+      margin-bottom: 10px;
     }
-    #ps1bootcards td {
-      padding: 12px;
-      vertical-align: top;
-      border-bottom: 1px solid var(--border-color);
-    }
-    #ps1bootcards ul {
+    .bootcards-container ul {
       list-style: none;
       padding-left: 0;
-    }
-    #ps1bootcards li {
-      margin-bottom: 8px;
-    }
-    #ps1bootcards label {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    #ps1bootcards tr:hover {
-      background-color: rgba(0, 0, 0, 0.05);
-    }
-    /* PS2 BootCards Table formatted like PS1 BootCards */
-    #ps2bootcards table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 10px;
-    }
-    #ps2bootcards th {
-      background-color: var(--header-bg);
-      color: var(--header-text);
-      padding: 12px;
-      font-size: 1rem;
-      text-align: center;
-      border-bottom: 2px solid var(--border-color);
-      width: 50%;
-    }
-    #ps2bootcards td {
-      padding: 12px;
-      vertical-align: top;
-      border-bottom: 1px solid var(--border-color);
-      width: 50%;
-    }
-    /* Remove bullet points in PS2 BootCards unordered lists */
-    #ps2bootcards ul {
-      list-style: none;
-      padding-left: 0;
-      margin: 0;
-    }
-    /* Container used for CardSize, Mode and Variant selections */
-    .cardsize-container {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-top: 10px;
-    }
-    .cardsize-container label {
-      margin: 0;
-    }
-    /* Hide file input */
-    input[type="file"] {
-      display: none;
     }
     button {
       display: block;
@@ -277,7 +219,6 @@
 
       <fieldset>
         <legend>PS2</legend>
-        <!-- Drop downs first -->
         <div class="cardsize-container">
           <label for="PS2_CardSize">CardSize:</label>
           <select name="PS2_CardSize" id="PS2_CardSize">
@@ -311,303 +252,38 @@
          </div>
       </fieldset>
 
-      <!-- PS1 Boot Cards Section -->
+      <!-- Dynamic PS1 Boot Cards Section -->
       <fieldset id="ps1bootcards">
         <legend>PS1 Boot Cards</legend>
-        <table>
-          <thead>
-            <tr>
-              <th>Region I</th>
-              <th>Region A</th>
-              <th>Region E</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <!-- Region I -->
-              <td>
-                <ul>
-                  <li>
-                    <label>
-                      <input type="checkbox" class="modern-checkbox" name="PS1BootCards_SCPH1000_I_1.0" data-ini-key="SCPH-1000 (I) 1.0">
-                      SCPH-1000 (I) v1.0
-                    </label>
-                  </li>
-                  <li>
-                    <label>
-                      <input type="checkbox" class="modern-checkbox" name="PS1BootCards_SCPH3000_I_1.1" data-ini-key="SCPH-3000 (I) 1.1">
-                      SCPH-3000 (I) v1.1
-                    </label>
-                  </li>
-                  <li>
-                    <label>
-                      <input type="checkbox" class="modern-checkbox" name="PS1BootCards_SCPH3500_I_2.1" data-ini-key="SCPH-3500 (I) 2.1">
-                      SCPH-3500 (I) v2.1
-                    </label>
-                  </li>
-                  <li>
-                    <label>
-                      <input type="checkbox" class="modern-checkbox" name="PS1BootCards_SCPH5000_I_2.2" data-ini-key="SCPH-5000 (I) 2.2">
-                      SCPH-5000 (I) v2.2
-                    </label>
-                  </li>
-                  <li>
-                    <label>
-                      <input type="checkbox" class="modern-checkbox" name="PS1BootCards_SCPH5500_I_3.0" data-ini-key="SCPH-5500 (I) 3.0">
-                      SCPH-5500 (I) v3.0
-                    </label>
-                  </li>
-                  <li>
-                    <label>
-                      <input type="checkbox" class="modern-checkbox" name="PS1BootCards_SCPH7000_I_4.0" data-ini-key="SCPH-7000 (I) 4.0">
-                      SCPH-7000 (I) v4.0
-                    </label>
-                  </li>
-                  <li>
-                    <label>
-                      <input type="checkbox" class="modern-checkbox" name="PS1BootCards_SCPH100_I_4.3" data-ini-key="SCPH-100 (I) 4.3">
-                      SCPH-100 (I) v4.3
-                    </label>
-                  </li>
-                </ul>
-              </td>
-              <!-- Region A -->
-              <td>
-                <ul>
-                  <li>
-                    <label>
-                      <input type="checkbox" class="modern-checkbox" name="PS1BootCards_SCPH1001_A_2.0" data-ini-key="SCPH-1001 (A) 2.0">
-                      SCPH-1001 (A) v2.0
-                    </label>
-                  </li>
-                  <li>
-                    <label>
-                      <input type="checkbox" class="modern-checkbox" name="PS1BootCards_SCPH1001_A_2.1" data-ini-key="SCPH-1001 (A) 2.1">
-                      SCPH-1001 (A) v2.1
-                    </label>
-                  </li>
-                  <li>
-                    <label>
-                      <input type="checkbox" class="modern-checkbox" name="PS1BootCards_SCPH1001_A_2.2" data-ini-key="SCPH-1001 (A) 2.2">
-                      SCPH-1001 (A) v2.2
-                    </label>
-                  </li>
-                  <li>
-                    <label>
-                      <input type="checkbox" class="modern-checkbox" name="PS1BootCards_SCPH5003_A_2.2" data-ini-key="SCPH-5003 (A) 2.2">
-                      SCPH-5003 (A) v2.2
-                    </label>
-                  </li>
-                  <li>
-                    <label>
-                      <input type="checkbox" class="modern-checkbox" name="PS1BootCards_SCPH5001_A_3.0" data-ini-key="SCPH-5001 (A) 3.0">
-                      SCPH-5001 (A) v3.0
-                    </label>
-                  </li>
-                  <li>
-                    <label>
-                      <input type="checkbox" class="modern-checkbox" name="PS1BootCards_SCPH5501_A_3.0" data-ini-key="SCPH-5501 (A) 3.0">
-                      SCPH-5501 (A) v3.0
-                    </label>
-                  </li>
-                  <li>
-                    <label>
-                      <input type="checkbox" class="modern-checkbox" name="PS1BootCards_SCPH5503_A_3.0" data-ini-key="SCPH-5503 (A) 3.0">
-                      SCPH-5503 (A) v3.0
-                    </label>
-                  </li>
-                  <li>
-                    <label>
-                      <input type="checkbox" class="modern-checkbox" name="PS1BootCards_SCPH7003_A_3.0" data-ini-key="SCPH-7003 (A) 3.0">
-                      SCPH-7003 (A) v3.0
-                    </label>
-                  </li>
-                  <li>
-                    <label>
-                      <input type="checkbox" class="modern-checkbox" name="PS1BootCards_SCPH7000W_A_4.1" data-ini-key="SCPH-7000W (A) 4.1">
-                      SCPH-7000W (A) v4.1
-                    </label>
-                  </li>
-                  <li>
-                    <label>
-                      <input type="checkbox" class="modern-checkbox" name="PS1BootCards_SCPH7001_A_4.1" data-ini-key="SCPH-7001 (A) 4.1">
-                      SCPH-7001 (A) v4.1
-                    </label>
-                  </li>
-                  <li>
-                    <label>
-                      <input type="checkbox" class="modern-checkbox" name="PS1BootCards_SCPH7501_A_4.1" data-ini-key="SCPH-7501 (A) 4.1">
-                      SCPH-7501 (A) v4.1
-                    </label>
-                  </li>
-                  <li>
-                    <label>
-                      <input type="checkbox" class="modern-checkbox" name="PS1BootCards_SCPH7503_A_4.1" data-ini-key="SCPH-7503 (A) 4.1">
-                      SCPH-7503 (A) v4.1
-                    </label>
-                  </li>
-                  <li>
-                    <label>
-                      <input type="checkbox" class="modern-checkbox" name="PS1BootCards_SCPH9001_A_4.1" data-ini-key="SCPH-9001 (A) 4.1">
-                      SCPH-9001 (A) v4.1
-                    </label>
-                  </li>
-                  <li>
-                    <label>
-                      <input type="checkbox" class="modern-checkbox" name="PS1BootCards_SCPH9003_A_4.1" data-ini-key="SCPH-9003 (A) 4.1">
-                      SCPH-9003 (A) v4.1
-                    </label>
-                  </li>
-                  <li>
-                    <label>
-                      <input type="checkbox" class="modern-checkbox" name="PS1BootCards_SCPH9903_A_4.1" data-ini-key="SCPH-9903 (A) 4.1">
-                      SCPH-9903 (A) v4.1
-                    </label>
-                  </li>
-                  <li>
-                    <label>
-                      <input type="checkbox" class="modern-checkbox" name="PS1BootCards_SCPH101_A_4.4" data-ini-key="SCPH-101 (A) 4.4">
-                      SCPH-101 (A) v4.4
-                    </label>
-                  </li>
-                  <li>
-                    <label>
-                      <input type="checkbox" class="modern-checkbox" name="PS1BootCards_SCPH101_A_4.5" data-ini-key="SCPH-101 (A) 4.5">
-                      SCPH-101 (A) v4.5
-                    </label>
-                  </li>
-                  <li>
-                    <label>
-                      <input type="checkbox" class="modern-checkbox" name="PS1BootCards_SCPH103_A_4.5" data-ini-key="SCPH-103 (A) 4.5">
-                      SCPH-103 (A) v4.5
-                    </label>
-                  </li>
-                </ul>
-              </td>
-              <!-- Region E -->
-              <td>
-                <ul>
-                  <li>
-                    <label>
-                      <input type="checkbox" class="modern-checkbox" name="PS1BootCards_SCPH1002_E_2.0" data-ini-key="SCPH-1002 (E) 2.0">
-                      SCPH-1002 (E) v2.0
-                    </label>
-                  </li>
-                  <li>
-                    <label>
-                      <input type="checkbox" class="modern-checkbox" name="PS1BootCards_SCPH1002_E_2.1" data-ini-key="SCPH-1002 (E) 2.1">
-                      SCPH-1002 (E) v2.1
-                    </label>
-                  </li>
-                  <li>
-                    <label>
-                      <input type="checkbox" class="modern-checkbox" name="PS1BootCards_SCPH1002_E_2.2" data-ini-key="SCPH-1002 (E) 2.2">
-                      SCPH-1002 (E) v2.2
-                    </label>
-                  </li>
-                  <li>
-                    <label>
-                      <input type="checkbox" class="modern-checkbox" name="PS1BootCards_SCPH5502_E_3.0" data-ini-key="SCPH-5502 (E) 3.0">
-                      SCPH-5502 (E) v3.0
-                    </label>
-                  </li>
-                  <li>
-                    <label>
-                      <input type="checkbox" class="modern-checkbox" name="PS1BootCards_SCPH5552_E_3.0" data-ini-key="SCPH-5552 (E) 3.0">
-                      SCPH-5552 (E) v3.0
-                    </label>
-                  </li>
-                  <li>
-                    <label>
-                      <input type="checkbox" class="modern-checkbox" name="PS1BootCards_SCPH7002_E_4.1" data-ini-key="SCPH-7002 (E) 4.1">
-                      SCPH-7002 (E) v4.1
-                    </label>
-                  </li>
-                  <li>
-                    <label>
-                      <input type="checkbox" class="modern-checkbox" name="PS1BootCards_SCPH102_E_4.4" data-ini-key="SCPH-102 (E) 4.4">
-                      SCPH-102 (E) v4.4
-                    </label>
-                  </li>
-                  <li>
-                    <label>
-                      <input type="checkbox" class="modern-checkbox" name="PS1BootCards_SCPH102_E_4.5" data-ini-key="SCPH-102 (E) 4.5">
-                      SCPH-102 (E) v4.5
-                    </label>
-                  </li>
-                </ul>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        <div class="bootcards-container">
+          <div>
+            <h3>Region I</h3>
+            <ul id="bootcards_ps1_I"></ul>
+          </div>
+          <div>
+            <h3>Region A</h3>
+            <ul id="bootcards_ps1_A"></ul>
+          </div>
+          <div>
+            <h3>Region E</h3>
+            <ul id="bootcards_ps1_E"></ul>
+          </div>
+        </div>
       </fieldset>
 
-      <!-- PS2 BootCards Section -->
+      <!-- Dynamic PS2 Boot Cards Section -->
       <fieldset id="ps2bootcards">
-        <legend>PS2 BootCards</legend>
-        <table>
-          <thead>
-            <tr>
-              <th>PS2</th>
-              <th>Arcade</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>
-                <ul>
-                  <li>
-                    <label>
-                      <input type="checkbox" class="modern-checkbox" name="PS2BootCards_FMCB_1.966" data-ini-key="FMCB 1.966">
-                      FMCB 1.966 (recommended)
-                    </label>
-                  </li>
-                  <li>
-                    <label>
-                      <input type="checkbox" class="modern-checkbox" name="PS2BootCards_FMCB_1.965" data-ini-key="FMCB 1.965">
-                      FMCB 1.965
-                    </label>
-                  </li>
-                  <li>
-                    <label>
-                      <input type="checkbox" class="modern-checkbox" name="PS2BootCards_FMCB_1.964" data-ini-key="FMCB 1.964">
-                      FMCB 1.964
-                    </label>
-                  </li>
-                  <li>
-                    <label>
-                      <input type="checkbox" class="modern-checkbox" name="PS2BootCards_FMCB_1.963" data-ini-key="FMCB 1.963">
-                      FMCB 1.963
-                    </label>
-                  </li>
-                  <li>
-                    <label>
-                      <input type="checkbox" class="modern-checkbox" name="PS2BootCards_FMCB_1.953" data-ini-key="FMCB 1.953">
-                      FMCB 1.953 (recommended for Modchip)
-                    </label>
-                  </li>
-                  <li>
-                    <label>
-                      <input type="checkbox" class="modern-checkbox" name="PS2BootCards_PS2BBL" data-ini-key="PS2BBL">
-                      PS2BBL
-                    </label>
-                  </li>
-                  <li>
-                    <label>
-                      <input type="checkbox" class="modern-checkbox" name="PS2BootCards_SlimTuna_64MB" data-ini-key="SlimTuna (64MB)">
-                      SlimTuna (64MB)
-                    </label>
-                  </li>
-                </ul>
-              </td>
-              <td>
-                <ul>
-                  <!-- Arcade column: no entries yet -->
-                </ul>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        <legend>PS2 Boot Cards</legend>
+        <div class="bootcards-container">
+          <div>
+            <h3>PS2</h3>
+            <ul id="bootcards_ps2"></ul>
+          </div>
+          <div>
+            <h3>Arcade</h3>
+            <ul id="bootcards_arcade"></ul>
+          </div>
+        </div>
       </fieldset>
 
       <fieldset>
@@ -624,7 +300,60 @@
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
   <script>
-    // Clean pasted data for CIV input.
+    // Variables to hold bootcard mapping data loaded from JSON
+    let ps1IMap = {};
+    let ps1AMap = {};
+    let ps1EMap = {};
+    let ps2Map = {};
+    let arcadeMap = {};
+
+    // Load JSON mapping files
+    Promise.all([
+      fetch('./ps1_I.json').then(res => res.json()),
+      fetch('./ps1_A.json').then(res => res.json()),
+      fetch('./ps1_E.json').then(res => res.json()),
+      fetch('./ps2.json').then(res => res.json()),
+      fetch('./arcade.json').then(res => res.json())
+    ]).then(([dataI, dataA, dataE, dataPS2, dataArcade]) => {
+      ps1IMap = dataI;
+      ps1AMap = dataA;
+      ps1EMap = dataE;
+      ps2Map = dataPS2;
+      arcadeMap = dataArcade;
+      console.log("Bootcard JSON files loaded successfully.");
+      populateBootcards();
+    }).catch(err => {
+      console.error("Error loading bootcard JSON files:", err);
+    });
+
+    // Populate bootcard checkboxes dynamically from JSON data
+    function populateBootcards() {
+      populateList(ps1IMap, "bootcards_ps1_I", "I", "PS1BootCards_");
+      populateList(ps1AMap, "bootcards_ps1_A", "A", "PS1BootCards_");
+      populateList(ps1EMap, "bootcards_ps1_E", "E", "PS1BootCards_");
+      populateList(ps2Map, "bootcards_ps2", "PS2", "PS2BootCards_");
+      populateList(arcadeMap, "bootcards_arcade", "Arcade", "PS2BootCards_");
+    }
+
+    function populateList(map, containerId, regionCode, prefix) {
+      const container = document.getElementById(containerId);
+      for (const [key, filename] of Object.entries(map)) {
+        const li = document.createElement('li');
+        const label = document.createElement('label');
+        const input = document.createElement('input');
+        input.type = 'checkbox';
+        input.classList.add('modern-checkbox');
+        input.name = prefix + key.replace(/[^a-zA-Z0-9]/g, "_");
+        input.setAttribute("data-ini-key", key);
+        input.setAttribute("data-region", regionCode);
+        label.appendChild(input);
+        label.appendChild(document.createTextNode(" " + key));
+        li.appendChild(label);
+        container.appendChild(li);
+      }
+    }
+
+    // Clean pasted CIV hex data
     const civInput = document.getElementsByName("CIV_Hex")[0];
     civInput.addEventListener("paste", function(e) {
       e.preventDefault();
@@ -633,58 +362,8 @@
       this.value = cleaned;
     });
 
-    // Mapping from PS1 bootcard model (data-ini-key) to the corresponding local filename.
-    const bootcardFileMap = {
-      "SCPH-1000 (I) 1.0": "superfast_1.0-1994-09-22-I-3b601fc8.mcd",
-      "SCPH-3000 (I) 1.1": "superfast_1.1-1995-01-22-I-3539def6.mcd",
-      "SCPH-3500 (I) 2.1": "superfast_2.1-1995-07-17-I-bc190209.mcd",
-      "SCPH-5000 (I) 2.2": "superfast_2.2-1995-12-04-I-24fc7e17.mcd",
-      "SCPH-5500 (I) 3.0": "superfast_3.0-1996-09-09-I-ff3eeb8c.mcd",
-      "SCPH-7000 (I) 4.0": "superfast_4.0-1997-08-18-I-ec541cd0.mcd",
-      "SCPH-100 (I) 4.3": "superfast_4.3-2000-03-11-I-f2af798b.mcd",
-      "SCPH-1001 (A) 2.0": "superfast_2.0-1995-05-07-A-55847d8c.mcd",
-      "SCPH-1001 (A) 2.1": "superfast_2.1-1995-07-17-A-aff00f2f.mcd",
-      "SCPH-1001 (A) 2.2": "superfast_2.2-1995-12-04-A-37157331.mcd",
-      "SCPH-5003 (A) 2.2": "superfast_2.2-1995-12-04-A-37157331.mcd",
-      "SCPH-5001 (A) 3.0": "superfast_3.0-1996-11-18-A-8d8cb7e4.mcd",
-      "SCPH-5501 (A) 3.0": "superfast_3.0-1996-11-18-A-8d8cb7e4.mcd",
-      "SCPH-5503 (A) 3.0": "superfast_3.0-1996-11-18-A-8d8cb7e4.mcd",
-      "SCPH-7003 (A) 3.0": "superfast_3.0-1996-11-18-A-8d8cb7e4.mcd",
-      "SCPH-7000W (A) 4.1": "superfast_4.1-1997-11-14-A-b7c43dad.mcd",
-      "SCPH-7001 (A) 4.1": "superfast_4.1-1997-12-16-A-502224b6.mcd",
-      "SCPH-7501 (A) 4.1": "superfast_4.1-1997-12-16-A-502224b6.mcd",
-      "SCPH-7503 (A) 4.1": "superfast_4.1-1997-12-16-A-502224b6.mcd",
-      "SCPH-9001 (A) 4.1": "superfast_4.1-1997-12-16-A-502224b6.mcd",
-      "SCPH-9003 (A) 4.1": "superfast_4.1-1997-12-16-A-502224b6.mcd",
-      "SCPH-9903 (A) 4.1": "superfast_4.1-1997-12-16-A-502224b6.mcd",
-      "SCPH-101 (A) 4.4": "superfast_4.4-2000-03-24-A-6a0e22a0.mcd",
-      "SCPH-101 (A) 4.5": "superfast_4.5-2000-05-25-A-171bdcec.mcd",
-      "SCPH-103 (A) 4.5": "superfast_4.5-2000-05-25-A-171bdcec.mcd",
-      "SCPH-1002 (E) 2.0": "superfast_2.0-1995-05-10-E-9bb87c4b.mcd",
-      "SCPH-1002 (E) 2.1": "superfast_2.1-1995-07-17-E-86c30531.mcd",
-      "SCPH-1002 (E) 2.2": "superfast_2.2-1995-12-04-E-1e26792f.mcd",
-      "SCPH-5502 (E) 3.0": "superfast_3.0-1997-01-06-E-d786f0b9.mcd",
-      "SCPH-5552 (E) 3.0": "superfast_3.0-1997-01-06-E-d786f0b9.mcd",
-      "SCPH-7002 (E) 4.1": "superfast_4.1-1997-12-16-E-318178bf.mcd",
-      "SCPH-102 (E) 4.4": "superfast_4.4-2000-03-24-E-0bad7ea9.mcd",
-      "SCPH-102 (E) 4.5": "superfast_4.5-2000-05-25-E-76b880e5.mcd"
-    };
-
-    // Mapping for PS2 BootCards.
-    const ps2BootcardFileMap = {
-      "FMCB 1.966": "FMCB-1966.mcd",
-      "FMCB 1.965": "FMCB-1965.mcd",
-      "FMCB 1.964": "FMCB-1964.mcd",
-      "FMCB 1.963": "FMCB-1963.mcd",
-      "FMCB 1.953": "FMCB-1953.mcd",
-      "PS2BBL": "PS2BBL.mcd",
-      "SlimTuna (64MB)": "SlimTuna.mcd"
-    };
-
-    // Since the files are now local, use a relative path (assume they are in the same directory)
     const bootcardBaseUrl = "./";
 
-    // Modified generateINI function.
     async function generateINI() {
       const form = document.getElementById('settingsForm');
       let iniContent = "";
@@ -709,22 +388,21 @@
           const key = setting.replace("PS1_", "").replace("PS2_", "");
           iniContent += `${key}=${value}\n`;
         });
-        // Only add a trailing newline after the last section.
         if (index === sectionKeys.length - 1) {
           iniContent += "\n";
         }
       });
-      // Generate main settings.ini
+
       const zip = new JSZip();
       zip.file(".sd2psx/settings.ini", iniContent);
 
-      // Generate BootCard.ini for PS1 only if at least one bootcard is selected.
-      const bootCards = document.querySelectorAll("#ps1bootcards input[data-ini-key]");
-      let enabledCards = Array.from(bootCards).filter(card => card.checked);
-      if (enabledCards.length > 0) {
-        let maxChannels = enabledCards.length;
+      // Process PS1 Bootcards
+      const ps1Cards = document.querySelectorAll("#ps1bootcards input[data-ini-key]");
+      let enabledPS1Cards = Array.from(ps1Cards).filter(card => card.checked);
+      if (enabledPS1Cards.length > 0) {
+        let maxChannels = enabledPS1Cards.length;
         let bootCardContent = "[ChannelName]\n";
-        enabledCards.forEach((card, index) => {
+        enabledPS1Cards.forEach((card, index) => {
           let channelName = card.closest("label").textContent.trim();
           bootCardContent += `${index + 1}=${channelName}\n`;
         });
@@ -734,11 +412,18 @@
         bootCardContent += `CardSize=${ps2CardSize}\n\n`;
         zip.file("MemoryCards/PS1/BOOT/BootCard.ini", bootCardContent);
 
-        // Add each selected PS1 bootcard file.
-        for (let i = 0; i < enabledCards.length; i++) {
-          const card = enabledCards[i];
+        for (let i = 0; i < enabledPS1Cards.length; i++) {
+          const card = enabledPS1Cards[i];
           const key = card.getAttribute("data-ini-key");
-          const filename = bootcardFileMap[key];
+          const region = card.getAttribute("data-region");
+          let filename;
+          if (region === "I") {
+            filename = ps1IMap[key];
+          } else if (region === "A") {
+            filename = ps1AMap[key];
+          } else if (region === "E") {
+            filename = ps1EMap[key];
+          }
           if (filename) {
             const fileUrl = bootcardBaseUrl + filename;
             try {
@@ -755,9 +440,9 @@
         }
       }
 
-      // Generate BootCard.ini for PS2 only if at least one bootcard is selected.
-      const ps2BootCards = document.querySelectorAll("#ps2bootcards input[data-ini-key]");
-      let enabledPS2Cards = Array.from(ps2BootCards).filter(card => card.checked);
+      // Process PS2 Bootcards
+      const ps2Cards = document.querySelectorAll("#ps2bootcards input[data-ini-key]");
+      let enabledPS2Cards = Array.from(ps2Cards).filter(card => card.checked);
       if (enabledPS2Cards.length > 0) {
         let ps2MaxChannels = enabledPS2Cards.length;
         let ps2BootCardContent = "[ChannelName]\n";
@@ -771,11 +456,16 @@
         ps2BootCardContent += `CardSize=${ps2CardSizeValue}\n\n`;
         zip.file("MemoryCards/PS2/BOOT/BootCard.ini", ps2BootCardContent);
 
-        // Add each selected PS2 bootcard file.
         for (let i = 0; i < enabledPS2Cards.length; i++) {
           const card = enabledPS2Cards[i];
           const key = card.getAttribute("data-ini-key");
-          const filename = ps2BootcardFileMap[key];
+          const region = card.getAttribute("data-region");
+          let filename;
+          if (region === "PS2") {
+            filename = ps2Map[key];
+          } else if (region === "Arcade") {
+            filename = arcadeMap[key];
+          }
           if (filename) {
             const fileUrl = bootcardBaseUrl + filename;
             try {
@@ -792,7 +482,7 @@
         }
       }
 
-      // Add CIV data if valid.
+      // Process CIV data if valid.
       let civRaw = civInput.value;
       let civClean = civRaw.replace(/[^0-9a-fA-F]/g, "");
       if (civClean.length === 16) {
@@ -812,7 +502,6 @@
       });
     }
 
-    // Helper function to convert a hex string to a Uint8Array.
     function hexToUint8Array(hex) {
       const len = hex.length;
       let arr = new Uint8Array(len / 2);
@@ -855,7 +544,6 @@
       }
     });
 
-    // Reads the dropped or selected INI file, updates the drop zone text, and parses its content.
     function handleFile(file) {
       const reader = new FileReader();
       reader.onload = function(e) {
@@ -870,7 +558,6 @@
       reader.readAsText(file);
     }
 
-    // Parse an INI file's content and update the form fields.
     function parseINI(content) {
       document.getElementById('settingsForm').reset();
       const lines = content.split(/\r?\n/);
