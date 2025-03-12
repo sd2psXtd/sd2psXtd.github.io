@@ -762,7 +762,7 @@
         let ps2MaxChannels = enabledPS2Cards.length;
         let ps2BootCardContent = "[ChannelName]\n";
         enabledPS2Cards.forEach((card, index) => {
-          let channelName = card.closest("label").textContent.trim();
+          let channelName = card.getAttribute("data-ini-key");
           ps2BootCardContent += `${index + 1}=${channelName}\n`;
         });
         ps2BootCardContent += "[Settings]\n";
