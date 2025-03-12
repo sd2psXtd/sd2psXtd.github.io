@@ -476,7 +476,9 @@
               const response = await fetch(fileUrl);
               if (!response.ok) throw new Error(`Failed to fetch ${fileUrl}`);
               const fileData = await response.blob();
-              zip.file("MemoryCards/PS2/BOOT/BootCard-" + (i + 1) + ".mcd", fileData);
+              // Map arcade bootcards to MemoryCards/COH/BOOT/ folder
+              let folderPath = region === "Arcade" ? "MemoryCards/COH/BOOT/" : "MemoryCards/PS2/BOOT/";
+              zip.file(folderPath + "BootCard-" + (i + 1) + ".mcd", fileData);
             } catch (err) {
               console.error(err);
             }
