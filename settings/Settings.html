@@ -444,46 +444,79 @@
         }
       }
 
-      // Process PS2 Bootcards
+      // Process PS2 and Arcade Bootcards separately
       const ps2Cards = document.querySelectorAll("#ps2bootcards input[data-ini-key]");
       let enabledPS2Cards = Array.from(ps2Cards).filter(card => card.checked);
       if (enabledPS2Cards.length > 0) {
-        let ps2MaxChannels = enabledPS2Cards.length;
-        let ps2BootCardContent = "[ChannelName]\n";
-        enabledPS2Cards.forEach((card, index) => {
-          let channelName = card.getAttribute("data-ini-key");
-          ps2BootCardContent += `${index + 1}=${channelName}\n`;
-        });
-        ps2BootCardContent += "[Settings]\n";
-        ps2BootCardContent += `MaxChannels=${ps2MaxChannels}\n`;
-        const ps2CardSizeValue = form.elements["PS2_CardSize"].value;
-        ps2BootCardContent += `CardSize=${ps2CardSizeValue}\n\n`;
-        zip.file("MemoryCards/PS2/BOOT/BootCard.ini", ps2BootCardContent);
+        // Separate PS2 and Arcade cards
+        const enabledPS2Only = enabledPS2Cards.filter(card => card.getAttribute("data-region") === "PS2");
+        const enabledArcade = enabledPS2Cards.filter(card => card.getAttribute("data-region") === "Arcade");
 
-        for (let i = 0; i < enabledPS2Cards.length; i++) {
-          const card = enabledPS2Cards[i];
-          const key = card.getAttribute("data-ini-key");
-          const region = card.getAttribute("data-region");
-          let filename;
-          if (region === "PS2") {
-            filename = ps2Map[key];
-          } else if (region === "Arcade") {
-            filename = arcadeMap[key];
-          }
-          if (filename) {
-            const fileUrl = bootcardBaseUrl + filename;
-            try {
-              const response = await fetch(fileUrl);
-              if (!response.ok) throw new Error(`Failed to fetch ${fileUrl}`);
-              const fileData = await response.blob();
-              // Map arcade bootcards to MemoryCards/COH/BOOT/ folder
-              let folderPath = region === "Arcade" ? "MemoryCards/COH/BOOT/" : "MemoryCards/PS2/BOOT/";
-              zip.file(folderPath + "BootCard-" + (i + 1) + ".mcd", fileData);
-            } catch (err) {
-              console.error(err);
+        // Process PS2 cards
+        if (enabledPS2Only.length > 0) {
+          let ps2MaxChannels = enabledPS2Only.length;
+          let ps2BootCardContent = "[ChannelName]\n";
+          enabledPS2Only.forEach((card, index) => {
+            let channelName = card.getAttribute("data-ini-key");
+            ps2BootCardContent += `${index + 1}=${channelName}\n`;
+          });
+          ps2BootCardContent += "[Settings]\n";
+          ps2BootCardContent += `MaxChannels=${ps2MaxChannels}\n`;
+          const ps2CardSizeValue = form.elements["PS2_CardSize"].value;
+          ps2BootCardContent += `CardSize=${ps2CardSizeValue}\n\n`;
+          zip.file("MemoryCards/PS2/BOOT/BootCard.ini", ps2BootCardContent);
+
+          for (let i = 0; i < enabledPS2Only.length; i++) {
+            const card = enabledPS2Only[i];
+            const key = card.getAttribute("data-ini-key");
+            let filename = ps2Map[key];
+            if (filename) {
+              const fileUrl = bootcardBaseUrl + filename;
+              try {
+                const response = await fetch(fileUrl);
+                if (!response.ok) throw new Error(`Failed to fetch ${fileUrl}`);
+                const fileData = await response.blob();
+                zip.file("MemoryCards/PS2/BOOT/BootCard-" + (i + 1) + ".mcd", fileData);
+              } catch (err) {
+                console.error(err);
+              }
+            } else {
+              console.warn(`No file mapping found for PS2 bootcard key: ${key}`);
             }
-          } else {
-            console.warn(`No file mapping found for PS2 bootcard key: ${key}`);
+          }
+        }
+
+        // Process Arcade cards
+        if (enabledArcade.length > 0) {
+          let arcadeMaxChannels = enabledArcade.length;
+          let arcadeBootCardContent = "[ChannelName]\n";
+          enabledArcade.forEach((card, index) => {
+            let channelName = card.getAttribute("data-ini-key");
+            arcadeBootCardContent += `${index + 1}=${channelName}\n`;
+          });
+          arcadeBootCardContent += "[Settings]\n";
+          arcadeBootCardContent += `MaxChannels=${arcadeMaxChannels}\n`;
+          const ps2CardSizeValue = form.elements["PS2_CardSize"].value;
+          arcadeBootCardContent += `CardSize=${ps2CardSizeValue}\n\n`;
+          zip.file("MemoryCards/COH/BOOT/BootCard.ini", arcadeBootCardContent);
+
+          for (let i = 0; i < enabledArcade.length; i++) {
+            const card = enabledArcade[i];
+            const key = card.getAttribute("data-ini-key");
+            let filename = arcadeMap[key];
+            if (filename) {
+              const fileUrl = bootcardBaseUrl + filename;
+              try {
+                const response = await fetch(fileUrl);
+                if (!response.ok) throw new Error(`Failed to fetch ${fileUrl}`);
+                const fileData = await response.blob();
+                zip.file("MemoryCards/COH/BOOT/BootCard-" + (i + 1) + ".mcd", fileData);
+              } catch (err) {
+                console.error(err);
+              }
+            } else {
+              console.warn(`No file mapping found for arcade bootcard key: ${key}`);
+            }
           }
         }
       }
