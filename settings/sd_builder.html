@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>sd2psXtd Settings Generator</title>
+  <style>
+    /* Dark/light mode variables */
+    :root {
+      --bg-color: #f0f2f5;
+      --card-bg: #ffffff;
+      --text-color: #333;
+      --border-color: #ddd;
+      --button-bg: #007bff;
+      --button-color: #fff;
+      --button-hover: #0056b3;
+      --header-bg: #e0e0e0;
+      --header-text: #000;
+      --checkbox-border: #666;
+      --checkbox-checked: #007bff;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg-color: #121212;
+        --card-bg: #1e1e1e;
+        --text-color: #e0e0e0;
+        --border-color: #333;
+        --button-bg: #0a84ff;
+        --button-hover: #0060d0;
+        --header-bg: #333;
+        --header-text: #fff;
+        --checkbox-border: #aaa;
+        --checkbox-checked: #0a84ff;
+      }
+    }
+    /* Basic reset */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      background-color: var(--bg-color);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: var(--text-color);
+      padding: 20px;
+    }
+    .container {
+      background-color: var(--card-bg);
+      padding: 30px;
+      border-radius: 12px;
+      max-width: 900px;
+      margin: 0 auto;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    /* Drop Zone */
+    #dropZone {
+      border: 2px dashed var(--border-color);
+      padding: 20px;
+      text-align: center;
+      cursor: pointer;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      transition: background-color 0.3s ease, border-color 0.3s ease;
+    }
+    #dropZone.hover {
+      background-color: rgba(0, 0, 0, 0.05);
+      border-color: var(--button-bg);
+    }
+    fieldset {
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 15px 20px;
+      margin-bottom: 20px;
+    }
+    legend {
+      padding: 0 10px;
+      font-weight: bold;
+    }
+    label {
+      font-size: 0.95rem;
+      cursor: pointer;
+    }
+    /* Modern dropdown styling */
+    select {
+      width: 100%;
+      padding: 8px 12px;
+      margin-top: 5px;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      background-color: var(--card-bg);
+      color: var(--text-color);
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
+      background-image: url('data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="%23666" viewBox="0 0 10 10"><path d="M0 2l5 5 5-5z"/></svg>');
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      background-size: 10px;
+    }
+    input[type="text"] {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      background-color: var(--card-bg);
+      color: var(--text-color);
+    }
+    /* Modernized checkboxes */
+    input[type="checkbox"].modern-checkbox {
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      border: 2px solid var(--checkbox-border);
+      border-radius: 4px;
+      display: inline-block;
+      position: relative;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    input[type="checkbox"].modern-checkbox:checked {
+      background-color: var(--checkbox-checked);
+      border-color: var(--checkbox-checked);
+    }
+    input[type="checkbox"].modern-checkbox:checked::after {
+      content: '✔';
+      font-size: 14px;
+      color: white;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -55%);
+      font-weight: bold;
+    }
+    /* Container for checkbox groups */
+    .checkbox-container {
+      display: flex;
+      justify-content: space-evenly;
+      align-items: center;
+    }
+    /* Container for dynamically generated bootcard lists */
+    .bootcards-container {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+    }
+    .bootcards-container > div {
+      flex: 1;
+    }
+    .bootcards-container h3 {
+      text-align: center;
+      margin-bottom: 10px;
+    }
+    .bootcards-container ul {
+      list-style: none;
+      padding-left: 0;
+    }
+    /* Hide file input */
+    input[type="file"] {
+       display: none;
+    }
+    button {
+      display: block;
+      width: 100%;
+      padding: 12px;
+      background-color: var(--button-bg);
+      color: var(--button-color);
+      border: none;
+      border-radius: 6px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    button:hover {
+      background-color: var(--button-hover);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <form id="settingsForm">
+      <h2>sd2psXtd SD-Card Generator</h2>
+      <!-- Drop zone for importing an INI file -->
+      <div id="dropZone">Drag and drop your INI file here, or click to browse.</div>
+      <input type="file" id="iniFile" accept=".ini, .txt">
+
+      <fieldset>
+        <legend>General</legend>
+        <div class="cardsize-container">
+          <label for="Mode">Mode:</label>
+          <select name="Mode" id="Mode">
+            <option value="PS1">PS1</option>
+            <option value="PS2" selected>PS2</option>
+          </select>
+        </div>
+        <br/>
+        <div class="checkbox-container">
+          <label>
+            <input type="checkbox" class="modern-checkbox" name="FlippedScreen" id="FlippedScreen">
+            Flipped Screen
+          </label>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>PS1</legend>
+        <div class="checkbox-container">
+          <label>
+            <input type="checkbox" class="modern-checkbox" name="PS1_Autoboot" id="PS1_Autoboot" checked>
+            Autoboot
+          </label>
+          <label>
+            <input type="checkbox" class="modern-checkbox" name="PS1_GameID" id="PS1_GameID" checked>
+            GameID
+          </label>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>PS2</legend>
+        <div class="cardsize-container">
+          <label for="PS2_CardSize">CardSize:</label>
+          <select name="PS2_CardSize" id="PS2_CardSize">
+            <option value="1">1 MB</option>
+            <option value="2">2 MB</option>
+            <option value="4">4 MB</option>
+            <option value="8" selected>8 MB</option>
+            <option value="16">16 MB</option>
+            <option value="32">32 MB</option>
+            <option value="64">64 MB</option>
+          </select>
+        </div>
+        <div class="cardsize-container">
+          <label for="PS2_Variant">Variant:</label>
+          <select name="PS2_Variant" id="PS2_Variant">
+            <option value="RETAIL" selected>Retail</option>
+            <option value="PROTO">Proto</option>
+            <option value="ARCADE">Arcade</option>
+          </select>
+        </div>
+         <br/>
+         <div class="checkbox-container">
+           <label>
+             <input type="checkbox" class="modern-checkbox" name="PS2_Autoboot" id="PS2_Autoboot" checked>
+             Autoboot
+           </label>
+           <label>
+             <input type="checkbox" class="modern-checkbox" name="PS2_GameID" id="PS2_GameID" checked>
+             GameID
+           </label>
+         </div>
+      </fieldset>
+
+      <!-- Dynamic PS1 Boot Cards Section -->
+      <fieldset id="ps1bootcards">
+        <legend>PS1 Boot Cards</legend>
+        <div class="bootcards-container">
+          <div>
+            <h3>Region I</h3>
+            <ul id="bootcards_ps1_I"></ul>
+          </div>
+          <div>
+            <h3>Region A</h3>
+            <ul id="bootcards_ps1_A"></ul>
+          </div>
+          <div>
+            <h3>Region E</h3>
+            <ul id="bootcards_ps1_E"></ul>
+          </div>
+        </div>
+      </fieldset>
+
+      <!-- Dynamic PS2 Boot Cards Section -->
+      <fieldset id="ps2bootcards">
+        <legend>PS2 Boot Cards</legend>
+        <div class="bootcards-container">
+          <div>
+            <h3>PS2</h3>
+            <ul id="bootcards_ps2"></ul>
+          </div>
+          <div>
+            <h3>Arcade</h3>
+            <ul id="bootcards_arcade"></ul>
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>CIV Data</legend>
+        <label>
+          8 Byte Hex CIV:
+          <input type="text" name="CIV_Hex" placeholder="Enter 8 Hex Bytes" oninput="this.value = this.value.replace(/[^0-9a-fA-F]/g, '').slice(0,16)">
+        </label>
+      </fieldset>
+
+      <button type="button" onclick="generateINI()">Download zip file</button>
+    </form>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script>
+    // Variables to hold bootcard mapping data loaded from JSON
+    let ps1IMap = {};
+    let ps1AMap = {};
+    let ps1EMap = {};
+    let ps2Map = {};
+    let arcadeMap = {};
+
+    // Load JSON mapping files
+    Promise.all([
+      fetch('./ps1_I.json').then(res => res.json()),
+      fetch('./ps1_A.json').then(res => res.json()),
+      fetch('./ps1_E.json').then(res => res.json()),
+      fetch('./ps2.json').then(res => res.json()),
+      fetch('./arcade.json').then(res => res.json())
+    ]).then(([dataI, dataA, dataE, dataPS2, dataArcade]) => {
+      ps1IMap = dataI;
+      ps1AMap = dataA;
+      ps1EMap = dataE;
+      ps2Map = dataPS2;
+      arcadeMap = dataArcade;
+      console.log("Bootcard JSON files loaded successfully.");
+      populateBootcards();
+    }).catch(err => {
+      console.error("Error loading bootcard JSON files:", err);
+    });
+
+    // Populate bootcard checkboxes dynamically from JSON data
+    function populateBootcards() {
+      populateList(ps1IMap, "bootcards_ps1_I", "I", "PS1BootCards_");
+      populateList(ps1AMap, "bootcards_ps1_A", "A", "PS1BootCards_");
+      populateList(ps1EMap, "bootcards_ps1_E", "E", "PS1BootCards_");
+      populateList(ps2Map, "bootcards_ps2", "PS2", "PS2BootCards_");
+      populateList(arcadeMap, "bootcards_arcade", "Arcade", "PS2BootCards_");
+    }
+
+    function populateList(map, containerId, regionCode, prefix) {
+      const container = document.getElementById(containerId);
+      for (const [key, filename] of Object.entries(map)) {
+        const li = document.createElement('li');
+        const label = document.createElement('label');
+        const input = document.createElement('input');
+        input.type = 'checkbox';
+        input.classList.add('modern-checkbox');
+        input.name = prefix + key.replace(/[^a-zA-Z0-9]/g, "_");
+        input.setAttribute("data-ini-key", key);
+        input.setAttribute("data-region", regionCode);
+        label.appendChild(input);
+        label.appendChild(document.createTextNode(" " + key));
+        li.appendChild(label);
+        container.appendChild(li);
+      }
+    }
+
+    // Clean pasted CIV hex data
+    const civInput = document.getElementsByName("CIV_Hex")[0];
+    civInput.addEventListener("paste", function(e) {
+      e.preventDefault();
+      let pastedText = (e.clipboardData || window.clipboardData).getData("text");
+      let cleaned = pastedText.replace(/[^0-9a-fA-F]/g, '').slice(0,16);
+      this.value = cleaned;
+    });
+
+    const bootcardBaseUrl = "./";
+
+    async function generateINI() {
+      const form = document.getElementById('settingsForm');
+      let iniContent = "";
+      const sections = {
+        General: ['FlippedScreen', 'Mode'],
+        PS1: ['PS1_Autoboot', 'PS1_GameID'],
+        PS2: ['PS2_CardSize', 'PS2_Variant', 'PS2_Autoboot', 'PS2_GameID']
+      };
+      const sectionKeys = Object.keys(sections);
+      sectionKeys.forEach((section, index) => {
+        iniContent += `[${section}]\n`;
+        sections[section].forEach(setting => {
+          const element = form.elements[setting];
+          let value;
+          if (element.type === "checkbox") {
+            value = element.checked ? "ON" : "OFF";
+          } else if (element.type === "radio") {
+            value = document.querySelector(`input[name="${setting}"]:checked`).value;
+          } else {
+            value = element.value;
+          }
+          const key = setting.replace("PS1_", "").replace("PS2_", "");
+          iniContent += `${key}=${value}\n`;
+        });
+        if (index === sectionKeys.length - 1) {
+          iniContent += "\n";
+        }
+      });
+
+      const zip = new JSZip();
+      zip.file(".sd2psx/settings.ini", iniContent);
+
+      // Process PS1 Bootcards
+      const ps1Cards = document.querySelectorAll("#ps1bootcards input[data-ini-key]");
+      let enabledPS1Cards = Array.from(ps1Cards).filter(card => card.checked);
+      if (enabledPS1Cards.length > 0) {
+        let maxChannels = enabledPS1Cards.length;
+        let bootCardContent = "[ChannelName]\n";
+        enabledPS1Cards.forEach((card, index) => {
+          let channelName = card.closest("label").textContent.trim();
+          bootCardContent += `${index + 1}=${channelName}\n`;
+        });
+        bootCardContent += "[Settings]\n";
+        bootCardContent += `MaxChannels=${maxChannels}\n`;
+        const ps2CardSize = form.elements["PS2_CardSize"].value;
+        bootCardContent += `CardSize=${ps2CardSize}\n\n`;
+        zip.file("MemoryCards/PS1/BOOT/BootCard.ini", bootCardContent);
+
+        for (let i = 0; i < enabledPS1Cards.length; i++) {
+          const card = enabledPS1Cards[i];
+          const key = card.getAttribute("data-ini-key");
+          const region = card.getAttribute("data-region");
+          let filename;
+          if (region === "I") {
+            filename = ps1IMap[key];
+          } else if (region === "A") {
+            filename = ps1AMap[key];
+          } else if (region === "E") {
+            filename = ps1EMap[key];
+          }
+          if (filename) {
+            const fileUrl = bootcardBaseUrl + filename;
+            try {
+              const response = await fetch(fileUrl);
+              if (!response.ok) throw new Error(`Failed to fetch ${fileUrl}`);
+              const fileData = await response.blob();
+              zip.file("MemoryCards/PS1/BOOT/BootCard-" + (i + 1) + ".mcd", fileData);
+            } catch (err) {
+              console.error(err);
+            }
+          } else {
+            console.warn(`No file mapping found for bootcard key: ${key}`);
+          }
+        }
+      }
+
+      // Process PS2 and Arcade Bootcards separately
+      const ps2Cards = document.querySelectorAll("#ps2bootcards input[data-ini-key]");
+      let enabledPS2Cards = Array.from(ps2Cards).filter(card => card.checked);
+      if (enabledPS2Cards.length > 0) {
+        // Separate PS2 and Arcade cards
+        const enabledPS2Only = enabledPS2Cards.filter(card => card.getAttribute("data-region") === "PS2");
+        const enabledArcade = enabledPS2Cards.filter(card => card.getAttribute("data-region") === "Arcade");
+
+        // Process PS2 cards
+        if (enabledPS2Only.length > 0) {
+          let ps2MaxChannels = enabledPS2Only.length;
+          let ps2BootCardContent = "[ChannelName]\n";
+          enabledPS2Only.forEach((card, index) => {
+            let channelName = card.getAttribute("data-ini-key");
+            ps2BootCardContent += `${index + 1}=${channelName}\n`;
+          });
+          ps2BootCardContent += "[Settings]\n";
+          ps2BootCardContent += `MaxChannels=${ps2MaxChannels}\n`;
+          const ps2CardSizeValue = form.elements["PS2_CardSize"].value;
+          ps2BootCardContent += `CardSize=${ps2CardSizeValue}\n\n`;
+          zip.file("MemoryCards/PS2/BOOT/BootCard.ini", ps2BootCardContent);
+
+          for (let i = 0; i < enabledPS2Only.length; i++) {
+            const card = enabledPS2Only[i];
+            const key = card.getAttribute("data-ini-key");
+            let filename = ps2Map[key];
+            if (filename) {
+              const fileUrl = bootcardBaseUrl + filename;
+              try {
+                const response = await fetch(fileUrl);
+                if (!response.ok) throw new Error(`Failed to fetch ${fileUrl}`);
+                const fileData = await response.blob();
+                zip.file("MemoryCards/PS2/BOOT/BootCard-" + (i + 1) + ".mcd", fileData);
+              } catch (err) {
+                console.error(err);
+              }
+            } else {
+              console.warn(`No file mapping found for PS2 bootcard key: ${key}`);
+            }
+          }
+        }
+
+        // Process Arcade cards
+        if (enabledArcade.length > 0) {
+          let arcadeMaxChannels = enabledArcade.length;
+          let arcadeBootCardContent = "[ChannelName]\n";
+          enabledArcade.forEach((card, index) => {
+            let channelName = card.getAttribute("data-ini-key");
+            arcadeBootCardContent += `${index + 1}=${channelName}\n`;
+          });
+          arcadeBootCardContent += "[Settings]\n";
+          arcadeBootCardContent += `MaxChannels=${arcadeMaxChannels}\n`;
+          const ps2CardSizeValue = form.elements["PS2_CardSize"].value;
+          arcadeBootCardContent += `CardSize=${ps2CardSizeValue}\n\n`;
+          zip.file("MemoryCards/COH/BOOT/BootCard.ini", arcadeBootCardContent);
+
+          for (let i = 0; i < enabledArcade.length; i++) {
+            const card = enabledArcade[i];
+            const key = card.getAttribute("data-ini-key");
+            let filename = arcadeMap[key];
+            if (filename) {
+              const fileUrl = bootcardBaseUrl + filename;
+              try {
+                const response = await fetch(fileUrl);
+                if (!response.ok) throw new Error(`Failed to fetch ${fileUrl}`);
+                const fileData = await response.blob();
+                zip.file("MemoryCards/COH/BOOT/BootCard-" + (i + 1) + ".mcd", fileData);
+              } catch (err) {
+                console.error(err);
+              }
+            } else {
+              console.warn(`No file mapping found for arcade bootcard key: ${key}`);
+            }
+          }
+        }
+      }
+
+      // Process CIV data if valid.
+      let civRaw = civInput.value;
+      let civClean = civRaw.replace(/[^0-9a-fA-F]/g, "");
+      if (civClean.length === 16) {
+        const binData = hexToUint8Array(civClean);
+        zip.file(".sd2psx/civ.bin", binData);
+      } else if (civClean !== "") {
+        console.error("Invalid CIV hex string. After cleaning, it must contain exactly 16 hex digits.");
+      }
+
+      zip.generateAsync({ type: "blob" }).then(content => {
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(content);
+        a.download = "settings.zip";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      });
+    }
+
+    function hexToUint8Array(hex) {
+      const len = hex.length;
+      let arr = new Uint8Array(len / 2);
+      for (let i = 0; i < len; i += 2) {
+        arr[i / 2] = parseInt(hex.substr(i, 2), 16);
+      }
+      return arr;
+    }
+
+    // Drag & drop file handling
+    const dropZone = document.getElementById('dropZone');
+    const iniFileInput = document.getElementById('iniFile');
+
+    dropZone.addEventListener('click', () => {
+      iniFileInput.click();
+    });
+
+    iniFileInput.addEventListener('change', (e) => {
+      if (e.target.files && e.target.files.length > 0) {
+        handleFile(e.target.files[0]);
+      }
+    });
+
+    dropZone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      dropZone.classList.add('hover');
+    });
+
+    dropZone.addEventListener('dragleave', (e) => {
+      e.preventDefault();
+      dropZone.classList.remove('hover');
+    });
+
+    dropZone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropZone.classList.remove('hover');
+      if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+        handleFile(e.dataTransfer.files[0]);
+        e.dataTransfer.clearData();
+      }
+    });
+
+    function handleFile(file) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const content = e.target.result;
+        console.log("INI file content:", content);
+        dropZone.textContent = file.name;
+        parseINI(content);
+      };
+      reader.onerror = function(e) {
+        console.error("Error reading file", e);
+      };
+      reader.readAsText(file);
+    }
+
+    function parseINI(content) {
+      document.getElementById('settingsForm').reset();
+      const lines = content.split(/\r?\n/);
+      let currentSection = null;
+      lines.forEach(line => {
+        line = line.trim();
+        if (!line || line.startsWith(";") || line.startsWith("#")) return;
+        if (line.startsWith("[") && line.endsWith("]")) {
+          currentSection = line.slice(1, -1);
+        } else if (currentSection && line.includes("=")) {
+          const parts = line.split("=");
+          const key = parts[0].trim();
+          const value = parts.slice(1).join("=").trim();
+          updateField(currentSection, key, value);
+        }
+      });
+    }
+
+    function updateField(section, key, value) {
+      let fieldName;
+      if (section === "General") {
+        fieldName = key;
+      } else if (section === "PS1BootCards") {
+        const candidates = document.querySelectorAll("#ps1bootcards input[data-ini-key]");
+        candidates.forEach(candidate => {
+          if (candidate.getAttribute("data-ini-key") === key) {
+            fieldName = candidate.name;
+          }
+        });
+      } else {
+        fieldName = section + "_" + key;
+      }
+      const element = document.getElementsByName(fieldName)[0];
+      if (!element) {
+        console.warn(`No field found for ${fieldName}`);
+        return;
+      }
+      if (element.type === "checkbox") {
+        element.checked = (value.toUpperCase() === "ON");
+      } else if (element.type === "radio") {
+        const radio = document.querySelector(`input[name="${fieldName}"][value="${value.toUpperCase()}"]`);
+        if (radio) {
+          radio.checked = true;
+        }
+      } else {
+        element.value = value;
+      }
+    }
+  </script>
+</body>
+</html>
