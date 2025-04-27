@@ -243,6 +243,7 @@ Be aware: Long folder names may not be displayed correctly and may result in stu
 - **@xyz**: for sd2psx ❤️
 - **sd2psXtd Team**: (you know who you are 😉 )
 - **@El_isra**: for so much different stuff ❤️
+- **@Berion**: Our new beautiful logo ❤️
 - **8BitMods Team**: for helping out with card formatting and providing lots of other useful information ❤️
 - **@Mena / PhenomMods**: for providing hardware to some team members ❤️
 - **BitFunX**: for providing PSXMemcard and PSXMemcard Gen2 Hardware for dev ❤️
