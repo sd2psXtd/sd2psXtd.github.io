@@ -3,7 +3,7 @@
 
 # sd2psXtd Firmware
 
-*Latest stable Version:* **1.2**
+*Latest stable Version:* **1.2.1**
 
 sd2psXtd is an extended firmware for the popular *Multipurpose MemoryCard Emulator* sd2psx by developer @xyzz (see [here](https://github.com/sd2psx)). It combines cutting-edge extended functionality (like game ID switching, file system access, and dynamic mode selection) with the rock-solid performance of the original sd2psx firmware.
 
@@ -183,6 +183,16 @@ Support for different MMCE devices that share the same MCU has been added:
 - **PSXMemCard Gen2:** A commercial device by BitFunX, sharing the same architecture as *sd2psx*. Use *sd2psx* firmware variant.
 
 For each device, follow the flashing instructions provided by the creator, using the corresponding *sd2psXtd* firmware file.
+
+
+*New in 1.2.1*:
+- Stability Improvements when switching Mode manually
+- Stability Improvements on PS1
+- Add Arcade 2 Mode
+
+- Fix Max Channels in Settings
+- Fix CIV confirmation strategy
+- Fix cursed 90ks
 
 *New in 1.2*:
 PMC+ and PMCZero now support using the onboard buttons. They are assigned in the following way (according to the markings ons their board):
