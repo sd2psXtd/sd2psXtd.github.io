@@ -1,6 +1,12 @@
 ![sd2psXtd Logo](img/Logo.png)
  *Logo by Berion ❤️*
 
+<div style="text-align: right;">
+  <a href="https://discord.gg/QdbNGvc4">
+    <img src="img/OpenMCE.png" width="10%" alt="OpenMCE">
+  </a>
+</div>
+
 # sd2psXtd Firmware
 
 *Latest stable Version:* **1.3**
