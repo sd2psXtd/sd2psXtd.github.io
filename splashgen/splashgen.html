@@ -10,87 +10,154 @@
 
 <body>
 
-  <h2>sd2psXtd Splash Generator</h2>
+  <main class="page-shell">
+    <header class="page-header">
+      <h2 class="page-title">sd2psXtd Splash Generator</h2>
+      <p class="page-subtitle">Design a 1-bit splash, preview it live, then export Binary or UF2.</p>
+    </header>
 
-  <input type="file" id="imgInput" accept="image/*" aria-label="Upload image" style="display:none;">
+    <input type="file" id="imgInput" accept="image/*" aria-label="Upload image" class="hidden-input">
 
-  <div class="controls">
-  <div style="display:flex; flex-direction:column; gap:8px; width:100%; max-width:700px;">
-      <div style="display:flex; align-items:center; gap:18px; flex-wrap:wrap;">
-        <span style="font-weight:600; color:#6cb6ff; min-width:90px;">Threshold</span>
-        <input type="range" id="threshSlider" min="0" max="255" value="128" style="width: 200px;"
-          title="Set the threshold for black/white conversion (0=black, 255=white)">
-        <span id="threshVal" style="min-width:36px; color:#2d8cf0; font-weight:600;">128</span>
-      </div>
-      <div style="font-weight:600; color:#6cb6ff; margin-top:8px;">Grayscale Weights</div>
-      <div style="display:flex; align-items:center; gap:18px; flex-wrap:wrap;">
-        <label title="Red channel weight (auto-normalized)">R
-          <input type="range" id="rSlider" min="0" max="1" step="0.01" value="0.299"
-            style="width: 100px; margin-left:6px;">
-          <span id="rVal" style="min-width:36px; color:#ff6b6b; font-weight:600;">0.299</span>
-        </label>
-        <label title="Green channel weight (auto-normalized)">G
-          <input type="range" id="gSlider" min="0" max="1" step="0.01" value="0.587"
-            style="width: 100px; margin-left:6px;">
-          <span id="gVal" style="min-width:36px; color:#51fa7b; font-weight:600;">0.587</span>
-        </label>
-        <label title="Blue channel weight (auto-normalized)">B
-          <input type="range" id="bSlider" min="0" max="1" step="0.01" value="0.114"
-            style="width: 100px; margin-left:6px;">
-          <span id="bVal" style="min-width:36px; color:#6cb6ff; font-weight:600;">0.114</span>
-        </label>
-        <span style="font-size: 0.9em; color: #aaa; margin-left:10px;">(weights auto-normalized)</span>
-      </div>
-      <div style="display:flex; justify-content:flex-end; margin-top:4px; gap:10px;">
-        <button id="resetBtn"
-          style="padding:5px 18px; border-radius:7px; background:#232a36; color:#e3e6eb; border:1.5px solid #3a4252; font-weight:600; cursor:pointer;">Reset</button>
-        <button id="clearSelBtn"
-          style="padding:5px 18px; border-radius:7px; background:#2d2a36; color:#ff6b6b; border:1.5px solid #6b2d2d; font-weight:600; cursor:pointer;">Clear
-          Selection</button>
-      </div>
+    <div class="workspace-grid">
+      <section class="controls panel-card">
+        <div class="controls-stack">
+          <div class="control-row">
+            <span class="control-label">Controls</span>
+            <label class="mode-option">
+              <input type="radio" name="uiMode" id="modeSimple" value="simple" checked>
+              <span>Simple</span>
+            </label>
+            <label class="mode-option">
+              <input type="radio" name="uiMode" id="modeAdvanced" value="advanced">
+              <span>Advanced</span>
+            </label>
+          </div>
+
+          <div class="control-row">
+            <span class="control-label">Threshold</span>
+            <input type="range" id="threshSlider" min="0" max="255" value="128" class="main-threshold-slider"
+              title="Set the threshold for black/white conversion (0=black, 255=white)">
+            <span id="threshVal" class="value-token">128</span>
+            <span id="effectiveThreshNote" class="info-token">(manual)</span>
+          </div>
+
+          <div class="control-row histogram-row">
+            <span class="control-label">Histogram</span>
+            <canvas id="histogramCanvas" width="256" height="80" class="histogram-canvas"></canvas>
+            <span id="histogramLegend" class="info-token">(cyan line = active threshold)</span>
+          </div>
+
+          <div id="advancedControls" class="advanced-controls">
+            <div class="control-row">
+              <label for="thresholdMethod" class="control-label">Threshold Method</label>
+              <select id="thresholdMethod" class="control-select">
+                <option value="manual" selected>Manual (Global)</option>
+                <option value="otsu">Auto (Otsu Global)</option>
+                <option value="adaptive">Adaptive (Local Mean)</option>
+              </select>
+              <label class="mode-option">
+                <input type="checkbox" id="invertToggle">
+                <span>Invert Output</span>
+              </label>
+            </div>
+
+            <div class="control-row">
+              <label for="ditherMode" class="control-label">Dithering</label>
+              <select id="ditherMode" class="control-select">
+                <option value="none" selected>None</option>
+                <option value="floyd">Floyd-Steinberg</option>
+                <option value="bayer4">Bayer 4x4</option>
+              </select>
+            </div>
+
+            <div class="subsection">
+              <div class="subsection-title">Input Levels</div>
+              <div class="control-row">
+                <span class="control-label">Black Point</span>
+                <input type="range" id="levelsBlackSlider" min="0" max="254" step="1" value="0" class="small-slider">
+                <span id="levelsBlackVal" class="value-token">0</span>
+              </div>
+              <div class="control-row">
+                <span class="control-label">White Point</span>
+                <input type="range" id="levelsWhiteSlider" min="1" max="255" step="1" value="255" class="small-slider">
+                <span id="levelsWhiteVal" class="value-token">255</span>
+              </div>
+              <div class="control-row">
+                <span class="control-label">Gamma</span>
+                <input type="range" id="levelsGammaSlider" min="0.2" max="3.0" step="0.05" value="1.00" class="small-slider">
+                <span id="levelsGammaVal" class="value-token">1.00</span>
+              </div>
+            </div>
+
+            <div id="adaptiveControls" class="adaptive-controls">
+              <div class="control-row">
+                <span class="control-label">Local Window</span>
+                <input type="range" id="adaptiveWindowSlider" min="3" max="31" step="2" value="15" class="small-slider">
+                <span id="adaptiveWindowVal" class="value-token">15</span>
+              </div>
+              <div class="control-row">
+                <span class="control-label">Adaptive Bias</span>
+                <input type="range" id="adaptiveBiasSlider" min="-64" max="64" step="1" value="0" class="small-slider">
+                <span id="adaptiveBiasVal" class="value-token">0</span>
+              </div>
+            </div>
+
+            <div class="subsection">
+              <div class="subsection-title">Grayscale Weights</div>
+              <div class="weight-grid">
+                <label title="Red channel weight (auto-normalized)">R
+                  <input type="range" id="rSlider" min="0" max="1" step="0.01" value="0.299" class="weight-slider">
+                  <span id="rVal" class="value-token">0.299</span>
+                </label>
+                <label title="Green channel weight (auto-normalized)">G
+                  <input type="range" id="gSlider" min="0" max="1" step="0.01" value="0.587" class="weight-slider">
+                  <span id="gVal" class="value-token">0.587</span>
+                </label>
+                <label title="Blue channel weight (auto-normalized)">B
+                  <input type="range" id="bSlider" min="0" max="1" step="0.01" value="0.114" class="weight-slider">
+                  <span id="bVal" class="value-token">0.114</span>
+                </label>
+              </div>
+              <span class="subsection-note">(weights auto-normalized)</span>
+            </div>
+          </div>
+
+          <div class="control-actions">
+            <button id="resetBtn" class="control-btn">Reset</button>
+            <button id="clearSelBtn" class="control-btn control-btn-danger">Clear Selection</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="preview-grid">
+        <div class="img-block panel-card">
+          <span class="panel-title">Original</span>
+          <div id="origImgWrap" class="image-dropzone" role="button" tabindex="0" aria-label="Drop image here or click to upload">
+            <img id="origImg" src="" alt="" class="source-image" />
+            <canvas id="selectCanvas" class="selection-canvas"></canvas>
+            <div id="dropHint" class="drop-hint">Drop Image Here<br>or click to upload</div>
+            <div id="dropOverlay" class="drop-overlay">Drop Image Here</div>
+          </div>
+        </div>
+
+        <div class="img-block panel-card">
+          <span class="panel-title">Black & White</span>
+          <canvas id="bwCanvas" class="preview-canvas"></canvas>
+          <div class="action-row">
+            <button id="downloadBinBtn" class="action-btn">Download Binary</button>
+            <button id="downloadUf2Btn" class="action-btn">Download UF2</button>
+            <button id="downloadCombinedBtn" class="action-btn action-btn-secondary">Download Combined UF2</button>
+          </div>
+          <div id="firmwareDropzone" class="firmware-dropzone">Drop firmware UF2 here or click to select</div>
+        </div>
+      </section>
     </div>
-  </div>
 
-  <div class="container">
-    <div class="img-block">
-      <span>Original</span>
-      <div id="origImgWrap" role="button" tabindex="0" aria-label="Drop image here or click to upload"
-        style="position:relative; display:inline-block; width:305px; height:305px; min-width:305px; min-height:305px; max-width:305px; max-height:305px; border:2.5px dashed #bfc9d1; border-radius:10px; background:#f8fafc; transition:border-color 0.2s, background 0.2s; cursor:pointer;">
-        <img id="origImg" src="" alt=""
-          style="display:block; width:100%; height:100%; object-fit:contain; position:relative; z-index:1;" />
-        <canvas id="selectCanvas"
-          style="position:absolute; left:0; top:0; width:100%; height:100%; pointer-events:auto; z-index:2; background:transparent;"></canvas>
-        <div id="dropOverlay"
-          style="display:none; position:absolute; left:0; top:0; width:100%; height:100%; background:rgba(108,182,255,0.10); border-radius:10px; z-index:10; display:flex; align-items:center; justify-content:center; color:#6cb6ff; font-size:1.2em; font-weight:600; pointer-events:none; text-align:center; transition:background 0.2s;">
-          Drop image here</div>
-      </div>
-
-    </div>
-    <div class="img-block">
-      <span>Black & White</span>
-      <canvas id="bwCanvas"></canvas>
-      <div style="display:flex; flex-direction:row; gap:10px; margin-top:14px;">
-        <button id="downloadBinBtn"
-          style="font-size:1em; padding:7px 18px; border-radius:7px; background:#6cb6ff; color:#181c24; border:none; cursor:pointer; box-shadow:0 2px 8px 0 rgba(108,182,255,0.18);">Download
-          Binary</button>
-        <button id="downloadUf2Btn"
-          style="font-size:1em; padding:7px 18px; border-radius:7px; background:#6cb6ff; color:#181c24; border:none; cursor:pointer; box-shadow:0 2px 8px 0 rgba(108,182,255,0.18);">Download
-          UF2</button>
-        <button id="downloadCombinedBtn"
-          style="font-size:1em; padding:7px 18px; border-radius:7px; background:#6cb6ff; color:#181c24; border:none; cursor:pointer; box-shadow:0 2px 8px 0 rgba(108,182,255,0.18);">Download
-          Combined UF2</button>
-      </div>
-      <div id="firmwareDropzone" style="margin-top:18px; padding:24px 18px; border:2px dashed #6cb6ff; border-radius:10px; background:#232a36; color:#6cb6ff; text-align:center; font-weight:600; cursor:pointer; transition:border-color 0.2s, background 0.2s;">Drop firmware UF2 here or click to select</div>
-
-    </div>
-  </div>
-  </div>
-  <div style="max-width:900px; margin: 28px auto 0 auto; width: 98vw;">
-    <label for="cArrayBox" style="font-weight:600; color:#6cb6ff; margin-bottom:6px; display:block;">C Header
-      Array:</label>
-    <textarea id="cArrayBox" readonly aria-label="C header array"
-      style="width:100%; min-width:220px; max-width:100%; height:160px; font-family:monospace; font-size:0.98em; background:#232a36; color:#e3e6eb; border-radius:7px; border:1.5px solid #3a4252; padding:8px; resize:vertical; display:block;"></textarea>
-  </div>
+    <section class="carray-card panel-card">
+      <label for="cArrayBox" class="carray-label">C Header Array:</label>
+      <textarea id="cArrayBox" readonly aria-label="C header array" class="carray-box"></textarea>
+    </section>
+  </main>
 
   <script src="uf2.js"></script>
   <script defer>
@@ -98,13 +165,35 @@
     // --- DOM Queries ---
     const origImgWrap = document.getElementById('origImgWrap');
     const dropOverlay = document.getElementById('dropOverlay');
+    const dropHint = document.getElementById('dropHint');
     const imgInput = document.getElementById('imgInput');
     const origImg = document.getElementById('origImg');
 
     const bwCanvas = document.getElementById('bwCanvas');
     const bwCtx = bwCanvas.getContext('2d');
+    const modeSimple = document.getElementById('modeSimple');
+    const modeAdvanced = document.getElementById('modeAdvanced');
+    const advancedControls = document.getElementById('advancedControls');
     const threshSlider = document.getElementById('threshSlider');
     const threshVal = document.getElementById('threshVal');
+    const effectiveThreshNote = document.getElementById('effectiveThreshNote');
+    const histogramCanvas = document.getElementById('histogramCanvas');
+    const histogramCtx = histogramCanvas.getContext('2d');
+    const histogramLegend = document.getElementById('histogramLegend');
+    const thresholdMethod = document.getElementById('thresholdMethod');
+    const adaptiveControls = document.getElementById('adaptiveControls');
+    const ditherMode = document.getElementById('ditherMode');
+    const levelsBlackSlider = document.getElementById('levelsBlackSlider');
+    const levelsBlackVal = document.getElementById('levelsBlackVal');
+    const levelsWhiteSlider = document.getElementById('levelsWhiteSlider');
+    const levelsWhiteVal = document.getElementById('levelsWhiteVal');
+    const levelsGammaSlider = document.getElementById('levelsGammaSlider');
+    const levelsGammaVal = document.getElementById('levelsGammaVal');
+    const adaptiveWindowSlider = document.getElementById('adaptiveWindowSlider');
+    const adaptiveWindowVal = document.getElementById('adaptiveWindowVal');
+    const adaptiveBiasSlider = document.getElementById('adaptiveBiasSlider');
+    const adaptiveBiasVal = document.getElementById('adaptiveBiasVal');
+    const invertToggle = document.getElementById('invertToggle');
     const rSlider = document.getElementById('rSlider');
     const gSlider = document.getElementById('gSlider');
     const bSlider = document.getElementById('bSlider');
@@ -113,23 +202,62 @@
     const bVal = document.getElementById('bVal');
     const cArrayBox = document.getElementById('cArrayBox');
 
+    function syncImageDropHint() {
+      const dragActive = dropOverlay.style.display === 'flex';
+      if (imgLoaded || dragActive) {
+        dropHint.classList.add('hidden');
+      } else {
+        dropHint.classList.remove('hidden');
+      }
+    }
+
+    function syncPreviewSamplingMode() {
+      const useNoBlendPreview = imgLoaded && origImg.naturalWidth === 128 && origImg.naturalHeight === 64;
+      origImgWrap.classList.toggle('no-blend-preview', useNoBlendPreview);
+    }
+
+    let imageDragDepth = 0;
+
+    function setImageDragOverlayActive(active) {
+      dropOverlay.style.display = active ? 'flex' : 'none';
+      if (active) {
+        origImgWrap.style.borderColor = '#2d8cf0';
+        origImgWrap.style.background = 'rgba(108, 182, 255, 0.14)';
+      } else {
+        origImgWrap.style.borderColor = '';
+        origImgWrap.style.background = '';
+      }
+      syncImageDropHint();
+    }
+
+    function dragHasFiles(e) {
+      if (!e.dataTransfer || !e.dataTransfer.types) return false;
+      return Array.from(e.dataTransfer.types).includes('Files');
+    }
+
     // --- Drag and drop image loading for origImgWrap ---
-    origImgWrap.addEventListener('dragover', function (e) {
+    origImgWrap.addEventListener('dragenter', function (e) {
+      if (!dragHasFiles(e)) return;
       e.preventDefault();
-      dropOverlay.style.display = 'flex';
-      origImgWrap.style.borderColor = '#2d8cf0';
-      origImgWrap.style.background = '#e3ecfa';
+      imageDragDepth += 1;
+      setImageDragOverlayActive(true);
+    });
+    origImgWrap.addEventListener('dragover', function (e) {
+      if (!dragHasFiles(e)) return;
+      e.preventDefault();
+      setImageDragOverlayActive(true);
     });
     origImgWrap.addEventListener('dragleave', function (e) {
-      dropOverlay.style.display = 'none';
-      origImgWrap.style.borderColor = '';
-      origImgWrap.style.background = '';
+      if (!dragHasFiles(e)) return;
+      imageDragDepth = Math.max(0, imageDragDepth - 1);
+      if (imageDragDepth === 0) {
+        setImageDragOverlayActive(false);
+      }
     });
     origImgWrap.addEventListener('drop', function (e) {
       e.preventDefault();
-      dropOverlay.style.display = 'none';
-      origImgWrap.style.borderColor = '';
-      origImgWrap.style.background = '';
+      imageDragDepth = 0;
+      setImageDragOverlayActive(false);
       if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
         const file = e.dataTransfer.files[0];
         if (!file.type.startsWith('image/')) {
@@ -143,21 +271,71 @@
         reader.readAsDataURL(file);
       }
     });
+    origImgWrap.addEventListener('dragend', function () {
+      imageDragDepth = 0;
+      setImageDragOverlayActive(false);
+    });
+
+    // Mouse/touch accessibility: click to upload or replace image
+    origImgWrap.addEventListener('click', function () {
+      imgInput.click();
+    });
 
     // Keyboard accessibility: allow Enter/Space to trigger file input
     origImgWrap.addEventListener('keydown', function (e) {
       if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
         imgInput.click();
       }
     });
 
 
+    function getActiveThresholdMode() {
+      if (!modeAdvanced.checked) {
+        return 'manual';
+      }
+      return thresholdMethod.value;
+    }
+
+    function updateConversionModeUI() {
+      const advancedEnabled = modeAdvanced.checked;
+      advancedControls.style.display = advancedEnabled ? 'flex' : 'none';
+      const activeMode = getActiveThresholdMode();
+      adaptiveControls.style.display = (advancedEnabled && activeMode === 'adaptive') ? 'flex' : 'none';
+
+      const manualMode = activeMode === 'manual';
+      threshSlider.disabled = !manualMode;
+      threshSlider.style.opacity = manualMode ? '1' : '0.55';
+
+      const ditherDisabled = !advancedEnabled || activeMode === 'adaptive';
+      ditherMode.disabled = ditherDisabled;
+      ditherMode.style.opacity = ditherDisabled ? '0.55' : '1';
+
+      if (activeMode === 'manual') {
+        effectiveThreshNote.textContent = '(manual)';
+      } else if (activeMode === 'otsu') {
+        effectiveThreshNote.textContent = '(auto: Otsu)';
+      } else {
+        effectiveThreshNote.textContent = '(auto: adaptive)';
+      }
+    }
+
     // Reset controls to default values
     document.getElementById('resetBtn').addEventListener('click', function () {
+      modeSimple.checked = true;
       threshSlider.value = 128;
+      thresholdMethod.value = 'manual';
+      ditherMode.value = 'none';
+      levelsBlackSlider.value = 0;
+      levelsWhiteSlider.value = 255;
+      levelsGammaSlider.value = 1.00;
+      adaptiveWindowSlider.value = 15;
+      adaptiveBiasSlider.value = 0;
+      invertToggle.checked = false;
       rSlider.value = 0.299;
       gSlider.value = 0.587;
       bSlider.value = 0.114;
+      updateConversionModeUI();
       updateLabels();
       updateBW();
     });
@@ -254,6 +432,358 @@
 
     let imgLoaded = false;
 
+    function getDisplayImageRect() {
+      const boxW = selectCanvas.width || origImg.clientWidth || origImg.offsetWidth || 1;
+      const boxH = selectCanvas.height || origImg.clientHeight || origImg.offsetHeight || 1;
+      const naturalW = origImg.naturalWidth;
+      const naturalH = origImg.naturalHeight;
+
+      if (!naturalW || !naturalH) {
+        return { x: 0, y: 0, w: boxW, h: boxH };
+      }
+
+      const imageAspect = naturalW / naturalH;
+      const boxAspect = boxW / boxH;
+      let drawW;
+      let drawH;
+      let drawX;
+      let drawY;
+
+      if (imageAspect > boxAspect) {
+        drawW = boxW;
+        drawH = boxW / imageAspect;
+        drawX = 0;
+        drawY = (boxH - drawH) / 2;
+      } else {
+        drawH = boxH;
+        drawW = boxH * imageAspect;
+        drawX = (boxW - drawW) / 2;
+        drawY = 0;
+      }
+
+      return { x: drawX, y: drawY, w: drawW, h: drawH };
+    }
+
+    function clampPointToRect(x, y, rect) {
+      return {
+        x: Math.max(rect.x, Math.min(x, rect.x + rect.w)),
+        y: Math.max(rect.y, Math.min(y, rect.y + rect.h))
+      };
+    }
+
+    function pointInRect(x, y, rect) {
+      return (
+        x >= rect.x &&
+        x <= rect.x + rect.w &&
+        y >= rect.y &&
+        y <= rect.y + rect.h
+      );
+    }
+
+    function remapSelectionToNewRect(oldRect, newRect) {
+      if (!selection || oldRect.w <= 0 || oldRect.h <= 0 || newRect.w <= 0 || newRect.h <= 0) {
+        return;
+      }
+
+      const oldX0 = (selection.x - oldRect.x) / oldRect.w;
+      const oldY0 = (selection.y - oldRect.y) / oldRect.h;
+      const oldX1 = (selection.x + selection.w - oldRect.x) / oldRect.w;
+      const oldY1 = (selection.y + selection.h - oldRect.y) / oldRect.h;
+
+      const x0 = Math.max(0, Math.min(1, Math.min(oldX0, oldX1)));
+      const y0 = Math.max(0, Math.min(1, Math.min(oldY0, oldY1)));
+      const x1 = Math.max(0, Math.min(1, Math.max(oldX0, oldX1)));
+      const y1 = Math.max(0, Math.min(1, Math.max(oldY0, oldY1)));
+
+      selection = {
+        x: newRect.x + x0 * newRect.w,
+        y: newRect.y + y0 * newRect.h,
+        w: (x1 - x0) * newRect.w,
+        h: (y1 - y0) * newRect.h
+      };
+
+      if (selection.w < 1 || selection.h < 1) {
+        selection = null;
+      }
+    }
+
+    function computeOtsuThreshold(grayValues) {
+      const histogram = new Uint32Array(256);
+      for (let i = 0; i < grayValues.length; ++i) {
+        histogram[grayValues[i]]++;
+      }
+
+      const total = grayValues.length;
+      let sum = 0;
+      for (let i = 0; i < 256; ++i) {
+        sum += i * histogram[i];
+      }
+
+      let sumBackground = 0;
+      let weightBackground = 0;
+      let bestVariance = -1;
+      let bestThreshold = 128;
+
+      for (let t = 0; t < 256; ++t) {
+        weightBackground += histogram[t];
+        if (weightBackground === 0) continue;
+
+        const weightForeground = total - weightBackground;
+        if (weightForeground === 0) break;
+
+        sumBackground += t * histogram[t];
+        const meanBackground = sumBackground / weightBackground;
+        const meanForeground = (sum - sumBackground) / weightForeground;
+        const betweenClassVariance = weightBackground * weightForeground * (meanBackground - meanForeground) * (meanBackground - meanForeground);
+
+        if (betweenClassVariance > bestVariance) {
+          bestVariance = betweenClassVariance;
+          bestThreshold = t;
+        }
+      }
+
+      return bestThreshold;
+    }
+
+    function clampByte(value) {
+      return Math.max(0, Math.min(255, value));
+    }
+
+    function normalizeLevelsInputs(changedControl) {
+      let black = parseInt(levelsBlackSlider.value, 10);
+      let white = parseInt(levelsWhiteSlider.value, 10);
+
+      if (black >= white) {
+        if (changedControl === 'black') {
+          white = Math.min(255, black + 1);
+          if (white <= black) {
+            black = 254;
+            white = 255;
+          }
+        } else {
+          black = Math.max(0, white - 1);
+          if (black >= white) {
+            black = 0;
+            white = 1;
+          }
+        }
+        levelsBlackSlider.value = black;
+        levelsWhiteSlider.value = white;
+      }
+
+      return { black: black, white: white };
+    }
+
+    function applyInputLevels(grayValues) {
+      if (!modeAdvanced.checked) {
+        return grayValues;
+      }
+
+      const normalized = normalizeLevelsInputs();
+      const black = normalized.black;
+      const white = normalized.white;
+      const gamma = Math.max(0.2, parseFloat(levelsGammaSlider.value));
+      const span = Math.max(1, white - black);
+      const invSpan = 1 / span;
+      const out = new Uint8Array(grayValues.length);
+
+      for (let i = 0; i < grayValues.length; ++i) {
+        let value = (grayValues[i] - black) * invSpan;
+        if (value < 0) value = 0;
+        if (value > 1) value = 1;
+        const corrected = Math.pow(value, 1 / gamma);
+        out[i] = Math.round(corrected * 255);
+      }
+
+      return out;
+    }
+
+    function drawHistogram(grayValues, markerThreshold, markerLabel) {
+      const width = histogramCanvas.width;
+      const height = histogramCanvas.height;
+
+      histogramCtx.fillStyle = '#141925';
+      histogramCtx.fillRect(0, 0, width, height);
+
+      if (!grayValues || grayValues.length === 0) {
+        histogramLegend.textContent = '(cyan line = active threshold)';
+        return;
+      }
+
+      const histogram = new Uint32Array(256);
+      let maxCount = 0;
+      for (let i = 0; i < grayValues.length; ++i) {
+        const v = grayValues[i];
+        histogram[v]++;
+        if (histogram[v] > maxCount) {
+          maxCount = histogram[v];
+        }
+      }
+
+      histogramCtx.fillStyle = '#6cb6ff';
+      for (let x = 0; x < 256; ++x) {
+        if (histogram[x] === 0) {
+          continue;
+        }
+        const normalized = maxCount > 0 ? histogram[x] / maxCount : 0;
+        const barHeight = Math.max(1, Math.round(normalized * (height - 1)));
+        histogramCtx.fillRect(x, height - barHeight, 1, barHeight);
+      }
+
+      if (Number.isFinite(markerThreshold)) {
+        const markerX = Math.round(clampByte(markerThreshold));
+        histogramCtx.strokeStyle = '#00e5ff';
+        histogramCtx.lineWidth = 1;
+        histogramCtx.beginPath();
+        histogramCtx.moveTo(markerX + 0.5, 0);
+        histogramCtx.lineTo(markerX + 0.5, height);
+        histogramCtx.stroke();
+        histogramLegend.textContent = `(cyan line = ${markerLabel})`;
+      } else {
+        histogramLegend.textContent = '(adaptive threshold varies per pixel)';
+      }
+    }
+
+    function applyGlobalThreshold(grayValues, width, height, threshold, dither) {
+      const output = new Uint8Array(grayValues.length);
+
+      if (dither === 'floyd') {
+        const work = new Float32Array(grayValues.length);
+        for (let i = 0; i < grayValues.length; ++i) {
+          work[i] = grayValues[i];
+        }
+
+        for (let y = 0; y < height; ++y) {
+          for (let x = 0; x < width; ++x) {
+            const idx = y * width + x;
+            const oldValue = work[idx];
+            const newValue = oldValue >= threshold ? 255 : 0;
+            output[idx] = newValue;
+            const error = oldValue - newValue;
+
+            if (x + 1 < width) work[idx + 1] += error * (7 / 16);
+            if (y + 1 < height) {
+              if (x > 0) work[idx + width - 1] += error * (3 / 16);
+              work[idx + width] += error * (5 / 16);
+              if (x + 1 < width) work[idx + width + 1] += error * (1 / 16);
+            }
+          }
+        }
+        return output;
+      }
+
+      if (dither === 'bayer4') {
+        const matrix = [
+          0, 8, 2, 10,
+          12, 4, 14, 6,
+          3, 11, 1, 9,
+          15, 7, 13, 5
+        ];
+        const amplitude = 48;
+        for (let y = 0; y < height; ++y) {
+          for (let x = 0; x < width; ++x) {
+            const idx = y * width + x;
+            const m = matrix[(y % 4) * 4 + (x % 4)];
+            const adjustedThreshold = threshold + ((m - 7.5) / 7.5) * amplitude;
+            output[idx] = grayValues[idx] >= adjustedThreshold ? 255 : 0;
+          }
+        }
+        return output;
+      }
+
+      for (let i = 0; i < grayValues.length; ++i) {
+        output[i] = grayValues[i] >= threshold ? 255 : 0;
+      }
+      return output;
+    }
+
+    function computeAdaptiveBinary(grayValues, width, height, windowSize, bias) {
+      const binary = new Uint8Array(grayValues.length);
+      const stride = width + 1;
+      const integral = new Float64Array((height + 1) * stride);
+      let thresholdAccumulator = 0;
+
+      for (let y = 1; y <= height; ++y) {
+        let rowSum = 0;
+        for (let x = 1; x <= width; ++x) {
+          rowSum += grayValues[(y - 1) * width + (x - 1)];
+          integral[y * stride + x] = integral[(y - 1) * stride + x] + rowSum;
+        }
+      }
+
+      const radius = Math.floor(windowSize / 2);
+      for (let y = 0; y < height; ++y) {
+        const y0 = Math.max(0, y - radius);
+        const y1 = Math.min(height - 1, y + radius);
+        for (let x = 0; x < width; ++x) {
+          const x0 = Math.max(0, x - radius);
+          const x1 = Math.min(width - 1, x + radius);
+          const idx = y * width + x;
+
+          const iA = y0 * stride + x0;
+          const iB = y0 * stride + (x1 + 1);
+          const iC = (y1 + 1) * stride + x0;
+          const iD = (y1 + 1) * stride + (x1 + 1);
+
+          const sum = integral[iD] - integral[iB] - integral[iC] + integral[iA];
+          const count = (x1 - x0 + 1) * (y1 - y0 + 1);
+          const localThreshold = (sum / count) + bias;
+          thresholdAccumulator += localThreshold;
+          binary[idx] = grayValues[idx] >= localThreshold ? 255 : 0;
+        }
+      }
+
+      return {
+        binary: binary,
+        meanThreshold: thresholdAccumulator / grayValues.length
+      };
+    }
+
+    function binarizeGrayscale(grayValues, width, height) {
+      const mode = getActiveThresholdMode();
+      const invert = modeAdvanced.checked && invertToggle.checked;
+      const dither = modeAdvanced.checked && mode !== 'adaptive' ? ditherMode.value : 'none';
+      let binary;
+      let markerThreshold = NaN;
+      let markerLabel = '';
+
+      if (mode === 'adaptive') {
+        let windowSize = parseInt(adaptiveWindowSlider.value, 10);
+        if (windowSize % 2 === 0) {
+          windowSize += 1;
+        }
+        const bias = parseInt(adaptiveBiasSlider.value, 10);
+        const adaptiveResult = computeAdaptiveBinary(grayValues, width, height, windowSize, bias);
+        binary = adaptiveResult.binary;
+        markerThreshold = adaptiveResult.meanThreshold;
+        markerLabel = `adaptive mean ${Math.round(markerThreshold)}`;
+        effectiveThreshNote.textContent = `(adaptive: w${windowSize}, b${bias})`;
+      } else {
+        const threshold = mode === 'otsu' ? computeOtsuThreshold(grayValues) : parseInt(threshSlider.value, 10);
+        binary = applyGlobalThreshold(grayValues, width, height, threshold, dither);
+        markerThreshold = threshold;
+        markerLabel = `${mode === 'otsu' ? 'Otsu' : 'manual'} ${threshold}`;
+        if (mode === 'otsu') {
+          effectiveThreshNote.textContent = `(auto: Otsu=${threshold}${dither !== 'none' ? `, ${dither}` : ''})`;
+        } else {
+          effectiveThreshNote.textContent = `(manual: ${threshold}${dither !== 'none' ? `, ${dither}` : ''})`;
+        }
+      }
+
+      if (invert) {
+        for (let i = 0; i < binary.length; ++i) {
+          binary[i] = 255 - binary[i];
+        }
+        effectiveThreshNote.textContent += ', inverted';
+      }
+
+      return {
+        binary: binary,
+        markerThreshold: markerThreshold,
+        markerLabel: markerLabel
+      };
+    }
+
 
 
     // --- Main BW update logic ---
@@ -263,70 +793,119 @@
       const origW = origImg.naturalWidth;
       const origH = origImg.naturalHeight;
       let crop = { x: 0, y: 0, w: origW, h: origH };
-      if (selection && origImg.width && origImg.height) {
-        // Map selection from display to natural image coordinates
-        const scaleX = origW / origImg.width;
-        const scaleY = origH / origImg.height;
-        crop = {
-          x: Math.max(0, Math.round(selection.x * scaleX)),
-          y: Math.max(0, Math.round(selection.y * scaleY)),
-          w: Math.max(1, Math.round(selection.w * scaleX)),
-          h: Math.max(1, Math.round(selection.h * scaleY))
-        };
-        // Clamp
-        if (crop.x + crop.w > origW) crop.w = origW - crop.x;
-        if (crop.y + crop.h > origH) crop.h = origH - crop.y;
-        // If selection is too small, fallback to full image
-        if (crop.w < 2 || crop.h < 2) {
-          crop = { x: 0, y: 0, w: origW, h: origH };
-        }
-      }
-      // Determine target size based on crop
-      let targetW, targetH;
-      if (crop.w / crop.h >= 128 / 64) {
-        targetW = 128;
-        targetH = Math.round(crop.h * (128 / crop.w));
-        if (targetH > 64) {
-          targetH = 64;
-          targetW = Math.round(crop.w * (64 / crop.h));
-        }
-      } else {
-        targetH = 64;
-        targetW = Math.round(crop.w * (64 / crop.h));
-        if (targetW > 128) {
-          targetW = 128;
-          targetH = Math.round(crop.h * (128 / crop.w));
+      if (selection && selectCanvas.width && selectCanvas.height) {
+        const imageRect = getDisplayImageRect();
+        const selX0 = Math.max(imageRect.x, selection.x);
+        const selY0 = Math.max(imageRect.y, selection.y);
+        const selX1 = Math.min(imageRect.x + imageRect.w, selection.x + selection.w);
+        const selY1 = Math.min(imageRect.y + imageRect.h, selection.y + selection.h);
+        if (selX1 - selX0 >= 2 && selY1 - selY0 >= 2) {
+          const scaleX = origW / imageRect.w;
+          const scaleY = origH / imageRect.h;
+          crop = {
+            x: Math.max(0, Math.floor((selX0 - imageRect.x) * scaleX)),
+            y: Math.max(0, Math.floor((selY0 - imageRect.y) * scaleY)),
+            w: Math.max(1, Math.ceil((selX1 - selX0) * scaleX)),
+            h: Math.max(1, Math.ceil((selY1 - selY0) * scaleY))
+          };
+          // Clamp
+          if (crop.x + crop.w > origW) crop.w = origW - crop.x;
+          if (crop.y + crop.h > origH) crop.h = origH - crop.y;
+          // If selection is too small, fallback to full image
+          if (crop.w < 2 || crop.h < 2) {
+            crop = { x: 0, y: 0, w: origW, h: origH };
+          }
         }
       }
       // Always output 128x64
       const outW = 128, outH = 64;
-      // Calculate scaled image size
-      let drawW = targetW, drawH = targetH;
-      // Center the image
-      let offsetX = Math.floor((outW - drawW) / 2);
-      let offsetY = Math.floor((outH - drawH) / 2);
+      const keepNativeSize = (crop.w === outW && crop.h === outH);
+      let drawW;
+      let drawH;
+      let offsetX;
+      let offsetY;
+      if (keepNativeSize) {
+        // Keep native 128x64 content pixel-perfect without scaling.
+        drawW = outW;
+        drawH = outH;
+        offsetX = 0;
+        offsetY = 0;
+      } else {
+        // Determine target size based on crop
+        let targetW;
+        let targetH;
+        if (crop.w / crop.h >= outW / outH) {
+          targetW = outW;
+          targetH = Math.round(crop.h * (outW / crop.w));
+          if (targetH > outH) {
+            targetH = outH;
+            targetW = Math.round(crop.w * (outH / crop.h));
+          }
+        } else {
+          targetH = outH;
+          targetW = Math.round(crop.w * (outH / crop.h));
+          if (targetW > outW) {
+            targetW = outW;
+            targetH = Math.round(crop.h * (outW / crop.w));
+          }
+        }
+        // Calculate scaled image size
+        drawW = targetW;
+        drawH = targetH;
+        // Center the image
+        offsetX = Math.floor((outW - drawW) / 2);
+        offsetY = Math.floor((outH - drawH) / 2);
+      }
       // Create a temp canvas for the scaled image
       const tempCanvas = document.createElement('canvas');
       tempCanvas.width = drawW;
       tempCanvas.height = drawH;
       const tempCtx = tempCanvas.getContext('2d');
       tempCtx.clearRect(0, 0, drawW, drawH);
-      tempCtx.drawImage(origImg, crop.x, crop.y, crop.w, crop.h, 0, 0, drawW, drawH);
+      if (keepNativeSize) {
+        tempCtx.drawImage(origImg, crop.x, crop.y, crop.w, crop.h, 0, 0, crop.w, crop.h);
+      } else {
+        tempCtx.drawImage(origImg, crop.x, crop.y, crop.w, crop.h, 0, 0, drawW, drawH);
+      }
       // Get image data from temp
       const imgData = tempCtx.getImageData(0, 0, drawW, drawH);
       const data = imgData.data;
-      // Normalize weights
-      let rW = parseFloat(rSlider.value);
-      let gW = parseFloat(gSlider.value);
-      let bW = parseFloat(bSlider.value);
-      const sum = rW + gW + bW;
-      rW /= sum; gW /= sum; bW /= sum;
-      // Convert to grayscale and apply threshold
-      const threshold = parseInt(threshSlider.value);
-      for (let i = 0; i < data.length; i += 4) {
+
+      // Normalize grayscale weights
+      let rW = 0.299;
+      let gW = 0.587;
+      let bW = 0.114;
+      if (modeAdvanced.checked) {
+        rW = parseFloat(rSlider.value);
+        gW = parseFloat(gSlider.value);
+        bW = parseFloat(bSlider.value);
+        const sum = rW + gW + bW;
+        if (sum > 0) {
+          rW /= sum;
+          gW /= sum;
+          bW /= sum;
+        } else {
+          rW = 0.299;
+          gW = 0.587;
+          bW = 0.114;
+        }
+      }
+
+      // Convert to grayscale, then apply the selected threshold strategy.
+      const grayValues = new Uint8Array(drawW * drawH);
+      for (let p = 0, i = 0; p < grayValues.length; ++p, i += 4) {
         const avg = rW * data[i] + gW * data[i + 1] + bW * data[i + 2];
-        const bw = avg >= threshold ? 255 : 0;
+        grayValues[p] = Math.max(0, Math.min(255, Math.round(avg)));
+      }
+
+      const leveledGrayValues = applyInputLevels(grayValues);
+      const thresholdResult = binarizeGrayscale(leveledGrayValues, drawW, drawH);
+      const binaryValues = thresholdResult.binary;
+      drawHistogram(leveledGrayValues, thresholdResult.markerThreshold, thresholdResult.markerLabel);
+      for (let i = 0; i < data.length; i += 4) {
+        const bw = binaryValues[i / 4];
         data[i] = data[i + 1] = data[i + 2] = bw;
+        data[i + 3] = 255;
       }
       tempCtx.putImageData(imgData, 0, 0);
 
@@ -364,15 +943,13 @@
       updateCArrayBox();
 
       // Upscale the canvas to match the original image's display size
-      const displayW = origImg.clientWidth;
-      const displayH = origImg.clientHeight;
-      //if (displayW && displayH) {
-      //  bwCanvas.style.width = '128px';
-      //  bwCanvas.style.height = '64px';
-      //} else {
-        bwCanvas.style.width = '300px';
-        bwCanvas.style.height = 'auto';
-      //}
+      const displayW = origImgWrap.clientWidth;
+      if (displayW) {
+        bwCanvas.style.width = displayW + 'px';
+      } else {
+        bwCanvas.style.width = '';
+      }
+      bwCanvas.style.height = 'auto';
     }
 
 
@@ -389,12 +966,25 @@
     // Error handling for image load
     origImg.onerror = function () {
       imgLoaded = false;
+      isSelecting = false;
+      isDraggingSelection = false;
+      selection = null;
+      syncImageDropHint();
+      syncPreviewSamplingMode();
+      selectCanvas.style.pointerEvents = 'none';
+      drawSelection();
+      drawHistogram(null, NaN, '');
       alert('Failed to load image. Please try another file.');
     };
 
     origImg.onload = function () {
 
+      isSelecting = false;
+      isDraggingSelection = false;
+      selection = null;
       imgLoaded = true;
+      syncImageDropHint();
+      syncPreviewSamplingMode();
       // Sync overlay size to image
       function syncOverlay() {
         const w = origImg.offsetWidth;
@@ -405,6 +995,7 @@
           selectCanvas.style.width = w + 'px';
           selectCanvas.style.height = h + 'px';
           selectCanvas.style.display = '';
+          selectCanvas.style.pointerEvents = 'auto';
           drawSelection();
           updateBW();
         } else {
@@ -434,6 +1025,11 @@
     }
     function updateLabels() {
       threshVal.textContent = threshSlider.value;
+      levelsBlackVal.textContent = levelsBlackSlider.value;
+      levelsWhiteVal.textContent = levelsWhiteSlider.value;
+      levelsGammaVal.textContent = parseFloat(levelsGammaSlider.value).toFixed(2);
+      adaptiveWindowVal.textContent = adaptiveWindowSlider.value;
+      adaptiveBiasVal.textContent = adaptiveBiasSlider.value;
       rVal.textContent = parseFloat(rSlider.value).toFixed(3);
       gVal.textContent = parseFloat(gSlider.value).toFixed(3);
       bVal.textContent = parseFloat(bSlider.value).toFixed(3);
@@ -445,6 +1041,7 @@
       const rect = selectCanvas.getBoundingClientRect();
       const mouseX = Math.max(0, Math.min(e.clientX - rect.left, selectCanvas.width));
       const mouseY = Math.max(0, Math.min(e.clientY - rect.top, selectCanvas.height));
+      const imageRect = getDisplayImageRect();
       // If inside selection, start dragging
       if (selection &&
         mouseX >= selection.x && mouseX <= selection.x + selection.w &&
@@ -452,37 +1049,48 @@
         isDraggingSelection = true;
         dragOffset.x = mouseX - selection.x;
         dragOffset.y = mouseY - selection.y;
-      } else {
+      } else if (pointInRect(mouseX, mouseY, imageRect)) {
+        const clampedStart = clampPointToRect(mouseX, mouseY, imageRect);
         isSelecting = true;
         selectStart = {
-          x: mouseX,
-          y: mouseY
+          x: clampedStart.x,
+          y: clampedStart.y
         };
+        selection = null;
+        drawSelection();
+      } else {
+        isSelecting = false;
+        selectStart = null;
       }
     });
 
     selectCanvas.addEventListener('mousemove', function (e) {
+      if (!imgLoaded || (!isDraggingSelection && !isSelecting)) return;
       const rect = selectCanvas.getBoundingClientRect();
-      const x = Math.max(0, Math.min(e.clientX - rect.left, selectCanvas.width));
-      const y = Math.max(0, Math.min(e.clientY - rect.top, selectCanvas.height));
+      const imageRect = getDisplayImageRect();
+      const rawX = Math.max(0, Math.min(e.clientX - rect.left, selectCanvas.width));
+      const rawY = Math.max(0, Math.min(e.clientY - rect.top, selectCanvas.height));
+      const clampedPoint = clampPointToRect(rawX, rawY, imageRect);
       if (isDraggingSelection && selection) {
         // Move selection
-        let newX = x - dragOffset.x;
-        let newY = y - dragOffset.y;
-        // Clamp to canvas
-        newX = Math.max(0, Math.min(newX, selectCanvas.width - selection.w));
-        newY = Math.max(0, Math.min(newY, selectCanvas.height - selection.h));
+        let newX = clampedPoint.x - dragOffset.x;
+        let newY = clampedPoint.y - dragOffset.y;
+        // Clamp to visible image area
+        const maxX = imageRect.x + Math.max(0, imageRect.w - selection.w);
+        const maxY = imageRect.y + Math.max(0, imageRect.h - selection.h);
+        newX = Math.max(imageRect.x, Math.min(newX, maxX));
+        newY = Math.max(imageRect.y, Math.min(newY, maxY));
         selection.x = newX;
         selection.y = newY;
         drawSelection();
-      } else if (isSelecting) {
+      } else if (isSelecting && selectStart) {
         const sx = selectStart.x;
         const sy = selectStart.y;
         selection = {
-          x: Math.min(sx, x),
-          y: Math.min(sy, y),
-          w: Math.abs(x - sx),
-          h: Math.abs(y - sy)
+          x: Math.min(sx, clampedPoint.x),
+          y: Math.min(sy, clampedPoint.y),
+          w: Math.abs(clampedPoint.x - sx),
+          h: Math.abs(clampedPoint.y - sy)
         };
         drawSelection();
       }
@@ -512,11 +1120,16 @@
         const w = origImg.offsetWidth;
         const h = origImg.offsetHeight;
         if (w && h) {
+          const oldRect = getDisplayImageRect();
           selectCanvas.width = w;
           selectCanvas.height = h;
           selectCanvas.style.width = w + 'px';
           selectCanvas.style.height = h + 'px';
+          selectCanvas.style.pointerEvents = 'auto';
+          const newRect = getDisplayImageRect();
+          remapSelectionToNewRect(oldRect, newRect);
           drawSelection();
+          updateBW();
         } else {
           requestAnimationFrame(syncOverlayResize);
         }
@@ -525,6 +1138,76 @@
     });
     // (Selection overlay removed)
 
+
+    modeSimple.addEventListener('change', function () {
+      if (modeSimple.checked) {
+        updateConversionModeUI();
+        updateLabels();
+        updateBW();
+      }
+    });
+    modeAdvanced.addEventListener('change', function () {
+      if (modeAdvanced.checked) {
+        updateConversionModeUI();
+        updateLabels();
+        updateBW();
+      }
+    });
+    thresholdMethod.addEventListener('change', function () {
+      updateConversionModeUI();
+      updateLabels();
+      updateBW();
+    });
+    invertToggle.addEventListener('change', function () {
+      updateBW();
+    });
+    ditherMode.addEventListener('change', function () {
+      updateBW();
+    });
+    levelsBlackSlider.addEventListener('input', function () {
+      normalizeLevelsInputs('black');
+      updateLabels();
+      updateBW();
+    });
+    levelsWhiteSlider.addEventListener('input', function () {
+      normalizeLevelsInputs('white');
+      updateLabels();
+      updateBW();
+    });
+    levelsGammaSlider.addEventListener('input', function () {
+      levelsGammaVal.textContent = parseFloat(levelsGammaSlider.value).toFixed(2);
+      updateBW();
+    });
+    levelsBlackSlider.addEventListener('change', function () {
+      normalizeLevelsInputs('black');
+      updateLabels();
+      updateBW();
+    });
+    levelsWhiteSlider.addEventListener('change', function () {
+      normalizeLevelsInputs('white');
+      updateLabels();
+      updateBW();
+    });
+    levelsGammaSlider.addEventListener('change', function () {
+      updateLabels();
+      updateBW();
+    });
+    adaptiveWindowSlider.addEventListener('input', function () {
+      adaptiveWindowVal.textContent = adaptiveWindowSlider.value;
+      updateBW();
+    });
+    adaptiveBiasSlider.addEventListener('input', function () {
+      adaptiveBiasVal.textContent = adaptiveBiasSlider.value;
+      updateBW();
+    });
+    adaptiveWindowSlider.addEventListener('change', function () {
+      updateLabels();
+      updateBW();
+    });
+    adaptiveBiasSlider.addEventListener('change', function () {
+      updateLabels();
+      updateBW();
+    });
 
     // Update labels live as the slider moves
     threshSlider.addEventListener('input', function () {
@@ -562,7 +1245,11 @@
       updateBW();
     });
 
+    updateConversionModeUI();
     updateLabels();
+    syncImageDropHint();
+    syncPreviewSamplingMode();
+    drawHistogram(null, NaN, '');
 
     // Download UF2 handler
     let logoUf2 = null;
@@ -589,6 +1276,41 @@
     // Firmware UF2 upload and combine logic
     let uploadedFirmwareUf2 = null;
     const firmwareDropzone = document.getElementById('firmwareDropzone');
+    const firmwareDropzoneDefaultText = 'Drop firmware UF2 here or click to select';
+
+    function setUploadedFirmwareUf2(file, arrayBuffer) {
+      const validation = validateUf2ArrayBuffer(arrayBuffer);
+      if (!validation.valid) {
+        throw new Error(validation.error);
+      }
+      uploadedFirmwareUf2 = validation.buffer;
+      firmwareDropzone.textContent = 'Firmware UF2 uploaded: ' + file.name;
+    }
+
+    function loadFirmwareUf2File(file) {
+      if (!file) return;
+      if (!file.name.toLowerCase().endsWith('.uf2')) {
+        alert('Please select a UF2 firmware file.');
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = function (ev) {
+        try {
+          setUploadedFirmwareUf2(file, ev.target.result);
+        } catch (err) {
+          uploadedFirmwareUf2 = null;
+          firmwareDropzone.textContent = firmwareDropzoneDefaultText;
+          alert('Invalid UF2 file: ' + err.message);
+        }
+      };
+      reader.onerror = function () {
+        uploadedFirmwareUf2 = null;
+        firmwareDropzone.textContent = firmwareDropzoneDefaultText;
+        alert('Failed to read UF2 file.');
+      };
+      reader.readAsArrayBuffer(file);
+    }
+
     firmwareDropzone.addEventListener('dragover', function(e) {
       e.preventDefault();
       firmwareDropzone.style.borderColor = '#2d8cf0';
@@ -603,17 +1325,7 @@
       firmwareDropzone.style.borderColor = '#6cb6ff';
       firmwareDropzone.style.background = '#232a36';
       if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-        const file = e.dataTransfer.files[0];
-        if (!file.name.endsWith('.uf2')) {
-          alert('Please drop a UF2 firmware file.');
-          return;
-        }
-        const reader = new FileReader();
-        reader.onload = function(ev) {
-          uploadedFirmwareUf2 = ev.target.result;
-          firmwareDropzone.textContent = 'Firmware UF2 uploaded: ' + file.name;
-        };
-        reader.readAsArrayBuffer(file);
+        loadFirmwareUf2File(e.dataTransfer.files[0]);
       }
     });
     // Optional: click to select file
@@ -624,17 +1336,9 @@
       input.style.display = 'none';
       input.onchange = function(e) {
         const file = e.target.files[0];
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = function(ev) {
-          uploadedFirmwareUf2 = ev.target.result;
-          firmwareDropzone.textContent = 'Firmware UF2 uploaded: ' + file.name;
-        };
-        reader.readAsArrayBuffer(file);
+        loadFirmwareUf2File(file);
       };
-      document.body.appendChild(input);
       input.click();
-      setTimeout(() => document.body.removeChild(input), 1000);
     });
 
     document.getElementById('downloadCombinedBtn').addEventListener('click', function() {
@@ -649,19 +1353,23 @@
       full.set(bin, colorTable.length);
       const logoUf2 = payloadToUf2(full.buffer);
 
-      // Merge using uf2.js
-      const merged = mergeUf2Files(uploadedFirmwareUf2, logoUf2.buffer);
-      const blob = new Blob([merged], { type: 'application/octet-stream' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'combined.uf2';
-      document.body.appendChild(a);
-      a.click();
-      setTimeout(() => {
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-      }, 100);
+      try {
+        // Merge using uf2.js
+        const merged = mergeUf2Files(uploadedFirmwareUf2, logoUf2.buffer);
+        const blob = new Blob([merged], { type: 'application/octet-stream' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'combined.uf2';
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(() => {
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+        }, 100);
+      } catch (err) {
+        alert('Failed to merge UF2 files: ' + err.message);
+      }
     });
 
   </script>

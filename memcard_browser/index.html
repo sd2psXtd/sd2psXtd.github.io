@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PS2 Memory Card Browser</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <main class="page-shell">
+      <header class="page-header">
+        <h1>PS2 Memory Card Browser</h1>
+        <p>
+          Upload a PS2 memory card image and inspect folders, files, metadata,
+          and raw bytes.
+        </p>
+      </header>
+
+      <section class="panel upload-panel">
+        <label for="imageInput" class="upload-label">Memory Card Image</label>
+        <input
+          id="imageInput"
+          class="visually-hidden"
+          type="file"
+          accept=".ps2,.bin,.vmc,.mcd,.mc2,application/octet-stream"
+        >
+        <input id="addFileInput" class="visually-hidden" type="file">
+        <input
+          id="importZipInput"
+          class="visually-hidden"
+          type="file"
+          accept=".zip,application/zip"
+        >
+        <div
+          id="dropZone"
+          class="dropzone"
+          role="button"
+          tabindex="0"
+          aria-controls="imageInput"
+          aria-label="Drop memory card image or click to browse"
+        >
+          <p class="dropzone-title">Drop Image Here</p>
+          <p class="dropzone-subtitle">or click to choose a file</p>
+        </div>
+        <div class="upload-actions">
+          <label for="newCardSizeSelect" class="upload-inline-label"
+          >Size</label>
+          <select id="newCardSizeSelect" aria-label="New card size">
+            <option value="1">1 MB</option>
+            <option value="2">2 MB</option>
+            <option value="4">4 MB</option>
+            <option value="8" selected>8 MB</option>
+            <option value="16">16 MB</option>
+            <option value="32">32 MB</option>
+            <option value="64">64 MB</option>
+          </select>
+          <button id="createEmptyCardButton" type="button">
+            New Empty Card
+          </button>
+          <button id="importZipButton" type="button">Import ZIP To Root</button>
+        </div>
+        <p class="hint">
+          Supported: raw images and ECC-appended images (for example `.ps2`,
+          `.bin`, `.vmc`).
+        </p>
+        <p id="statusText" class="status">No image loaded.</p>
+      </section>
+
+      <section class="workspace-grid">
+        <section class="panel">
+          <h2>Card Info</h2>
+          <dl id="cardInfo" class="info-list"></dl>
+        </section>
+
+        <section class="panel">
+          <div class="toolbar">
+            <h2>Directory</h2>
+            <button id="upButton" type="button" disabled>Up</button>
+          </div>
+          <div class="search-row">
+            <input
+              id="searchInput"
+              type="search"
+              placeholder="Search current directory"
+            >
+            <label class="search-global">
+              <input id="searchGlobalCheckbox" type="checkbox">
+              Global
+            </label>
+          </div>
+          <p id="pathText" class="path-text">/</p>
+          <div class="table-wrap">
+            <table id="entryTable">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Type</th>
+                  <th>Size</th>
+                  <th>Cluster</th>
+                  <th>Modified</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </section>
+      </section>
+
+      <section class="panel">
+        <h2>Entry Details</h2>
+        <div id="entryDetails" class="details-box">
+          Select a file or directory entry.
+        </div>
+        <div class="details-actions">
+          <button id="downloadEntryButton" type="button" disabled>
+            Download File
+          </button>
+          <button id="renameEntryButton" type="button" disabled>Rename</button>
+          <button id="deleteEntryButton" type="button" disabled>
+            Delete Entry
+          </button>
+          <button id="exportFolderZipButton" type="button" disabled>
+            Export Folder ZIP
+          </button>
+          <button id="downloadImageButton" type="button" disabled>
+            Download Image
+          </button>
+          <button id="undoButton" type="button" disabled>Undo</button>
+          <button id="redoButton" type="button" disabled>Redo</button>
+          <button id="checkIntegrityButton" type="button" disabled>
+            Check Integrity
+          </button>
+          <button id="applyRepairButton" type="button" disabled>
+            Apply Safe Repair
+          </button>
+        </div>
+        <div id="changeSummary" class="details-box secondary-box">
+          No pending changes.
+        </div>
+        <div id="integritySummary" class="details-box secondary-box">
+          Integrity check not run.
+        </div>
+      </section>
+    </main>
+    <div id="contextMenu" class="context-menu" hidden></div>
+
+    <script nomodule>
+      const status = document.getElementById("statusText");
+      if (status) {
+        status.textContent =
+          "This page needs a newer browser with JavaScript modules enabled.";
+        status.classList.add("error");
+      }
+    </script>
+    <script>
+      if (window.location.protocol === "file:") {
+        const status = document.getElementById("statusText");
+        if (status) {
+          status.textContent =
+            "Open this page through a local web server (http://localhost), not file://.";
+          status.classList.add("error");
+        }
+      }
+    </script>
+    <script type="module" src="js/app.js"></script>
+  </body>
+</html>
