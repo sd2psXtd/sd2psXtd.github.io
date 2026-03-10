@@ -137,7 +137,8 @@
     }
 
     select,
-    input[type="text"] {
+    input[type="text"],
+    input[type="number"] {
       width: 100%;
       border: 1px solid var(--panel-border);
       border-radius: 8px;
@@ -156,6 +157,10 @@
     }
 
     input[type="text"]::placeholder {
+      color: var(--muted);
+    }
+
+    input[type="number"]::placeholder {
       color: var(--muted);
     }
 
@@ -314,6 +319,14 @@
             <input type="checkbox" class="modern-checkbox" name="PS1_GameID" id="PS1_GameID" checked>
             GameID
           </label>
+          <label>
+            <input type="checkbox" class="modern-checkbox" name="PS1_EnableControllerCombo" id="PS1_EnableControllerCombo" checked>
+            Enable Controller Combo
+          </label>
+        </div>
+        <div class="cardsize-container">
+          <label for="PS1_MaxCardIdx">Max Card Index (0 = unlimited):</label>
+          <input type="number" name="PS1_MaxCardIdx" id="PS1_MaxCardIdx" min="0" max="255" step="1" value="0">
         </div>
       </fieldset>
 
@@ -337,9 +350,9 @@
             <option value="RETAIL" selected>Retail</option>
             <option value="PROTO">Proto</option>
             <option value="ARCADE">Arcade</option>
+            <option value="CONQUEST">Conquest</option>
           </select>
         </div>
-         <br/>
          <div class="checkbox-container">
            <label>
              <input type="checkbox" class="modern-checkbox" name="PS2_Autoboot" id="PS2_Autoboot" checked>
@@ -349,6 +362,10 @@
              <input type="checkbox" class="modern-checkbox" name="PS2_GameID" id="PS2_GameID" checked>
              GameID
            </label>
+         </div>
+         <div class="cardsize-container">
+           <label for="PS2_MaxCardIdx">Max Card Index (0 = unlimited):</label>
+           <input type="number" name="PS2_MaxCardIdx" id="PS2_MaxCardIdx" min="0" max="255" step="1" value="0">
          </div>
       </fieldset>
 
@@ -496,8 +513,8 @@
       const buildErrors = [];
       const sections = {
         General: ['FlippedScreen', 'Mode'],
-        PS1: ['PS1_Autoboot', 'PS1_GameID'],
-        PS2: ['PS2_CardSize', 'PS2_Variant', 'PS2_Autoboot', 'PS2_GameID']
+        PS1: ['PS1_Autoboot', 'PS1_GameID', 'PS1_EnableControllerCombo', 'PS1_MaxCardIdx'],
+        PS2: ['PS2_CardSize', 'PS2_Variant', 'PS2_Autoboot', 'PS2_GameID', 'PS2_MaxCardIdx']
       };
       const sectionKeys = Object.keys(sections);
       sectionKeys.forEach((section, index) => {
@@ -509,6 +526,12 @@
             value = element.checked ? "ON" : "OFF";
           } else if (element.type === "radio") {
             value = document.querySelector(`input[name="${setting}"]:checked`).value;
+          } else if (setting === "PS1_MaxCardIdx" || setting === "PS2_MaxCardIdx") {
+            let idx = parseInt(element.value, 10);
+            if (!Number.isFinite(idx)) idx = 0;
+            idx = Math.max(0, Math.min(255, idx));
+            element.value = String(idx);
+            value = String(idx);
           } else {
             value = element.value;
           }
