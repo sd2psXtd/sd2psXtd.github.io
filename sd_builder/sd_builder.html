@@ -5,113 +5,159 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>sd2psXtd SD-Card Generator</title>
   <style>
-    /* Dark/light mode variables */
+    @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
     :root {
-      --bg-color: #f0f2f5;
-      --card-bg: #ffffff;
-      --text-color: #333;
-      --border-color: #ddd;
-      --button-bg: #007bff;
-      --button-color: #fff;
-      --button-hover: #0056b3;
-      --header-bg: #e0e0e0;
-      --header-text: #000;
-      --checkbox-border: #666;
-      --checkbox-checked: #007bff;
+      --bg-top: #0f1722;
+      --bg-bottom: #1d2736;
+      --panel-bg: rgba(28, 35, 49, 0.95);
+      --panel-soft: #1d2330;
+      --panel-border: #364359;
+      --ink: #e7edf6;
+      --muted: #9bb0c7;
+      --accent: #6cb6ff;
+      --accent-strong: #2d8cf0;
+      --checkbox-border: #7d93ae;
     }
-    @media (prefers-color-scheme: dark) {
-      :root {
-        --bg-color: #121212;
-        --card-bg: #1e1e1e;
-        --text-color: #e0e0e0;
-        --border-color: #333;
-        --button-bg: #0a84ff;
-        --button-hover: #0060d0;
-        --header-bg: #333;
-        --header-text: #fff;
-        --checkbox-border: #aaa;
-        --checkbox-checked: #0a84ff;
-      }
-    }
-    /* Basic reset */
+
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
     }
+
     body {
-      background-color: var(--bg-color);
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      color: var(--text-color);
-      padding: 20px;
+      min-height: 100vh;
+      padding: 24px 16px 36px;
+      color: var(--ink);
+      font-family: 'Space Grotesk', 'Trebuchet MS', 'Segoe UI', sans-serif;
+      background:
+        radial-gradient(circle at 10% 10%, rgba(108, 182, 255, 0.15), transparent 30%),
+        radial-gradient(circle at 90% 0%, rgba(22, 47, 92, 0.28), transparent 35%),
+        linear-gradient(160deg, var(--bg-top) 0%, var(--bg-bottom) 100%);
     }
+
+    button,
+    input,
+    select,
+    textarea {
+      font-family: inherit;
+    }
+
     .container {
-      background-color: var(--card-bg);
-      padding: 30px;
-      border-radius: 12px;
-      max-width: 900px;
+      max-width: 980px;
       margin: 0 auto;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      padding: 22px;
+      border: 1px solid var(--panel-border);
+      border-radius: 18px;
+      background: var(--panel-bg);
+      box-shadow: 0 14px 30px rgba(6, 12, 24, 0.35);
+      backdrop-filter: blur(2px);
     }
+
+    #settingsForm {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .brand-logo {
+      width: 100%;
+      max-width: 300px;
+      margin: 0 auto;
+      display: block;
+    }
+
     h2 {
       text-align: center;
-      margin-bottom: 20px;
+      color: var(--ink);
+      font-size: clamp(1.65rem, 2.8vw, 2.15rem);
+      letter-spacing: 0.02em;
+      margin-bottom: 2px;
+      text-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
     }
-    /* Drop Zone */
+
     #dropZone {
-      border: 2px dashed var(--border-color);
-      padding: 20px;
+      border: 2.5px dashed #4d5f79;
+      border-radius: 12px;
+      padding: 20px 16px;
       text-align: center;
       cursor: pointer;
-      border-radius: 8px;
-      margin-bottom: 20px;
-      transition: background-color 0.3s ease, border-color 0.3s ease;
+      color: var(--muted);
+      font-weight: 600;
+      letter-spacing: 0.01em;
+      background: linear-gradient(155deg, #1f2a3c 0%, #182233 55%, #121a28 100%);
+      box-shadow: inset 0 0 0 1px rgba(11, 18, 30, 0.85);
+      transition: border-color 0.2s, background 0.2s, box-shadow 0.2s, color 0.2s;
     }
+
     #dropZone.hover {
-      background-color: rgba(0, 0, 0, 0.05);
-      border-color: var(--button-bg);
+      border-color: var(--accent);
+      color: var(--ink);
+      background: rgba(108, 182, 255, 0.14);
+      box-shadow: inset 0 0 0 1px rgba(108, 182, 255, 0.2);
     }
+
     fieldset {
-      border: 1px solid var(--border-color);
-      border-radius: 8px;
-      padding: 15px 20px;
-      margin-bottom: 20px;
+      border: 1px solid var(--panel-border);
+      border-radius: 12px;
+      padding: 14px;
+      background: var(--panel-soft);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
     }
+
     legend {
-      padding: 0 10px;
-      font-weight: bold;
+      padding: 0 8px;
+      color: var(--accent);
+      font-weight: 700;
+      letter-spacing: 0.02em;
     }
+
     label {
       font-size: 0.95rem;
-      cursor: pointer;
+      color: var(--ink);
     }
-    /* Modern dropdown styling */
-    select {
+
+    fieldset > label {
+      display: block;
+    }
+
+    .cardsize-container label {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    .cardsize-container + .cardsize-container {
+      margin-top: 2px;
+    }
+
+    select,
+    input[type="text"] {
       width: 100%;
+      border: 1px solid var(--panel-border);
+      border-radius: 8px;
+      background-color: #232a36;
+      color: var(--ink);
       padding: 8px 12px;
-      margin-top: 5px;
-      border: 1px solid var(--border-color);
-      border-radius: 4px;
-      background-color: var(--card-bg);
-      color: var(--text-color);
-      -webkit-appearance: none;
-      -moz-appearance: none;
+    }
+
+    select {
       appearance: none;
-      background-image: url('data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="%23666" viewBox="0 0 10 10"><path d="M0 2l5 5 5-5z"/></svg>');
+      background-image: url('data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="%236cb6ff" viewBox="0 0 10 10"><path d="M0 2l5 5 5-5z"/></svg>');
       background-repeat: no-repeat;
       background-position: right 10px center;
       background-size: 10px;
+      padding-right: 30px;
     }
-    input[type="text"] {
-      width: 100%;
-      padding: 8px;
-      margin-top: 5px;
-      border: 1px solid var(--border-color);
-      border-radius: 4px;
-      background-color: var(--card-bg);
-      color: var(--text-color);
+
+    input[type="text"]::placeholder {
+      color: var(--muted);
     }
-    /* Modernized checkboxes */
+
     input[type="checkbox"].modern-checkbox {
       appearance: none;
       width: 18px;
@@ -121,70 +167,118 @@
       display: inline-block;
       position: relative;
       cursor: pointer;
-      transition: all 0.2s ease;
+      background: #1a2433;
+      transition: border-color 0.2s, background-color 0.2s;
     }
+
     input[type="checkbox"].modern-checkbox:checked {
-      background-color: var(--checkbox-checked);
-      border-color: var(--checkbox-checked);
+      background-color: var(--accent);
+      border-color: var(--accent);
     }
+
     input[type="checkbox"].modern-checkbox:checked::after {
       content: '✔';
       font-size: 14px;
-      color: white;
+      color: #131b29;
       position: absolute;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -55%);
-      font-weight: bold;
+      font-weight: 700;
     }
-    /* Container for checkbox groups */
+
     .checkbox-container {
       display: flex;
-      justify-content: space-evenly;
       align-items: center;
+      gap: 24px;
+      flex-wrap: wrap;
     }
-    /* Container for dynamically generated bootcard lists */
+
+    .checkbox-container label,
+    .bootcards-container label {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+    }
+
     .bootcards-container {
-      display: flex;
-      justify-content: space-between;
-      gap: 20px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
     }
+
     .bootcards-container > div {
-      flex: 1;
+      border: 1px solid var(--panel-border);
+      border-radius: 10px;
+      background: #20293a;
+      padding: 10px;
     }
+
     .bootcards-container h3 {
       text-align: center;
-      margin-bottom: 10px;
+      color: var(--accent);
+      margin-bottom: 8px;
+      font-size: 1rem;
     }
+
     .bootcards-container ul {
       list-style: none;
       padding-left: 0;
+      max-height: 230px;
+      overflow-y: auto;
     }
-    /* Hide file input */
+
+    .bootcards-container li + li {
+      margin-top: 6px;
+    }
+
     input[type="file"] {
-       display: none;
+      display: none;
     }
+
     button {
-      display: block;
       width: 100%;
-      padding: 12px;
-      background-color: var(--button-bg);
-      color: var(--button-color);
-      border: none;
-      border-radius: 6px;
-      font-size: 1rem;
+      padding: 10px 14px;
+      border: 1px solid transparent;
+      border-radius: 8px;
+      background: var(--accent);
+      color: #131b29;
+      font-size: 0.98rem;
+      font-weight: 700;
       cursor: pointer;
-      transition: background-color 0.3s ease;
+      box-shadow: 0 3px 10px rgba(108, 182, 255, 0.2);
+      transition: background 0.2s, color 0.2s;
     }
+
     button:hover {
-      background-color: var(--button-hover);
+      background: var(--accent-strong);
+      color: #fff;
+    }
+
+    @media (max-width: 760px) {
+      body {
+        padding: 16px 10px 26px;
+      }
+
+      .container {
+        padding: 14px;
+      }
+
+      #dropZone {
+        padding: 16px 12px;
+      }
+
+      .checkbox-container {
+        gap: 14px;
+      }
     }
   </style>
 </head>
 <body>
   <div class="container">
     <form id="settingsForm">
-      <img src="../img/Logo.png" alt="sd2psXtd Logo" style="width: 100%; max-width: 300px; margin: 0 auto; display: block;">
+      <img src="../img/Logo.png" alt="sd2psXtd Logo" class="brand-logo">
       <h2>sd2psXtd SD-Card Generator</h2>
       <!-- Drop zone for importing an INI file -->
       <div id="dropZone">Drag and drop your INI file here, or click to browse.</div>
