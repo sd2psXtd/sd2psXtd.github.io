@@ -1,0 +1,61 @@
+<div class="Header">
+    <!-- Text item -->
+    <div class="Header-item">
+    <a class="Header-link f4 d-flex" href="{{ '/' | relative_url }}">
+      {% if site.title and site.title != page.title %}
+        {{ site.title }}
+      {% endif %}
+    </a>
+    </div>
+    <!-- Form item
+    <div class="Header-item">
+        <input class="form-control Header-input"
+            type="text"/>
+    </div>  -->
+
+    <div class="position-relative d-inline-block">
+        <details class="details-reset details-overlay">
+            <summary class="btn" aria-haspopup="true">
+                <svg class="octicon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
+                    <path fill-rule="evenodd" d="M7.47 10.78a.75.75 0 001.06 0l3.75-3.75a.75.75 0 00-1.06-1.06L8.75 8.44V1.75a.75.75 0 00-1.5 0v6.69L4.78 5.97a.75.75 0 00-1.06 1.06l3.75 3.75zM3.75 13a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5z"></path>
+                  </svg>
+                  <span>Download</span>
+                  <span class="dropdown-caret"></span>
+            </summary>
+            <div class="SelectMenu">
+              <div class="SelectMenu-modal">
+                <div class="SelectMenu-list">
+                  <a class="SelectMenu-item" role="menuitem" href="{{ '/download' | relative_url }}">
+                    Firmware
+                  </a>
+                  <a class="SelectMenu-item" role="menuitem" href="{{ '/exploits' | relative_url }}">
+                    Card Images & Exploits
+                  </a>
+                  <a class="SelectMenu-item" role="menuitem" href="https://github.com/ps2-mmce/Open-PS2-Loader/releases">
+                    OPL for MMCE
+                  </a>
+                  <a class="SelectMenu-item" role="menuitem" href="{{ '/homebrew' | relative_url }}">
+                    Compatible Applications
+                  </a>
+                  <a class="SelectMenu-item" role="menuitem" href="{{ '/splashgen/splashgen.html' | relative_url }}">
+                    Splash Generator
+                  </a>
+                </div>
+              </div>
+            </div>
+          </details>
+    </div>
+    <div style="text-align: right;">
+      <a href="https://discord.gg/QdbNGvc4">
+        <img src="{{ '/img/OpenMCE.png' | relative_url }}" width="4%" alt="OpenMCE">
+      </a>
+    </div>
+
+    <!-- Image item
+    <div class="Header-item">
+        <img class="avatar" height="20"
+            alt="@octocat"
+            src="https://github.com/octocat.png"
+            width="20">
+    </div>  -->
+</div>

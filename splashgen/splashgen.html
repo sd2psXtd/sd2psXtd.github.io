@@ -59,9 +59,9 @@
         <img id="origImg" src="" alt=""
           style="display:block; width:100%; height:100%; object-fit:contain; position:relative; z-index:1;" />
         <canvas id="selectCanvas"
-          style="position:absolute; left:0; top:0; width:100%; height:100%; pointer-events:auto; z-index:2; background:transparent;"></canvas>
+          style="position:absolute; left:0; top:0; width:100%; height:100%; pointer-events:none; z-index:2; background:transparent;"></canvas>
         <div id="dropOverlay"
-          style="display:none; position:absolute; left:0; top:0; width:100%; height:100%; background:rgba(108,182,255,0.10); border-radius:10px; z-index:10; display:flex; align-items:center; justify-content:center; color:#6cb6ff; font-size:1.2em; font-weight:600; pointer-events:none; text-align:center; transition:background 0.2s;">
+          style="display:none; position:absolute; left:0; top:0; width:100%; height:100%; background:rgba(108,182,255,0.10); border-radius:10px; z-index:10; align-items:center; justify-content:center; color:#6cb6ff; font-size:1.2em; font-weight:600; pointer-events:none; text-align:center; transition:background 0.2s;">
           Drop image here</div>
       </div>
 
@@ -144,9 +144,17 @@
       }
     });
 
+    // Mouse/touch accessibility: click to upload before an image is loaded
+    origImgWrap.addEventListener('click', function () {
+      if (!imgLoaded) {
+        imgInput.click();
+      }
+    });
+
     // Keyboard accessibility: allow Enter/Space to trigger file input
     origImgWrap.addEventListener('keydown', function (e) {
       if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
         imgInput.click();
       }
     });
@@ -254,6 +262,81 @@
 
     let imgLoaded = false;
 
+    function getDisplayImageRect() {
+      const boxW = selectCanvas.width || origImg.clientWidth || origImg.offsetWidth || 1;
+      const boxH = selectCanvas.height || origImg.clientHeight || origImg.offsetHeight || 1;
+      const naturalW = origImg.naturalWidth;
+      const naturalH = origImg.naturalHeight;
+
+      if (!naturalW || !naturalH) {
+        return { x: 0, y: 0, w: boxW, h: boxH };
+      }
+
+      const imageAspect = naturalW / naturalH;
+      const boxAspect = boxW / boxH;
+      let drawW;
+      let drawH;
+      let drawX;
+      let drawY;
+
+      if (imageAspect > boxAspect) {
+        drawW = boxW;
+        drawH = boxW / imageAspect;
+        drawX = 0;
+        drawY = (boxH - drawH) / 2;
+      } else {
+        drawH = boxH;
+        drawW = boxH * imageAspect;
+        drawX = (boxW - drawW) / 2;
+        drawY = 0;
+      }
+
+      return { x: drawX, y: drawY, w: drawW, h: drawH };
+    }
+
+    function clampPointToRect(x, y, rect) {
+      return {
+        x: Math.max(rect.x, Math.min(x, rect.x + rect.w)),
+        y: Math.max(rect.y, Math.min(y, rect.y + rect.h))
+      };
+    }
+
+    function pointInRect(x, y, rect) {
+      return (
+        x >= rect.x &&
+        x <= rect.x + rect.w &&
+        y >= rect.y &&
+        y <= rect.y + rect.h
+      );
+    }
+
+    function remapSelectionToNewRect(oldRect, newRect) {
+      if (!selection || oldRect.w <= 0 || oldRect.h <= 0 || newRect.w <= 0 || newRect.h <= 0) {
+        return;
+      }
+
+      const oldX0 = (selection.x - oldRect.x) / oldRect.w;
+      const oldY0 = (selection.y - oldRect.y) / oldRect.h;
+      const oldX1 = (selection.x + selection.w - oldRect.x) / oldRect.w;
+      const oldY1 = (selection.y + selection.h - oldRect.y) / oldRect.h;
+
+      const x0 = Math.max(0, Math.min(1, Math.min(oldX0, oldX1)));
+      const y0 = Math.max(0, Math.min(1, Math.min(oldY0, oldY1)));
+      const x1 = Math.max(0, Math.min(1, Math.max(oldX0, oldX1)));
+      const y1 = Math.max(0, Math.min(1, Math.max(oldY0, oldY1)));
+
+      selection = {
+        x: newRect.x + x0 * newRect.w,
+        y: newRect.y + y0 * newRect.h,
+        w: (x1 - x0) * newRect.w,
+        h: (y1 - y0) * newRect.h
+      };
+
+      if (selection.w < 1 || selection.h < 1) {
+        selection = null;
+      }
+    }
+
 
 
     // --- Main BW update logic ---
@@ -263,22 +346,28 @@
       const origW = origImg.naturalWidth;
       const origH = origImg.naturalHeight;
       let crop = { x: 0, y: 0, w: origW, h: origH };
-      if (selection && origImg.width && origImg.height) {
-        // Map selection from display to natural image coordinates
-        const scaleX = origW / origImg.width;
-        const scaleY = origH / origImg.height;
-        crop = {
-          x: Math.max(0, Math.round(selection.x * scaleX)),
-          y: Math.max(0, Math.round(selection.y * scaleY)),
-          w: Math.max(1, Math.round(selection.w * scaleX)),
-          h: Math.max(1, Math.round(selection.h * scaleY))
-        };
-        // Clamp
-        if (crop.x + crop.w > origW) crop.w = origW - crop.x;
-        if (crop.y + crop.h > origH) crop.h = origH - crop.y;
-        // If selection is too small, fallback to full image
-        if (crop.w < 2 || crop.h < 2) {
-          crop = { x: 0, y: 0, w: origW, h: origH };
+      if (selection && selectCanvas.width && selectCanvas.height) {
+        const imageRect = getDisplayImageRect();
+        const selX0 = Math.max(imageRect.x, selection.x);
+        const selY0 = Math.max(imageRect.y, selection.y);
+        const selX1 = Math.min(imageRect.x + imageRect.w, selection.x + selection.w);
+        const selY1 = Math.min(imageRect.y + imageRect.h, selection.y + selection.h);
+        if (selX1 - selX0 >= 2 && selY1 - selY0 >= 2) {
+          const scaleX = origW / imageRect.w;
+          const scaleY = origH / imageRect.h;
+          crop = {
+            x: Math.max(0, Math.floor((selX0 - imageRect.x) * scaleX)),
+            y: Math.max(0, Math.floor((selY0 - imageRect.y) * scaleY)),
+            w: Math.max(1, Math.ceil((selX1 - selX0) * scaleX)),
+            h: Math.max(1, Math.ceil((selY1 - selY0) * scaleY))
+          };
+          // Clamp
+          if (crop.x + crop.w > origW) crop.w = origW - crop.x;
+          if (crop.y + crop.h > origH) crop.h = origH - crop.y;
+          // If selection is too small, fallback to full image
+          if (crop.w < 2 || crop.h < 2) {
+            crop = { x: 0, y: 0, w: origW, h: origH };
+          }
         }
       }
       // Determine target size based on crop
@@ -389,11 +478,19 @@
     // Error handling for image load
     origImg.onerror = function () {
       imgLoaded = false;
+      isSelecting = false;
+      isDraggingSelection = false;
+      selection = null;
+      selectCanvas.style.pointerEvents = 'none';
+      drawSelection();
       alert('Failed to load image. Please try another file.');
     };
 
     origImg.onload = function () {
 
+      isSelecting = false;
+      isDraggingSelection = false;
+      selection = null;
       imgLoaded = true;
       // Sync overlay size to image
       function syncOverlay() {
@@ -405,6 +502,7 @@
           selectCanvas.style.width = w + 'px';
           selectCanvas.style.height = h + 'px';
           selectCanvas.style.display = '';
+          selectCanvas.style.pointerEvents = 'auto';
           drawSelection();
           updateBW();
         } else {
@@ -445,6 +543,7 @@
       const rect = selectCanvas.getBoundingClientRect();
       const mouseX = Math.max(0, Math.min(e.clientX - rect.left, selectCanvas.width));
       const mouseY = Math.max(0, Math.min(e.clientY - rect.top, selectCanvas.height));
+      const imageRect = getDisplayImageRect();
       // If inside selection, start dragging
       if (selection &&
         mouseX >= selection.x && mouseX <= selection.x + selection.w &&
@@ -452,37 +551,48 @@
         isDraggingSelection = true;
         dragOffset.x = mouseX - selection.x;
         dragOffset.y = mouseY - selection.y;
-      } else {
+      } else if (pointInRect(mouseX, mouseY, imageRect)) {
+        const clampedStart = clampPointToRect(mouseX, mouseY, imageRect);
         isSelecting = true;
         selectStart = {
-          x: mouseX,
-          y: mouseY
+          x: clampedStart.x,
+          y: clampedStart.y
         };
+        selection = null;
+        drawSelection();
+      } else {
+        isSelecting = false;
+        selectStart = null;
       }
     });
 
     selectCanvas.addEventListener('mousemove', function (e) {
+      if (!imgLoaded || (!isDraggingSelection && !isSelecting)) return;
       const rect = selectCanvas.getBoundingClientRect();
-      const x = Math.max(0, Math.min(e.clientX - rect.left, selectCanvas.width));
-      const y = Math.max(0, Math.min(e.clientY - rect.top, selectCanvas.height));
+      const imageRect = getDisplayImageRect();
+      const rawX = Math.max(0, Math.min(e.clientX - rect.left, selectCanvas.width));
+      const rawY = Math.max(0, Math.min(e.clientY - rect.top, selectCanvas.height));
+      const clampedPoint = clampPointToRect(rawX, rawY, imageRect);
       if (isDraggingSelection && selection) {
         // Move selection
-        let newX = x - dragOffset.x;
-        let newY = y - dragOffset.y;
-        // Clamp to canvas
-        newX = Math.max(0, Math.min(newX, selectCanvas.width - selection.w));
-        newY = Math.max(0, Math.min(newY, selectCanvas.height - selection.h));
+        let newX = clampedPoint.x - dragOffset.x;
+        let newY = clampedPoint.y - dragOffset.y;
+        // Clamp to visible image area
+        const maxX = imageRect.x + Math.max(0, imageRect.w - selection.w);
+        const maxY = imageRect.y + Math.max(0, imageRect.h - selection.h);
+        newX = Math.max(imageRect.x, Math.min(newX, maxX));
+        newY = Math.max(imageRect.y, Math.min(newY, maxY));
         selection.x = newX;
         selection.y = newY;
         drawSelection();
-      } else if (isSelecting) {
+      } else if (isSelecting && selectStart) {
         const sx = selectStart.x;
         const sy = selectStart.y;
         selection = {
-          x: Math.min(sx, x),
-          y: Math.min(sy, y),
-          w: Math.abs(x - sx),
-          h: Math.abs(y - sy)
+          x: Math.min(sx, clampedPoint.x),
+          y: Math.min(sy, clampedPoint.y),
+          w: Math.abs(clampedPoint.x - sx),
+          h: Math.abs(clampedPoint.y - sy)
         };
         drawSelection();
       }
@@ -512,11 +622,16 @@
         const w = origImg.offsetWidth;
         const h = origImg.offsetHeight;
         if (w && h) {
+          const oldRect = getDisplayImageRect();
           selectCanvas.width = w;
           selectCanvas.height = h;
           selectCanvas.style.width = w + 'px';
           selectCanvas.style.height = h + 'px';
+          selectCanvas.style.pointerEvents = 'auto';
+          const newRect = getDisplayImageRect();
+          remapSelectionToNewRect(oldRect, newRect);
           drawSelection();
+          updateBW();
         } else {
           requestAnimationFrame(syncOverlayResize);
         }
@@ -589,6 +704,41 @@
     // Firmware UF2 upload and combine logic
     let uploadedFirmwareUf2 = null;
     const firmwareDropzone = document.getElementById('firmwareDropzone');
+    const firmwareDropzoneDefaultText = 'Drop firmware UF2 here or click to select';
+
+    function setUploadedFirmwareUf2(file, arrayBuffer) {
+      const validation = validateUf2ArrayBuffer(arrayBuffer);
+      if (!validation.valid) {
+        throw new Error(validation.error);
+      }
+      uploadedFirmwareUf2 = validation.buffer;
+      firmwareDropzone.textContent = 'Firmware UF2 uploaded: ' + file.name;
+    }
+
+    function loadFirmwareUf2File(file) {
+      if (!file) return;
+      if (!file.name.toLowerCase().endsWith('.uf2')) {
+        alert('Please select a UF2 firmware file.');
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = function (ev) {
+        try {
+          setUploadedFirmwareUf2(file, ev.target.result);
+        } catch (err) {
+          uploadedFirmwareUf2 = null;
+          firmwareDropzone.textContent = firmwareDropzoneDefaultText;
+          alert('Invalid UF2 file: ' + err.message);
+        }
+      };
+      reader.onerror = function () {
+        uploadedFirmwareUf2 = null;
+        firmwareDropzone.textContent = firmwareDropzoneDefaultText;
+        alert('Failed to read UF2 file.');
+      };
+      reader.readAsArrayBuffer(file);
+    }
+
     firmwareDropzone.addEventListener('dragover', function(e) {
       e.preventDefault();
       firmwareDropzone.style.borderColor = '#2d8cf0';
@@ -603,17 +753,7 @@
       firmwareDropzone.style.borderColor = '#6cb6ff';
       firmwareDropzone.style.background = '#232a36';
       if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-        const file = e.dataTransfer.files[0];
-        if (!file.name.endsWith('.uf2')) {
-          alert('Please drop a UF2 firmware file.');
-          return;
-        }
-        const reader = new FileReader();
-        reader.onload = function(ev) {
-          uploadedFirmwareUf2 = ev.target.result;
-          firmwareDropzone.textContent = 'Firmware UF2 uploaded: ' + file.name;
-        };
-        reader.readAsArrayBuffer(file);
+        loadFirmwareUf2File(e.dataTransfer.files[0]);
       }
     });
     // Optional: click to select file
@@ -624,17 +764,9 @@
       input.style.display = 'none';
       input.onchange = function(e) {
         const file = e.target.files[0];
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = function(ev) {
-          uploadedFirmwareUf2 = ev.target.result;
-          firmwareDropzone.textContent = 'Firmware UF2 uploaded: ' + file.name;
-        };
-        reader.readAsArrayBuffer(file);
+        loadFirmwareUf2File(file);
       };
-      document.body.appendChild(input);
       input.click();
-      setTimeout(() => document.body.removeChild(input), 1000);
     });
 
     document.getElementById('downloadCombinedBtn').addEventListener('click', function() {
@@ -649,19 +781,23 @@
       full.set(bin, colorTable.length);
       const logoUf2 = payloadToUf2(full.buffer);
 
-      // Merge using uf2.js
-      const merged = mergeUf2Files(uploadedFirmwareUf2, logoUf2.buffer);
-      const blob = new Blob([merged], { type: 'application/octet-stream' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'combined.uf2';
-      document.body.appendChild(a);
-      a.click();
-      setTimeout(() => {
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-      }, 100);
+      try {
+        // Merge using uf2.js
+        const merged = mergeUf2Files(uploadedFirmwareUf2, logoUf2.buffer);
+        const blob = new Blob([merged], { type: 'application/octet-stream' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'combined.uf2';
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(() => {
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+        }, 100);
+      } catch (err) {
+        alert('Failed to merge UF2 files: ' + err.message);
+      }
     });
 
   </script>
