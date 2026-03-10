@@ -211,26 +211,48 @@
       }
     }
 
-    // --- Drag and drop image loading for origImgWrap ---
-    origImgWrap.addEventListener('dragover', function (e) {
-      e.preventDefault();
-      dropOverlay.style.display = 'flex';
+    let imageDragDepth = 0;
+
+    function setImageDragOverlayActive(active) {
+      dropOverlay.style.display = active ? 'flex' : 'none';
+      if (active) {
+        origImgWrap.style.borderColor = '#2d8cf0';
+        origImgWrap.style.background = 'rgba(108, 182, 255, 0.14)';
+      } else {
+        origImgWrap.style.borderColor = '';
+        origImgWrap.style.background = '';
+      }
       syncImageDropHint();
-      origImgWrap.style.borderColor = '#2d8cf0';
-      origImgWrap.style.background = 'rgba(108, 182, 255, 0.14)';
+    }
+
+    function dragHasFiles(e) {
+      if (!e.dataTransfer || !e.dataTransfer.types) return false;
+      return Array.from(e.dataTransfer.types).includes('Files');
+    }
+
+    // --- Drag and drop image loading for origImgWrap ---
+    origImgWrap.addEventListener('dragenter', function (e) {
+      if (!dragHasFiles(e)) return;
+      e.preventDefault();
+      imageDragDepth += 1;
+      setImageDragOverlayActive(true);
+    });
+    origImgWrap.addEventListener('dragover', function (e) {
+      if (!dragHasFiles(e)) return;
+      e.preventDefault();
+      setImageDragOverlayActive(true);
     });
     origImgWrap.addEventListener('dragleave', function (e) {
-      dropOverlay.style.display = 'none';
-      syncImageDropHint();
-      origImgWrap.style.borderColor = '';
-      origImgWrap.style.background = '';
+      if (!dragHasFiles(e)) return;
+      imageDragDepth = Math.max(0, imageDragDepth - 1);
+      if (imageDragDepth === 0) {
+        setImageDragOverlayActive(false);
+      }
     });
     origImgWrap.addEventListener('drop', function (e) {
       e.preventDefault();
-      dropOverlay.style.display = 'none';
-      syncImageDropHint();
-      origImgWrap.style.borderColor = '';
-      origImgWrap.style.background = '';
+      imageDragDepth = 0;
+      setImageDragOverlayActive(false);
       if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
         const file = e.dataTransfer.files[0];
         if (!file.type.startsWith('image/')) {
@@ -244,12 +266,14 @@
         reader.readAsDataURL(file);
       }
     });
+    origImgWrap.addEventListener('dragend', function () {
+      imageDragDepth = 0;
+      setImageDragOverlayActive(false);
+    });
 
-    // Mouse/touch accessibility: click to upload before an image is loaded
+    // Mouse/touch accessibility: click to upload or replace image
     origImgWrap.addEventListener('click', function () {
-      if (!imgLoaded) {
-        imgInput.click();
-      }
+      imgInput.click();
     });
 
     // Keyboard accessibility: allow Enter/Space to trigger file input
