@@ -15,32 +15,75 @@
   <input type="file" id="imgInput" accept="image/*" aria-label="Upload image" style="display:none;">
 
   <div class="controls">
-  <div style="display:flex; flex-direction:column; gap:8px; width:100%; max-width:700px;">
+    <div style="display:flex; flex-direction:column; gap:10px; width:100%; max-width:760px;">
+      <div style="display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
+        <span style="font-weight:600; color:#6cb6ff; min-width:90px;">Controls</span>
+        <label style="display:flex; align-items:center; gap:6px;">
+          <input type="radio" name="uiMode" id="modeSimple" value="simple" checked>
+          <span>Simple</span>
+        </label>
+        <label style="display:flex; align-items:center; gap:6px;">
+          <input type="radio" name="uiMode" id="modeAdvanced" value="advanced">
+          <span>Advanced</span>
+        </label>
+      </div>
+
       <div style="display:flex; align-items:center; gap:18px; flex-wrap:wrap;">
-        <span style="font-weight:600; color:#6cb6ff; min-width:90px;">Threshold</span>
-        <input type="range" id="threshSlider" min="0" max="255" value="128" style="width: 200px;"
+        <span style="font-weight:600; color:#6cb6ff; min-width:120px;">Threshold</span>
+        <input type="range" id="threshSlider" min="0" max="255" value="128" style="width: 220px;"
           title="Set the threshold for black/white conversion (0=black, 255=white)">
         <span id="threshVal" style="min-width:36px; color:#2d8cf0; font-weight:600;">128</span>
+        <span id="effectiveThreshNote" style="font-size:0.9em; color:#a7b7ca;">(manual)</span>
       </div>
-      <div style="font-weight:600; color:#6cb6ff; margin-top:8px;">Grayscale Weights</div>
-      <div style="display:flex; align-items:center; gap:18px; flex-wrap:wrap;">
-        <label title="Red channel weight (auto-normalized)">R
-          <input type="range" id="rSlider" min="0" max="1" step="0.01" value="0.299"
-            style="width: 100px; margin-left:6px;">
-          <span id="rVal" style="min-width:36px; color:#ff6b6b; font-weight:600;">0.299</span>
-        </label>
-        <label title="Green channel weight (auto-normalized)">G
-          <input type="range" id="gSlider" min="0" max="1" step="0.01" value="0.587"
-            style="width: 100px; margin-left:6px;">
-          <span id="gVal" style="min-width:36px; color:#51fa7b; font-weight:600;">0.587</span>
-        </label>
-        <label title="Blue channel weight (auto-normalized)">B
-          <input type="range" id="bSlider" min="0" max="1" step="0.01" value="0.114"
-            style="width: 100px; margin-left:6px;">
-          <span id="bVal" style="min-width:36px; color:#6cb6ff; font-weight:600;">0.114</span>
-        </label>
-        <span style="font-size: 0.9em; color: #aaa; margin-left:10px;">(weights auto-normalized)</span>
+
+      <div id="advancedControls" style="display:none; flex-direction:column; gap:10px; border:1px solid #3a4252; border-radius:8px; padding:10px 12px; background:#1d2330;">
+        <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+          <label for="thresholdMethod" style="font-weight:600; color:#6cb6ff;">Threshold Method</label>
+          <select id="thresholdMethod" style="background:#232a36; color:#e3e6eb; border:1px solid #3a4252; border-radius:6px; padding:4px 8px;">
+            <option value="manual" selected>Manual (Global)</option>
+            <option value="otsu">Auto (Otsu Global)</option>
+            <option value="adaptive">Adaptive (Local Mean)</option>
+          </select>
+          <label style="display:flex; align-items:center; gap:6px;">
+            <input type="checkbox" id="invertToggle">
+            <span>Invert Output</span>
+          </label>
+        </div>
+
+        <div id="adaptiveControls" style="display:none; flex-direction:column; gap:8px;">
+          <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+            <span style="font-weight:600; color:#6cb6ff; min-width:120px;">Local Window</span>
+            <input type="range" id="adaptiveWindowSlider" min="3" max="31" step="2" value="15" style="width:170px;">
+            <span id="adaptiveWindowVal" style="min-width:30px; color:#2d8cf0; font-weight:600;">15</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+            <span style="font-weight:600; color:#6cb6ff; min-width:120px;">Adaptive Bias</span>
+            <input type="range" id="adaptiveBiasSlider" min="-64" max="64" step="1" value="0" style="width:170px;">
+            <span id="adaptiveBiasVal" style="min-width:36px; color:#2d8cf0; font-weight:600;">0</span>
+          </div>
+        </div>
+
+        <div style="font-weight:600; color:#6cb6ff;">Grayscale Weights</div>
+        <div style="display:flex; align-items:center; gap:18px; flex-wrap:wrap;">
+          <label title="Red channel weight (auto-normalized)">R
+            <input type="range" id="rSlider" min="0" max="1" step="0.01" value="0.299"
+              style="width: 100px; margin-left:6px;">
+            <span id="rVal" style="min-width:36px; color:#ff6b6b; font-weight:600;">0.299</span>
+          </label>
+          <label title="Green channel weight (auto-normalized)">G
+            <input type="range" id="gSlider" min="0" max="1" step="0.01" value="0.587"
+              style="width: 100px; margin-left:6px;">
+            <span id="gVal" style="min-width:36px; color:#51fa7b; font-weight:600;">0.587</span>
+          </label>
+          <label title="Blue channel weight (auto-normalized)">B
+            <input type="range" id="bSlider" min="0" max="1" step="0.01" value="0.114"
+              style="width: 100px; margin-left:6px;">
+            <span id="bVal" style="min-width:36px; color:#6cb6ff; font-weight:600;">0.114</span>
+          </label>
+          <span style="font-size: 0.9em; color: #aaa; margin-left:10px;">(weights auto-normalized)</span>
+        </div>
       </div>
+
       <div style="display:flex; justify-content:flex-end; margin-top:4px; gap:10px;">
         <button id="resetBtn"
           style="padding:5px 18px; border-radius:7px; background:#232a36; color:#e3e6eb; border:1.5px solid #3a4252; font-weight:600; cursor:pointer;">Reset</button>
@@ -84,7 +127,6 @@
 
     </div>
   </div>
-  </div>
   <div style="max-width:900px; margin: 28px auto 0 auto; width: 98vw;">
     <label for="cArrayBox" style="font-weight:600; color:#6cb6ff; margin-bottom:6px; display:block;">C Header
       Array:</label>
@@ -103,8 +145,19 @@
 
     const bwCanvas = document.getElementById('bwCanvas');
     const bwCtx = bwCanvas.getContext('2d');
+    const modeSimple = document.getElementById('modeSimple');
+    const modeAdvanced = document.getElementById('modeAdvanced');
+    const advancedControls = document.getElementById('advancedControls');
     const threshSlider = document.getElementById('threshSlider');
     const threshVal = document.getElementById('threshVal');
+    const effectiveThreshNote = document.getElementById('effectiveThreshNote');
+    const thresholdMethod = document.getElementById('thresholdMethod');
+    const adaptiveControls = document.getElementById('adaptiveControls');
+    const adaptiveWindowSlider = document.getElementById('adaptiveWindowSlider');
+    const adaptiveWindowVal = document.getElementById('adaptiveWindowVal');
+    const adaptiveBiasSlider = document.getElementById('adaptiveBiasSlider');
+    const adaptiveBiasVal = document.getElementById('adaptiveBiasVal');
+    const invertToggle = document.getElementById('invertToggle');
     const rSlider = document.getElementById('rSlider');
     const gSlider = document.getElementById('gSlider');
     const bSlider = document.getElementById('bSlider');
@@ -160,12 +213,44 @@
     });
 
 
+    function getActiveThresholdMode() {
+      if (!modeAdvanced.checked) {
+        return 'manual';
+      }
+      return thresholdMethod.value;
+    }
+
+    function updateConversionModeUI() {
+      const advancedEnabled = modeAdvanced.checked;
+      advancedControls.style.display = advancedEnabled ? 'flex' : 'none';
+      const activeMode = getActiveThresholdMode();
+      adaptiveControls.style.display = (advancedEnabled && activeMode === 'adaptive') ? 'flex' : 'none';
+
+      const manualMode = activeMode === 'manual';
+      threshSlider.disabled = !manualMode;
+      threshSlider.style.opacity = manualMode ? '1' : '0.55';
+
+      if (activeMode === 'manual') {
+        effectiveThreshNote.textContent = '(manual)';
+      } else if (activeMode === 'otsu') {
+        effectiveThreshNote.textContent = '(auto: Otsu)';
+      } else {
+        effectiveThreshNote.textContent = '(auto: adaptive)';
+      }
+    }
+
     // Reset controls to default values
     document.getElementById('resetBtn').addEventListener('click', function () {
+      modeSimple.checked = true;
       threshSlider.value = 128;
+      thresholdMethod.value = 'manual';
+      adaptiveWindowSlider.value = 15;
+      adaptiveBiasSlider.value = 0;
+      invertToggle.checked = false;
       rSlider.value = 0.299;
       gSlider.value = 0.587;
       bSlider.value = 0.114;
+      updateConversionModeUI();
       updateLabels();
       updateBW();
     });
@@ -337,6 +422,116 @@
       }
     }
 
+    function computeOtsuThreshold(grayValues) {
+      const histogram = new Uint32Array(256);
+      for (let i = 0; i < grayValues.length; ++i) {
+        histogram[grayValues[i]]++;
+      }
+
+      const total = grayValues.length;
+      let sum = 0;
+      for (let i = 0; i < 256; ++i) {
+        sum += i * histogram[i];
+      }
+
+      let sumBackground = 0;
+      let weightBackground = 0;
+      let bestVariance = -1;
+      let bestThreshold = 128;
+
+      for (let t = 0; t < 256; ++t) {
+        weightBackground += histogram[t];
+        if (weightBackground === 0) continue;
+
+        const weightForeground = total - weightBackground;
+        if (weightForeground === 0) break;
+
+        sumBackground += t * histogram[t];
+        const meanBackground = sumBackground / weightBackground;
+        const meanForeground = (sum - sumBackground) / weightForeground;
+        const betweenClassVariance = weightBackground * weightForeground * (meanBackground - meanForeground) * (meanBackground - meanForeground);
+
+        if (betweenClassVariance > bestVariance) {
+          bestVariance = betweenClassVariance;
+          bestThreshold = t;
+        }
+      }
+
+      return bestThreshold;
+    }
+
+    function computeAdaptiveBinary(grayValues, width, height, windowSize, bias) {
+      const binary = new Uint8Array(grayValues.length);
+      const stride = width + 1;
+      const integral = new Float64Array((height + 1) * stride);
+
+      for (let y = 1; y <= height; ++y) {
+        let rowSum = 0;
+        for (let x = 1; x <= width; ++x) {
+          rowSum += grayValues[(y - 1) * width + (x - 1)];
+          integral[y * stride + x] = integral[(y - 1) * stride + x] + rowSum;
+        }
+      }
+
+      const radius = Math.floor(windowSize / 2);
+      for (let y = 0; y < height; ++y) {
+        const y0 = Math.max(0, y - radius);
+        const y1 = Math.min(height - 1, y + radius);
+        for (let x = 0; x < width; ++x) {
+          const x0 = Math.max(0, x - radius);
+          const x1 = Math.min(width - 1, x + radius);
+          const idx = y * width + x;
+
+          const iA = y0 * stride + x0;
+          const iB = y0 * stride + (x1 + 1);
+          const iC = (y1 + 1) * stride + x0;
+          const iD = (y1 + 1) * stride + (x1 + 1);
+
+          const sum = integral[iD] - integral[iB] - integral[iC] + integral[iA];
+          const count = (x1 - x0 + 1) * (y1 - y0 + 1);
+          const localThreshold = (sum / count) + bias;
+          binary[idx] = grayValues[idx] >= localThreshold ? 255 : 0;
+        }
+      }
+
+      return binary;
+    }
+
+    function binarizeGrayscale(grayValues, width, height) {
+      const mode = getActiveThresholdMode();
+      const invert = modeAdvanced.checked && invertToggle.checked;
+      let binary;
+
+      if (mode === 'adaptive') {
+        let windowSize = parseInt(adaptiveWindowSlider.value, 10);
+        if (windowSize % 2 === 0) {
+          windowSize += 1;
+        }
+        const bias = parseInt(adaptiveBiasSlider.value, 10);
+        binary = computeAdaptiveBinary(grayValues, width, height, windowSize, bias);
+        effectiveThreshNote.textContent = `(adaptive: w${windowSize}, b${bias})`;
+      } else {
+        const threshold = mode === 'otsu' ? computeOtsuThreshold(grayValues) : parseInt(threshSlider.value, 10);
+        binary = new Uint8Array(grayValues.length);
+        for (let i = 0; i < grayValues.length; ++i) {
+          binary[i] = grayValues[i] >= threshold ? 255 : 0;
+        }
+        if (mode === 'otsu') {
+          effectiveThreshNote.textContent = `(auto: Otsu=${threshold})`;
+        } else {
+          effectiveThreshNote.textContent = `(manual: ${threshold})`;
+        }
+      }
+
+      if (invert) {
+        for (let i = 0; i < binary.length; ++i) {
+          binary[i] = 255 - binary[i];
+        }
+      }
+
+      return binary;
+    }
+
 
 
     // --- Main BW update logic ---
@@ -404,18 +599,39 @@
       // Get image data from temp
       const imgData = tempCtx.getImageData(0, 0, drawW, drawH);
       const data = imgData.data;
-      // Normalize weights
-      let rW = parseFloat(rSlider.value);
-      let gW = parseFloat(gSlider.value);
-      let bW = parseFloat(bSlider.value);
-      const sum = rW + gW + bW;
-      rW /= sum; gW /= sum; bW /= sum;
-      // Convert to grayscale and apply threshold
-      const threshold = parseInt(threshSlider.value);
-      for (let i = 0; i < data.length; i += 4) {
+
+      // Normalize grayscale weights
+      let rW = 0.299;
+      let gW = 0.587;
+      let bW = 0.114;
+      if (modeAdvanced.checked) {
+        rW = parseFloat(rSlider.value);
+        gW = parseFloat(gSlider.value);
+        bW = parseFloat(bSlider.value);
+        const sum = rW + gW + bW;
+        if (sum > 0) {
+          rW /= sum;
+          gW /= sum;
+          bW /= sum;
+        } else {
+          rW = 0.299;
+          gW = 0.587;
+          bW = 0.114;
+        }
+      }
+
+      // Convert to grayscale, then apply the selected threshold strategy.
+      const grayValues = new Uint8Array(drawW * drawH);
+      for (let p = 0, i = 0; p < grayValues.length; ++p, i += 4) {
         const avg = rW * data[i] + gW * data[i + 1] + bW * data[i + 2];
-        const bw = avg >= threshold ? 255 : 0;
+        grayValues[p] = Math.max(0, Math.min(255, Math.round(avg)));
+      }
+
+      const binaryValues = binarizeGrayscale(grayValues, drawW, drawH);
+      for (let i = 0; i < data.length; i += 4) {
+        const bw = binaryValues[i / 4];
         data[i] = data[i + 1] = data[i + 2] = bw;
+        data[i + 3] = 255;
       }
       tempCtx.putImageData(imgData, 0, 0);
 
@@ -532,6 +748,8 @@
     }
     function updateLabels() {
       threshVal.textContent = threshSlider.value;
+      adaptiveWindowVal.textContent = adaptiveWindowSlider.value;
+      adaptiveBiasVal.textContent = adaptiveBiasSlider.value;
       rVal.textContent = parseFloat(rSlider.value).toFixed(3);
       gVal.textContent = parseFloat(gSlider.value).toFixed(3);
       bVal.textContent = parseFloat(bSlider.value).toFixed(3);
@@ -641,6 +859,45 @@
     // (Selection overlay removed)
 
 
+    modeSimple.addEventListener('change', function () {
+      if (modeSimple.checked) {
+        updateConversionModeUI();
+        updateLabels();
+        updateBW();
+      }
+    });
+    modeAdvanced.addEventListener('change', function () {
+      if (modeAdvanced.checked) {
+        updateConversionModeUI();
+        updateLabels();
+        updateBW();
+      }
+    });
+    thresholdMethod.addEventListener('change', function () {
+      updateConversionModeUI();
+      updateLabels();
+      updateBW();
+    });
+    invertToggle.addEventListener('change', function () {
+      updateBW();
+    });
+    adaptiveWindowSlider.addEventListener('input', function () {
+      adaptiveWindowVal.textContent = adaptiveWindowSlider.value;
+      updateBW();
+    });
+    adaptiveBiasSlider.addEventListener('input', function () {
+      adaptiveBiasVal.textContent = adaptiveBiasSlider.value;
+      updateBW();
+    });
+    adaptiveWindowSlider.addEventListener('change', function () {
+      updateLabels();
+      updateBW();
+    });
+    adaptiveBiasSlider.addEventListener('change', function () {
+      updateLabels();
+      updateBW();
+    });
+
     // Update labels live as the slider moves
     threshSlider.addEventListener('input', function () {
       threshVal.textContent = threshSlider.value;
@@ -677,6 +934,7 @@
       updateBW();
     });
 
+    updateConversionModeUI();
     updateLabels();
 
     // Download UF2 handler
