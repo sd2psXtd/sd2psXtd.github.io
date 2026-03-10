@@ -64,6 +64,7 @@
     .brand-logo {
       width: 100%;
       max-width: 300px;
+      height: auto;
       margin: 0 auto;
       display: block;
     }
@@ -278,7 +279,7 @@
 <body>
   <div class="container">
     <form id="settingsForm">
-      <img src="../img/Logo.png" alt="sd2psXtd Logo" class="brand-logo">
+      <img id="brandLogo" src="../img/Logo.png" alt="sd2psXtd Logo" class="brand-logo" data-fallback-srcs="/img/Logo.png,img/Logo.png,./img/Logo.png">
       <h2>sd2psXtd SD-Card Generator</h2>
       <!-- Drop zone for importing an INI file -->
       <div id="dropZone">Drag and drop your INI file here, or click to browse.</div>
@@ -405,6 +406,22 @@
     let ps1EMap = {};
     let ps2Map = {};
     let arcadeMap = {};
+
+    const brandLogo = document.getElementById('brandLogo');
+    if (brandLogo) {
+      const fallbackRaw = (brandLogo.getAttribute('data-fallback-srcs') || "")
+        .split(',')
+        .map(s => s.trim())
+        .filter(Boolean);
+      const candidates = Array.from(new Set([brandLogo.getAttribute('src'), ...fallbackRaw].filter(Boolean)));
+      let candidateIndex = 0;
+      brandLogo.addEventListener('error', () => {
+        candidateIndex += 1;
+        if (candidateIndex < candidates.length) {
+          brandLogo.src = candidates[candidateIndex];
+        }
+      });
+    }
 
     // Load JSON mapping files
     Promise.all([
