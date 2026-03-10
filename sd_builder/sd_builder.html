@@ -369,9 +369,20 @@
 
     const bootcardBaseUrl = "./";
 
+    async function fetchBootcardBlob(fileUrl) {
+      const response = await fetch(fileUrl);
+      if (!response.ok) throw new Error(`Failed to fetch ${fileUrl}`);
+      return response.blob();
+    }
+
+    function formatBuildErrors(errors) {
+      return errors.map((err, index) => `${index + 1}. ${err}`).join("\n");
+    }
+
     async function generateINI() {
       const form = document.getElementById('settingsForm');
       let iniContent = "";
+      const buildErrors = [];
       const sections = {
         General: ['FlippedScreen', 'Mode'],
         PS1: ['PS1_Autoboot', 'PS1_GameID'],
@@ -432,15 +443,16 @@
           if (filename) {
             const fileUrl = bootcardBaseUrl + filename;
             try {
-              const response = await fetch(fileUrl);
-              if (!response.ok) throw new Error(`Failed to fetch ${fileUrl}`);
-              const fileData = await response.blob();
+              const fileData = await fetchBootcardBlob(fileUrl);
               zip.file("MemoryCards/PS1/BOOT/BootCard-" + (i + 1) + ".mcd", fileData);
             } catch (err) {
               console.error(err);
+              buildErrors.push(`PS1 bootcard "${key}" could not be loaded.`);
             }
           } else {
-            console.warn(`No file mapping found for bootcard key: ${key}`);
+            const message = `No file mapping found for PS1 bootcard key: ${key}`;
+            console.warn(message);
+            buildErrors.push(message);
           }
         }
       }
@@ -474,15 +486,16 @@
             if (filename) {
               const fileUrl = bootcardBaseUrl + filename;
               try {
-                const response = await fetch(fileUrl);
-                if (!response.ok) throw new Error(`Failed to fetch ${fileUrl}`);
-                const fileData = await response.blob();
+                const fileData = await fetchBootcardBlob(fileUrl);
                 zip.file("MemoryCards/PS2/BOOT/BootCard-" + (i + 1) + ".mcd", fileData);
               } catch (err) {
                 console.error(err);
+                buildErrors.push(`PS2 bootcard "${key}" could not be loaded.`);
               }
             } else {
-              console.warn(`No file mapping found for PS2 bootcard key: ${key}`);
+              const message = `No file mapping found for PS2 bootcard key: ${key}`;
+              console.warn(message);
+              buildErrors.push(message);
             }
           }
         }
@@ -508,15 +521,16 @@
             if (filename) {
               const fileUrl = bootcardBaseUrl + filename;
               try {
-                const response = await fetch(fileUrl);
-                if (!response.ok) throw new Error(`Failed to fetch ${fileUrl}`);
-                const fileData = await response.blob();
+                const fileData = await fetchBootcardBlob(fileUrl);
                 zip.file("MemoryCards/COH/BOOT/BootCard-" + (i + 1) + ".mcd", fileData);
               } catch (err) {
                 console.error(err);
+                buildErrors.push(`Arcade bootcard "${key}" could not be loaded.`);
               }
             } else {
-              console.warn(`No file mapping found for arcade bootcard key: ${key}`);
+              const message = `No file mapping found for arcade bootcard key: ${key}`;
+              console.warn(message);
+              buildErrors.push(message);
             }
           }
         }
@@ -532,13 +546,23 @@
         console.error("Invalid CIV hex string. After cleaning, it must contain exactly 16 hex digits.");
       }
 
+      if (buildErrors.length > 0) {
+        alert("ZIP generation aborted due to missing bootcard files:\n\n" + formatBuildErrors(buildErrors));
+        return;
+      }
+
       zip.generateAsync({ type: "blob" }).then(content => {
         const a = document.createElement("a");
-        a.href = URL.createObjectURL(content);
+        const objectUrl = URL.createObjectURL(content);
+        a.href = objectUrl;
         a.download = "settings.zip";
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
+        setTimeout(() => URL.revokeObjectURL(objectUrl), 0);
+      }).catch(err => {
+        console.error("Failed to generate ZIP:", err);
+        alert("Failed to generate ZIP file. Please try again.");
       });
     }
 
@@ -584,11 +608,19 @@
       }
     });
 
+    function isSupportedIniFile(file) {
+      const name = (file && file.name ? file.name : "").toLowerCase();
+      return name.endsWith(".ini") || name.endsWith(".txt");
+    }
+
     function handleFile(file) {
+      if (!isSupportedIniFile(file)) {
+        alert("Please choose an INI or TXT file.");
+        return;
+      }
       const reader = new FileReader();
       reader.onload = function(e) {
         const content = e.target.result;
-        console.log("INI file content:", content);
         dropZone.textContent = file.name;
         parseINI(content);
       };
