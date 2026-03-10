@@ -35,6 +35,12 @@
         <span id="threshVal" style="min-width:36px; color:#2d8cf0; font-weight:600;">128</span>
         <span id="effectiveThreshNote" style="font-size:0.9em; color:#a7b7ca;">(manual)</span>
       </div>
+      <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+        <span style="font-weight:600; color:#6cb6ff; min-width:120px;">Histogram</span>
+        <canvas id="histogramCanvas" width="256" height="80"
+          style="width:256px; height:80px; border:1px solid #3a4252; border-radius:6px; background:#141925;"></canvas>
+        <span id="histogramLegend" style="font-size:0.9em; color:#a7b7ca;">(cyan line = active threshold)</span>
+      </div>
 
       <div id="advancedControls" style="display:none; flex-direction:column; gap:10px; border:1px solid #3a4252; border-radius:8px; padding:10px 12px; background:#1d2330;">
         <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
@@ -48,6 +54,34 @@
             <input type="checkbox" id="invertToggle">
             <span>Invert Output</span>
           </label>
+        </div>
+
+        <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+          <label for="ditherMode" style="font-weight:600; color:#6cb6ff;">Dithering</label>
+          <select id="ditherMode" style="background:#232a36; color:#e3e6eb; border:1px solid #3a4252; border-radius:6px; padding:4px 8px;">
+            <option value="none" selected>None</option>
+            <option value="floyd">Floyd-Steinberg</option>
+            <option value="bayer4">Bayer 4x4</option>
+          </select>
+        </div>
+
+        <div style="display:flex; flex-direction:column; gap:8px;">
+          <div style="font-weight:600; color:#6cb6ff;">Input Levels</div>
+          <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+            <span style="font-weight:600; color:#6cb6ff; min-width:120px;">Black Point</span>
+            <input type="range" id="levelsBlackSlider" min="0" max="254" step="1" value="0" style="width:170px;">
+            <span id="levelsBlackVal" style="min-width:36px; color:#2d8cf0; font-weight:600;">0</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+            <span style="font-weight:600; color:#6cb6ff; min-width:120px;">White Point</span>
+            <input type="range" id="levelsWhiteSlider" min="1" max="255" step="1" value="255" style="width:170px;">
+            <span id="levelsWhiteVal" style="min-width:36px; color:#2d8cf0; font-weight:600;">255</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+            <span style="font-weight:600; color:#6cb6ff; min-width:120px;">Gamma</span>
+            <input type="range" id="levelsGammaSlider" min="0.2" max="3.0" step="0.05" value="1.00" style="width:170px;">
+            <span id="levelsGammaVal" style="min-width:44px; color:#2d8cf0; font-weight:600;">1.00</span>
+          </div>
         </div>
 
         <div id="adaptiveControls" style="display:none; flex-direction:column; gap:8px;">
@@ -151,8 +185,18 @@
     const threshSlider = document.getElementById('threshSlider');
     const threshVal = document.getElementById('threshVal');
     const effectiveThreshNote = document.getElementById('effectiveThreshNote');
+    const histogramCanvas = document.getElementById('histogramCanvas');
+    const histogramCtx = histogramCanvas.getContext('2d');
+    const histogramLegend = document.getElementById('histogramLegend');
     const thresholdMethod = document.getElementById('thresholdMethod');
     const adaptiveControls = document.getElementById('adaptiveControls');
+    const ditherMode = document.getElementById('ditherMode');
+    const levelsBlackSlider = document.getElementById('levelsBlackSlider');
+    const levelsBlackVal = document.getElementById('levelsBlackVal');
+    const levelsWhiteSlider = document.getElementById('levelsWhiteSlider');
+    const levelsWhiteVal = document.getElementById('levelsWhiteVal');
+    const levelsGammaSlider = document.getElementById('levelsGammaSlider');
+    const levelsGammaVal = document.getElementById('levelsGammaVal');
     const adaptiveWindowSlider = document.getElementById('adaptiveWindowSlider');
     const adaptiveWindowVal = document.getElementById('adaptiveWindowVal');
     const adaptiveBiasSlider = document.getElementById('adaptiveBiasSlider');
@@ -230,6 +274,10 @@
       threshSlider.disabled = !manualMode;
       threshSlider.style.opacity = manualMode ? '1' : '0.55';
 
+      const ditherDisabled = !advancedEnabled || activeMode === 'adaptive';
+      ditherMode.disabled = ditherDisabled;
+      ditherMode.style.opacity = ditherDisabled ? '0.55' : '1';
+
       if (activeMode === 'manual') {
         effectiveThreshNote.textContent = '(manual)';
       } else if (activeMode === 'otsu') {
@@ -244,6 +292,10 @@
       modeSimple.checked = true;
       threshSlider.value = 128;
       thresholdMethod.value = 'manual';
+      ditherMode.value = 'none';
+      levelsBlackSlider.value = 0;
+      levelsWhiteSlider.value = 255;
+      levelsGammaSlider.value = 1.00;
       adaptiveWindowSlider.value = 15;
       adaptiveBiasSlider.value = 0;
       invertToggle.checked = false;
@@ -460,10 +512,163 @@
       return bestThreshold;
     }
 
+    function clampByte(value) {
+      return Math.max(0, Math.min(255, value));
+    }
+
+    function normalizeLevelsInputs(changedControl) {
+      let black = parseInt(levelsBlackSlider.value, 10);
+      let white = parseInt(levelsWhiteSlider.value, 10);
+
+      if (black >= white) {
+        if (changedControl === 'black') {
+          white = Math.min(255, black + 1);
+          if (white <= black) {
+            black = 254;
+            white = 255;
+          }
+        } else {
+          black = Math.max(0, white - 1);
+          if (black >= white) {
+            black = 0;
+            white = 1;
+          }
+        }
+        levelsBlackSlider.value = black;
+        levelsWhiteSlider.value = white;
+      }
+
+      return { black: black, white: white };
+    }
+
+    function applyInputLevels(grayValues) {
+      if (!modeAdvanced.checked) {
+        return grayValues;
+      }
+
+      const normalized = normalizeLevelsInputs();
+      const black = normalized.black;
+      const white = normalized.white;
+      const gamma = Math.max(0.2, parseFloat(levelsGammaSlider.value));
+      const span = Math.max(1, white - black);
+      const invSpan = 1 / span;
+      const out = new Uint8Array(grayValues.length);
+
+      for (let i = 0; i < grayValues.length; ++i) {
+        let value = (grayValues[i] - black) * invSpan;
+        if (value < 0) value = 0;
+        if (value > 1) value = 1;
+        const corrected = Math.pow(value, 1 / gamma);
+        out[i] = Math.round(corrected * 255);
+      }
+
+      return out;
+    }
+
+    function drawHistogram(grayValues, markerThreshold, markerLabel) {
+      const width = histogramCanvas.width;
+      const height = histogramCanvas.height;
+
+      histogramCtx.fillStyle = '#141925';
+      histogramCtx.fillRect(0, 0, width, height);
+
+      if (!grayValues || grayValues.length === 0) {
+        histogramLegend.textContent = '(cyan line = active threshold)';
+        return;
+      }
+
+      const histogram = new Uint32Array(256);
+      let maxCount = 0;
+      for (let i = 0; i < grayValues.length; ++i) {
+        const v = grayValues[i];
+        histogram[v]++;
+        if (histogram[v] > maxCount) {
+          maxCount = histogram[v];
+        }
+      }
+
+      histogramCtx.fillStyle = '#6cb6ff';
+      for (let x = 0; x < 256; ++x) {
+        if (histogram[x] === 0) {
+          continue;
+        }
+        const normalized = maxCount > 0 ? histogram[x] / maxCount : 0;
+        const barHeight = Math.max(1, Math.round(normalized * (height - 1)));
+        histogramCtx.fillRect(x, height - barHeight, 1, barHeight);
+      }
+
+      if (Number.isFinite(markerThreshold)) {
+        const markerX = Math.round(clampByte(markerThreshold));
+        histogramCtx.strokeStyle = '#00e5ff';
+        histogramCtx.lineWidth = 1;
+        histogramCtx.beginPath();
+        histogramCtx.moveTo(markerX + 0.5, 0);
+        histogramCtx.lineTo(markerX + 0.5, height);
+        histogramCtx.stroke();
+        histogramLegend.textContent = `(cyan line = ${markerLabel})`;
+      } else {
+        histogramLegend.textContent = '(adaptive threshold varies per pixel)';
+      }
+    }
+
+    function applyGlobalThreshold(grayValues, width, height, threshold, dither) {
+      const output = new Uint8Array(grayValues.length);
+
+      if (dither === 'floyd') {
+        const work = new Float32Array(grayValues.length);
+        for (let i = 0; i < grayValues.length; ++i) {
+          work[i] = grayValues[i];
+        }
+
+        for (let y = 0; y < height; ++y) {
+          for (let x = 0; x < width; ++x) {
+            const idx = y * width + x;
+            const oldValue = work[idx];
+            const newValue = oldValue >= threshold ? 255 : 0;
+            output[idx] = newValue;
+            const error = oldValue - newValue;
+
+            if (x + 1 < width) work[idx + 1] += error * (7 / 16);
+            if (y + 1 < height) {
+              if (x > 0) work[idx + width - 1] += error * (3 / 16);
+              work[idx + width] += error * (5 / 16);
+              if (x + 1 < width) work[idx + width + 1] += error * (1 / 16);
+            }
+          }
+        }
+        return output;
+      }
+
+      if (dither === 'bayer4') {
+        const matrix = [
+          0, 8, 2, 10,
+          12, 4, 14, 6,
+          3, 11, 1, 9,
+          15, 7, 13, 5
+        ];
+        const amplitude = 48;
+        for (let y = 0; y < height; ++y) {
+          for (let x = 0; x < width; ++x) {
+            const idx = y * width + x;
+            const m = matrix[(y % 4) * 4 + (x % 4)];
+            const adjustedThreshold = threshold + ((m - 7.5) / 7.5) * amplitude;
+            output[idx] = grayValues[idx] >= adjustedThreshold ? 255 : 0;
+          }
+        }
+        return output;
+      }
+
+      for (let i = 0; i < grayValues.length; ++i) {
+        output[i] = grayValues[i] >= threshold ? 255 : 0;
+      }
+      return output;
+    }
+
     function computeAdaptiveBinary(grayValues, width, height, windowSize, bias) {
       const binary = new Uint8Array(grayValues.length);
       const stride = width + 1;
       const integral = new Float64Array((height + 1) * stride);
+      let thresholdAccumulator = 0;
 
       for (let y = 1; y <= height; ++y) {
         let rowSum = 0;
@@ -490,17 +695,24 @@
           const sum = integral[iD] - integral[iB] - integral[iC] + integral[iA];
           const count = (x1 - x0 + 1) * (y1 - y0 + 1);
           const localThreshold = (sum / count) + bias;
+          thresholdAccumulator += localThreshold;
           binary[idx] = grayValues[idx] >= localThreshold ? 255 : 0;
         }
       }
 
-      return binary;
+      return {
+        binary: binary,
+        meanThreshold: thresholdAccumulator / grayValues.length
+      };
     }
 
     function binarizeGrayscale(grayValues, width, height) {
       const mode = getActiveThresholdMode();
       const invert = modeAdvanced.checked && invertToggle.checked;
+      const dither = modeAdvanced.checked && mode !== 'adaptive' ? ditherMode.value : 'none';
       let binary;
+      let markerThreshold = NaN;
+      let markerLabel = '';
 
       if (mode === 'adaptive') {
         let windowSize = parseInt(adaptiveWindowSlider.value, 10);
@@ -508,18 +720,20 @@
           windowSize += 1;
         }
         const bias = parseInt(adaptiveBiasSlider.value, 10);
-        binary = computeAdaptiveBinary(grayValues, width, height, windowSize, bias);
+        const adaptiveResult = computeAdaptiveBinary(grayValues, width, height, windowSize, bias);
+        binary = adaptiveResult.binary;
+        markerThreshold = adaptiveResult.meanThreshold;
+        markerLabel = `adaptive mean ${Math.round(markerThreshold)}`;
         effectiveThreshNote.textContent = `(adaptive: w${windowSize}, b${bias})`;
       } else {
         const threshold = mode === 'otsu' ? computeOtsuThreshold(grayValues) : parseInt(threshSlider.value, 10);
-        binary = new Uint8Array(grayValues.length);
-        for (let i = 0; i < grayValues.length; ++i) {
-          binary[i] = grayValues[i] >= threshold ? 255 : 0;
-        }
+        binary = applyGlobalThreshold(grayValues, width, height, threshold, dither);
+        markerThreshold = threshold;
+        markerLabel = `${mode === 'otsu' ? 'Otsu' : 'manual'} ${threshold}`;
         if (mode === 'otsu') {
-          effectiveThreshNote.textContent = `(auto: Otsu=${threshold})`;
+          effectiveThreshNote.textContent = `(auto: Otsu=${threshold}${dither !== 'none' ? `, ${dither}` : ''})`;
         } else {
-          effectiveThreshNote.textContent = `(manual: ${threshold})`;
+          effectiveThreshNote.textContent = `(manual: ${threshold}${dither !== 'none' ? `, ${dither}` : ''})`;
         }
       }
 
@@ -527,9 +741,14 @@
         for (let i = 0; i < binary.length; ++i) {
           binary[i] = 255 - binary[i];
         }
+        effectiveThreshNote.textContent += ', inverted';
       }
 
-      return binary;
+      return {
+        binary: binary,
+        markerThreshold: markerThreshold,
+        markerLabel: markerLabel
+      };
     }
 
 
@@ -627,7 +846,10 @@
         grayValues[p] = Math.max(0, Math.min(255, Math.round(avg)));
       }
 
-      const binaryValues = binarizeGrayscale(grayValues, drawW, drawH);
+      const leveledGrayValues = applyInputLevels(grayValues);
+      const thresholdResult = binarizeGrayscale(leveledGrayValues, drawW, drawH);
+      const binaryValues = thresholdResult.binary;
+      drawHistogram(leveledGrayValues, thresholdResult.markerThreshold, thresholdResult.markerLabel);
       for (let i = 0; i < data.length; i += 4) {
         const bw = binaryValues[i / 4];
         data[i] = data[i + 1] = data[i + 2] = bw;
@@ -699,6 +921,7 @@
       selection = null;
       selectCanvas.style.pointerEvents = 'none';
       drawSelection();
+      drawHistogram(null, NaN, '');
       alert('Failed to load image. Please try another file.');
     };
 
@@ -748,6 +971,9 @@
     }
     function updateLabels() {
       threshVal.textContent = threshSlider.value;
+      levelsBlackVal.textContent = levelsBlackSlider.value;
+      levelsWhiteVal.textContent = levelsWhiteSlider.value;
+      levelsGammaVal.textContent = parseFloat(levelsGammaSlider.value).toFixed(2);
       adaptiveWindowVal.textContent = adaptiveWindowSlider.value;
       adaptiveBiasVal.textContent = adaptiveBiasSlider.value;
       rVal.textContent = parseFloat(rSlider.value).toFixed(3);
@@ -881,6 +1107,37 @@
     invertToggle.addEventListener('change', function () {
       updateBW();
     });
+    ditherMode.addEventListener('change', function () {
+      updateBW();
+    });
+    levelsBlackSlider.addEventListener('input', function () {
+      normalizeLevelsInputs('black');
+      updateLabels();
+      updateBW();
+    });
+    levelsWhiteSlider.addEventListener('input', function () {
+      normalizeLevelsInputs('white');
+      updateLabels();
+      updateBW();
+    });
+    levelsGammaSlider.addEventListener('input', function () {
+      levelsGammaVal.textContent = parseFloat(levelsGammaSlider.value).toFixed(2);
+      updateBW();
+    });
+    levelsBlackSlider.addEventListener('change', function () {
+      normalizeLevelsInputs('black');
+      updateLabels();
+      updateBW();
+    });
+    levelsWhiteSlider.addEventListener('change', function () {
+      normalizeLevelsInputs('white');
+      updateLabels();
+      updateBW();
+    });
+    levelsGammaSlider.addEventListener('change', function () {
+      updateLabels();
+      updateBW();
+    });
     adaptiveWindowSlider.addEventListener('input', function () {
       adaptiveWindowVal.textContent = adaptiveWindowSlider.value;
       updateBW();
@@ -936,6 +1193,7 @@
 
     updateConversionModeUI();
     updateLabels();
+    drawHistogram(null, NaN, '');
 
     // Download UF2 handler
     let logoUf2 = null;
