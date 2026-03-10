@@ -812,37 +812,56 @@
           }
         }
       }
-      // Determine target size based on crop
-      let targetW, targetH;
-      if (crop.w / crop.h >= 128 / 64) {
-        targetW = 128;
-        targetH = Math.round(crop.h * (128 / crop.w));
-        if (targetH > 64) {
-          targetH = 64;
-          targetW = Math.round(crop.w * (64 / crop.h));
-        }
-      } else {
-        targetH = 64;
-        targetW = Math.round(crop.w * (64 / crop.h));
-        if (targetW > 128) {
-          targetW = 128;
-          targetH = Math.round(crop.h * (128 / crop.w));
-        }
-      }
       // Always output 128x64
       const outW = 128, outH = 64;
-      // Calculate scaled image size
-      let drawW = targetW, drawH = targetH;
-      // Center the image
-      let offsetX = Math.floor((outW - drawW) / 2);
-      let offsetY = Math.floor((outH - drawH) / 2);
+      const keepNativeSize = (crop.w === outW && crop.h === outH);
+      let drawW;
+      let drawH;
+      let offsetX;
+      let offsetY;
+      if (keepNativeSize) {
+        // Keep native 128x64 content pixel-perfect without scaling.
+        drawW = outW;
+        drawH = outH;
+        offsetX = 0;
+        offsetY = 0;
+      } else {
+        // Determine target size based on crop
+        let targetW;
+        let targetH;
+        if (crop.w / crop.h >= outW / outH) {
+          targetW = outW;
+          targetH = Math.round(crop.h * (outW / crop.w));
+          if (targetH > outH) {
+            targetH = outH;
+            targetW = Math.round(crop.w * (outH / crop.h));
+          }
+        } else {
+          targetH = outH;
+          targetW = Math.round(crop.w * (outH / crop.h));
+          if (targetW > outW) {
+            targetW = outW;
+            targetH = Math.round(crop.h * (outW / crop.w));
+          }
+        }
+        // Calculate scaled image size
+        drawW = targetW;
+        drawH = targetH;
+        // Center the image
+        offsetX = Math.floor((outW - drawW) / 2);
+        offsetY = Math.floor((outH - drawH) / 2);
+      }
       // Create a temp canvas for the scaled image
       const tempCanvas = document.createElement('canvas');
       tempCanvas.width = drawW;
       tempCanvas.height = drawH;
       const tempCtx = tempCanvas.getContext('2d');
       tempCtx.clearRect(0, 0, drawW, drawH);
-      tempCtx.drawImage(origImg, crop.x, crop.y, crop.w, crop.h, 0, 0, drawW, drawH);
+      if (keepNativeSize) {
+        tempCtx.drawImage(origImg, crop.x, crop.y, crop.w, crop.h, 0, 0, crop.w, crop.h);
+      } else {
+        tempCtx.drawImage(origImg, crop.x, crop.y, crop.w, crop.h, 0, 0, drawW, drawH);
+      }
       // Get image data from temp
       const imgData = tempCtx.getImageData(0, 0, drawW, drawH);
       const data = imgData.data;
