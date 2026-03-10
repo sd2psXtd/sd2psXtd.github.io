@@ -280,11 +280,6 @@ textarea {
   box-shadow: inset 0 0 0 1px rgba(108, 182, 255, 0.2);
 }
 
-.image-dropzone.native-size {
-  width: 128px;
-  aspect-ratio: 2 / 1;
-}
-
 .source-image {
   display: block;
   width: 100%;

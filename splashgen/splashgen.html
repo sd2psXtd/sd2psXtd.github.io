@@ -211,11 +211,6 @@
       }
     }
 
-    function syncNativeDropzoneSize() {
-      const isNativeSplashSize = imgLoaded && origImg.naturalWidth === 128 && origImg.naturalHeight === 64;
-      origImgWrap.classList.toggle('native-size', isNativeSplashSize);
-    }
-
     let imageDragDepth = 0;
 
     function setImageDragOverlayActive(active) {
@@ -970,7 +965,6 @@
       isDraggingSelection = false;
       selection = null;
       syncImageDropHint();
-      syncNativeDropzoneSize();
       selectCanvas.style.pointerEvents = 'none';
       drawSelection();
       drawHistogram(null, NaN, '');
@@ -984,7 +978,6 @@
       selection = null;
       imgLoaded = true;
       syncImageDropHint();
-      syncNativeDropzoneSize();
       // Sync overlay size to image
       function syncOverlay() {
         const w = origImg.offsetWidth;
@@ -1248,7 +1241,6 @@
     updateConversionModeUI();
     updateLabels();
     syncImageDropHint();
-    syncNativeDropzoneSize();
     drawHistogram(null, NaN, '');
 
     // Download UF2 handler
