@@ -266,7 +266,7 @@
         }
         const reader = new FileReader();
         reader.onload = function (ev) {
-          origImg.src = ev.target.result;
+          requestImageLoad(ev.target.result);
         };
         reader.readAsDataURL(file);
       }
@@ -436,6 +436,13 @@
     let suppressImagePickerUntil = 0;
 
     let imgLoaded = false;
+    let pendingImageLoad = false;
+
+    function requestImageLoad(src) {
+      if (!src) return;
+      pendingImageLoad = true;
+      origImg.src = src;
+    }
 
     function getDisplayImageRect() {
       const boxW = selectCanvas.width || origImg.clientWidth || origImg.offsetWidth || 1;
@@ -963,13 +970,15 @@
       if (!file) return;
       const reader = new FileReader();
       reader.onload = function (ev) {
-        origImg.src = ev.target.result;
+        requestImageLoad(ev.target.result);
       };
       reader.readAsDataURL(file);
     });
 
     // Error handling for image load
     origImg.onerror = function () {
+      if (!pendingImageLoad) return;
+      pendingImageLoad = false;
       imgLoaded = false;
       isSelecting = false;
       isDraggingSelection = false;
@@ -983,6 +992,7 @@
     };
 
     origImg.onload = function () {
+      pendingImageLoad = false;
 
       isSelecting = false;
       isDraggingSelection = false;
