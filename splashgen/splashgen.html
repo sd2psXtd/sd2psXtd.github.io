@@ -10,163 +10,154 @@
 
 <body>
 
-  <h2>sd2psXtd Splash Generator</h2>
+  <main class="page-shell">
+    <header class="page-header">
+      <h2 class="page-title">sd2psXtd Splash Generator</h2>
+      <p class="page-subtitle">Design a 1-bit splash, preview it live, then export Binary or UF2.</p>
+    </header>
 
-  <input type="file" id="imgInput" accept="image/*" aria-label="Upload image" style="display:none;">
+    <input type="file" id="imgInput" accept="image/*" aria-label="Upload image" class="hidden-input">
 
-  <div class="controls">
-    <div style="display:flex; flex-direction:column; gap:10px; width:100%; max-width:760px;">
-      <div style="display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
-        <span style="font-weight:600; color:#6cb6ff; min-width:90px;">Controls</span>
-        <label style="display:flex; align-items:center; gap:6px;">
-          <input type="radio" name="uiMode" id="modeSimple" value="simple" checked>
-          <span>Simple</span>
-        </label>
-        <label style="display:flex; align-items:center; gap:6px;">
-          <input type="radio" name="uiMode" id="modeAdvanced" value="advanced">
-          <span>Advanced</span>
-        </label>
-      </div>
+    <div class="workspace-grid">
+      <section class="controls panel-card">
+        <div class="controls-stack">
+          <div class="control-row">
+            <span class="control-label">Controls</span>
+            <label class="mode-option">
+              <input type="radio" name="uiMode" id="modeSimple" value="simple" checked>
+              <span>Simple</span>
+            </label>
+            <label class="mode-option">
+              <input type="radio" name="uiMode" id="modeAdvanced" value="advanced">
+              <span>Advanced</span>
+            </label>
+          </div>
 
-      <div style="display:flex; align-items:center; gap:18px; flex-wrap:wrap;">
-        <span style="font-weight:600; color:#6cb6ff; min-width:120px;">Threshold</span>
-        <input type="range" id="threshSlider" min="0" max="255" value="128" style="width: 220px;"
-          title="Set the threshold for black/white conversion (0=black, 255=white)">
-        <span id="threshVal" style="min-width:36px; color:#2d8cf0; font-weight:600;">128</span>
-        <span id="effectiveThreshNote" style="font-size:0.9em; color:#a7b7ca;">(manual)</span>
-      </div>
-      <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
-        <span style="font-weight:600; color:#6cb6ff; min-width:120px;">Histogram</span>
-        <canvas id="histogramCanvas" width="256" height="80"
-          style="width:256px; height:80px; border:1px solid #3a4252; border-radius:6px; background:#141925;"></canvas>
-        <span id="histogramLegend" style="font-size:0.9em; color:#a7b7ca;">(cyan line = active threshold)</span>
-      </div>
+          <div class="control-row">
+            <span class="control-label">Threshold</span>
+            <input type="range" id="threshSlider" min="0" max="255" value="128" class="main-threshold-slider"
+              title="Set the threshold for black/white conversion (0=black, 255=white)">
+            <span id="threshVal" class="value-token">128</span>
+            <span id="effectiveThreshNote" class="info-token">(manual)</span>
+          </div>
 
-      <div id="advancedControls" style="display:none; flex-direction:column; gap:10px; border:1px solid #3a4252; border-radius:8px; padding:10px 12px; background:#1d2330;">
-        <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
-          <label for="thresholdMethod" style="font-weight:600; color:#6cb6ff;">Threshold Method</label>
-          <select id="thresholdMethod" style="background:#232a36; color:#e3e6eb; border:1px solid #3a4252; border-radius:6px; padding:4px 8px;">
-            <option value="manual" selected>Manual (Global)</option>
-            <option value="otsu">Auto (Otsu Global)</option>
-            <option value="adaptive">Adaptive (Local Mean)</option>
-          </select>
-          <label style="display:flex; align-items:center; gap:6px;">
-            <input type="checkbox" id="invertToggle">
-            <span>Invert Output</span>
-          </label>
+          <div class="control-row histogram-row">
+            <span class="control-label">Histogram</span>
+            <canvas id="histogramCanvas" width="256" height="80" class="histogram-canvas"></canvas>
+            <span id="histogramLegend" class="info-token">(cyan line = active threshold)</span>
+          </div>
+
+          <div id="advancedControls" class="advanced-controls">
+            <div class="control-row">
+              <label for="thresholdMethod" class="control-label">Threshold Method</label>
+              <select id="thresholdMethod" class="control-select">
+                <option value="manual" selected>Manual (Global)</option>
+                <option value="otsu">Auto (Otsu Global)</option>
+                <option value="adaptive">Adaptive (Local Mean)</option>
+              </select>
+              <label class="mode-option">
+                <input type="checkbox" id="invertToggle">
+                <span>Invert Output</span>
+              </label>
+            </div>
+
+            <div class="control-row">
+              <label for="ditherMode" class="control-label">Dithering</label>
+              <select id="ditherMode" class="control-select">
+                <option value="none" selected>None</option>
+                <option value="floyd">Floyd-Steinberg</option>
+                <option value="bayer4">Bayer 4x4</option>
+              </select>
+            </div>
+
+            <div class="subsection">
+              <div class="subsection-title">Input Levels</div>
+              <div class="control-row">
+                <span class="control-label">Black Point</span>
+                <input type="range" id="levelsBlackSlider" min="0" max="254" step="1" value="0" class="small-slider">
+                <span id="levelsBlackVal" class="value-token">0</span>
+              </div>
+              <div class="control-row">
+                <span class="control-label">White Point</span>
+                <input type="range" id="levelsWhiteSlider" min="1" max="255" step="1" value="255" class="small-slider">
+                <span id="levelsWhiteVal" class="value-token">255</span>
+              </div>
+              <div class="control-row">
+                <span class="control-label">Gamma</span>
+                <input type="range" id="levelsGammaSlider" min="0.2" max="3.0" step="0.05" value="1.00" class="small-slider">
+                <span id="levelsGammaVal" class="value-token">1.00</span>
+              </div>
+            </div>
+
+            <div id="adaptiveControls" class="adaptive-controls">
+              <div class="control-row">
+                <span class="control-label">Local Window</span>
+                <input type="range" id="adaptiveWindowSlider" min="3" max="31" step="2" value="15" class="small-slider">
+                <span id="adaptiveWindowVal" class="value-token">15</span>
+              </div>
+              <div class="control-row">
+                <span class="control-label">Adaptive Bias</span>
+                <input type="range" id="adaptiveBiasSlider" min="-64" max="64" step="1" value="0" class="small-slider">
+                <span id="adaptiveBiasVal" class="value-token">0</span>
+              </div>
+            </div>
+
+            <div class="subsection">
+              <div class="subsection-title">Grayscale Weights</div>
+              <div class="weight-grid">
+                <label title="Red channel weight (auto-normalized)">R
+                  <input type="range" id="rSlider" min="0" max="1" step="0.01" value="0.299" class="weight-slider">
+                  <span id="rVal" class="value-token">0.299</span>
+                </label>
+                <label title="Green channel weight (auto-normalized)">G
+                  <input type="range" id="gSlider" min="0" max="1" step="0.01" value="0.587" class="weight-slider">
+                  <span id="gVal" class="value-token">0.587</span>
+                </label>
+                <label title="Blue channel weight (auto-normalized)">B
+                  <input type="range" id="bSlider" min="0" max="1" step="0.01" value="0.114" class="weight-slider">
+                  <span id="bVal" class="value-token">0.114</span>
+                </label>
+              </div>
+              <span class="subsection-note">(weights auto-normalized)</span>
+            </div>
+          </div>
+
+          <div class="control-actions">
+            <button id="resetBtn" class="control-btn">Reset</button>
+            <button id="clearSelBtn" class="control-btn control-btn-danger">Clear Selection</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="preview-grid">
+        <div class="img-block panel-card">
+          <span class="panel-title">Original</span>
+          <div id="origImgWrap" class="image-dropzone" role="button" tabindex="0" aria-label="Drop image here or click to upload">
+            <img id="origImg" src="" alt="" class="source-image" />
+            <canvas id="selectCanvas" class="selection-canvas"></canvas>
+            <div id="dropHint" class="drop-hint">Drop Image Here<br>or click to upload</div>
+            <div id="dropOverlay" class="drop-overlay">Drop Image Here</div>
+          </div>
         </div>
 
-        <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
-          <label for="ditherMode" style="font-weight:600; color:#6cb6ff;">Dithering</label>
-          <select id="ditherMode" style="background:#232a36; color:#e3e6eb; border:1px solid #3a4252; border-radius:6px; padding:4px 8px;">
-            <option value="none" selected>None</option>
-            <option value="floyd">Floyd-Steinberg</option>
-            <option value="bayer4">Bayer 4x4</option>
-          </select>
+        <div class="img-block panel-card">
+          <span class="panel-title">Black & White</span>
+          <canvas id="bwCanvas" class="preview-canvas"></canvas>
+          <div class="action-row">
+            <button id="downloadBinBtn" class="action-btn">Download Binary</button>
+            <button id="downloadUf2Btn" class="action-btn">Download UF2</button>
+            <button id="downloadCombinedBtn" class="action-btn action-btn-secondary">Download Combined UF2</button>
+          </div>
+          <div id="firmwareDropzone" class="firmware-dropzone">Drop firmware UF2 here or click to select</div>
         </div>
-
-        <div style="display:flex; flex-direction:column; gap:8px;">
-          <div style="font-weight:600; color:#6cb6ff;">Input Levels</div>
-          <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
-            <span style="font-weight:600; color:#6cb6ff; min-width:120px;">Black Point</span>
-            <input type="range" id="levelsBlackSlider" min="0" max="254" step="1" value="0" style="width:170px;">
-            <span id="levelsBlackVal" style="min-width:36px; color:#2d8cf0; font-weight:600;">0</span>
-          </div>
-          <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
-            <span style="font-weight:600; color:#6cb6ff; min-width:120px;">White Point</span>
-            <input type="range" id="levelsWhiteSlider" min="1" max="255" step="1" value="255" style="width:170px;">
-            <span id="levelsWhiteVal" style="min-width:36px; color:#2d8cf0; font-weight:600;">255</span>
-          </div>
-          <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
-            <span style="font-weight:600; color:#6cb6ff; min-width:120px;">Gamma</span>
-            <input type="range" id="levelsGammaSlider" min="0.2" max="3.0" step="0.05" value="1.00" style="width:170px;">
-            <span id="levelsGammaVal" style="min-width:44px; color:#2d8cf0; font-weight:600;">1.00</span>
-          </div>
-        </div>
-
-        <div id="adaptiveControls" style="display:none; flex-direction:column; gap:8px;">
-          <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
-            <span style="font-weight:600; color:#6cb6ff; min-width:120px;">Local Window</span>
-            <input type="range" id="adaptiveWindowSlider" min="3" max="31" step="2" value="15" style="width:170px;">
-            <span id="adaptiveWindowVal" style="min-width:30px; color:#2d8cf0; font-weight:600;">15</span>
-          </div>
-          <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
-            <span style="font-weight:600; color:#6cb6ff; min-width:120px;">Adaptive Bias</span>
-            <input type="range" id="adaptiveBiasSlider" min="-64" max="64" step="1" value="0" style="width:170px;">
-            <span id="adaptiveBiasVal" style="min-width:36px; color:#2d8cf0; font-weight:600;">0</span>
-          </div>
-        </div>
-
-        <div style="font-weight:600; color:#6cb6ff;">Grayscale Weights</div>
-        <div style="display:flex; align-items:center; gap:18px; flex-wrap:wrap;">
-          <label title="Red channel weight (auto-normalized)">R
-            <input type="range" id="rSlider" min="0" max="1" step="0.01" value="0.299"
-              style="width: 100px; margin-left:6px;">
-            <span id="rVal" style="min-width:36px; color:#ff6b6b; font-weight:600;">0.299</span>
-          </label>
-          <label title="Green channel weight (auto-normalized)">G
-            <input type="range" id="gSlider" min="0" max="1" step="0.01" value="0.587"
-              style="width: 100px; margin-left:6px;">
-            <span id="gVal" style="min-width:36px; color:#51fa7b; font-weight:600;">0.587</span>
-          </label>
-          <label title="Blue channel weight (auto-normalized)">B
-            <input type="range" id="bSlider" min="0" max="1" step="0.01" value="0.114"
-              style="width: 100px; margin-left:6px;">
-            <span id="bVal" style="min-width:36px; color:#6cb6ff; font-weight:600;">0.114</span>
-          </label>
-          <span style="font-size: 0.9em; color: #aaa; margin-left:10px;">(weights auto-normalized)</span>
-        </div>
-      </div>
-
-      <div style="display:flex; justify-content:flex-end; margin-top:4px; gap:10px;">
-        <button id="resetBtn"
-          style="padding:5px 18px; border-radius:7px; background:#232a36; color:#e3e6eb; border:1.5px solid #3a4252; font-weight:600; cursor:pointer;">Reset</button>
-        <button id="clearSelBtn"
-          style="padding:5px 18px; border-radius:7px; background:#2d2a36; color:#ff6b6b; border:1.5px solid #6b2d2d; font-weight:600; cursor:pointer;">Clear
-          Selection</button>
-      </div>
+      </section>
     </div>
-  </div>
 
-  <div class="container">
-    <div class="img-block">
-      <span>Original</span>
-      <div id="origImgWrap" role="button" tabindex="0" aria-label="Drop image here or click to upload"
-        style="position:relative; display:inline-block; width:305px; height:305px; min-width:305px; min-height:305px; max-width:305px; max-height:305px; border:2.5px dashed #bfc9d1; border-radius:10px; background:#f8fafc; transition:border-color 0.2s, background 0.2s; cursor:pointer;">
-        <img id="origImg" src="" alt=""
-          style="display:block; width:100%; height:100%; object-fit:contain; position:relative; z-index:1;" />
-        <canvas id="selectCanvas"
-          style="position:absolute; left:0; top:0; width:100%; height:100%; pointer-events:none; z-index:2; background:transparent;"></canvas>
-        <div id="dropOverlay"
-          style="display:none; position:absolute; left:0; top:0; width:100%; height:100%; background:rgba(108,182,255,0.10); border-radius:10px; z-index:10; align-items:center; justify-content:center; color:#6cb6ff; font-size:1.2em; font-weight:600; pointer-events:none; text-align:center; transition:background 0.2s;">
-          Drop image here</div>
-      </div>
-
-    </div>
-    <div class="img-block">
-      <span>Black & White</span>
-      <canvas id="bwCanvas"></canvas>
-      <div style="display:flex; flex-direction:row; gap:10px; margin-top:14px;">
-        <button id="downloadBinBtn"
-          style="font-size:1em; padding:7px 18px; border-radius:7px; background:#6cb6ff; color:#181c24; border:none; cursor:pointer; box-shadow:0 2px 8px 0 rgba(108,182,255,0.18);">Download
-          Binary</button>
-        <button id="downloadUf2Btn"
-          style="font-size:1em; padding:7px 18px; border-radius:7px; background:#6cb6ff; color:#181c24; border:none; cursor:pointer; box-shadow:0 2px 8px 0 rgba(108,182,255,0.18);">Download
-          UF2</button>
-        <button id="downloadCombinedBtn"
-          style="font-size:1em; padding:7px 18px; border-radius:7px; background:#6cb6ff; color:#181c24; border:none; cursor:pointer; box-shadow:0 2px 8px 0 rgba(108,182,255,0.18);">Download
-          Combined UF2</button>
-      </div>
-      <div id="firmwareDropzone" style="margin-top:18px; padding:24px 18px; border:2px dashed #6cb6ff; border-radius:10px; background:#232a36; color:#6cb6ff; text-align:center; font-weight:600; cursor:pointer; transition:border-color 0.2s, background 0.2s;">Drop firmware UF2 here or click to select</div>
-
-    </div>
-  </div>
-  <div style="max-width:900px; margin: 28px auto 0 auto; width: 98vw;">
-    <label for="cArrayBox" style="font-weight:600; color:#6cb6ff; margin-bottom:6px; display:block;">C Header
-      Array:</label>
-    <textarea id="cArrayBox" readonly aria-label="C header array"
-      style="width:100%; min-width:220px; max-width:100%; height:160px; font-family:monospace; font-size:0.98em; background:#232a36; color:#e3e6eb; border-radius:7px; border:1.5px solid #3a4252; padding:8px; resize:vertical; display:block;"></textarea>
-  </div>
+    <section class="carray-card panel-card">
+      <label for="cArrayBox" class="carray-label">C Header Array:</label>
+      <textarea id="cArrayBox" readonly aria-label="C header array" class="carray-box"></textarea>
+    </section>
+  </main>
 
   <script src="uf2.js"></script>
   <script defer>
@@ -174,6 +165,7 @@
     // --- DOM Queries ---
     const origImgWrap = document.getElementById('origImgWrap');
     const dropOverlay = document.getElementById('dropOverlay');
+    const dropHint = document.getElementById('dropHint');
     const imgInput = document.getElementById('imgInput');
     const origImg = document.getElementById('origImg');
 
@@ -209,6 +201,14 @@
     const gVal = document.getElementById('gVal');
     const bVal = document.getElementById('bVal');
     const cArrayBox = document.getElementById('cArrayBox');
+
+    function syncImageDropHint() {
+      if (imgLoaded) {
+        dropHint.classList.add('hidden');
+      } else {
+        dropHint.classList.remove('hidden');
+      }
+    }
 
     // --- Drag and drop image loading for origImgWrap ---
     origImgWrap.addEventListener('dragover', function (e) {
@@ -891,15 +891,13 @@
       updateCArrayBox();
 
       // Upscale the canvas to match the original image's display size
-      const displayW = origImg.clientWidth;
-      const displayH = origImg.clientHeight;
-      //if (displayW && displayH) {
-      //  bwCanvas.style.width = '128px';
-      //  bwCanvas.style.height = '64px';
-      //} else {
-        bwCanvas.style.width = '300px';
-        bwCanvas.style.height = 'auto';
-      //}
+      const displayW = origImgWrap.clientWidth;
+      if (displayW) {
+        bwCanvas.style.width = displayW + 'px';
+      } else {
+        bwCanvas.style.width = '';
+      }
+      bwCanvas.style.height = 'auto';
     }
 
 
@@ -919,6 +917,7 @@
       isSelecting = false;
       isDraggingSelection = false;
       selection = null;
+      syncImageDropHint();
       selectCanvas.style.pointerEvents = 'none';
       drawSelection();
       drawHistogram(null, NaN, '');
@@ -931,6 +930,7 @@
       isDraggingSelection = false;
       selection = null;
       imgLoaded = true;
+      syncImageDropHint();
       // Sync overlay size to image
       function syncOverlay() {
         const w = origImg.offsetWidth;
@@ -1193,6 +1193,7 @@
 
     updateConversionModeUI();
     updateLabels();
+    syncImageDropHint();
     drawHistogram(null, NaN, '');
 
     // Download UF2 handler
