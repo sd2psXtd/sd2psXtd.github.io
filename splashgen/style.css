@@ -289,6 +289,11 @@ textarea {
   z-index: 1;
 }
 
+.image-dropzone.no-blend-preview .source-image {
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
 .selection-canvas {
   position: absolute;
   inset: 0;

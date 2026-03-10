@@ -211,6 +211,11 @@
       }
     }
 
+    function syncPreviewSamplingMode() {
+      const useNoBlendPreview = imgLoaded && origImg.naturalWidth === 128 && origImg.naturalHeight === 64;
+      origImgWrap.classList.toggle('no-blend-preview', useNoBlendPreview);
+    }
+
     let imageDragDepth = 0;
 
     function setImageDragOverlayActive(active) {
@@ -965,6 +970,7 @@
       isDraggingSelection = false;
       selection = null;
       syncImageDropHint();
+      syncPreviewSamplingMode();
       selectCanvas.style.pointerEvents = 'none';
       drawSelection();
       drawHistogram(null, NaN, '');
@@ -978,6 +984,7 @@
       selection = null;
       imgLoaded = true;
       syncImageDropHint();
+      syncPreviewSamplingMode();
       // Sync overlay size to image
       function syncOverlay() {
         const w = origImg.offsetWidth;
@@ -1241,6 +1248,7 @@
     updateConversionModeUI();
     updateLabels();
     syncImageDropHint();
+    syncPreviewSamplingMode();
     drawHistogram(null, NaN, '');
 
     // Download UF2 handler
