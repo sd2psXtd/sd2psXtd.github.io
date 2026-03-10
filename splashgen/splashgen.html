@@ -203,7 +203,8 @@
     const cArrayBox = document.getElementById('cArrayBox');
 
     function syncImageDropHint() {
-      if (imgLoaded) {
+      const dragActive = dropOverlay.style.display === 'flex';
+      if (imgLoaded || dragActive) {
         dropHint.classList.add('hidden');
       } else {
         dropHint.classList.remove('hidden');
@@ -214,17 +215,20 @@
     origImgWrap.addEventListener('dragover', function (e) {
       e.preventDefault();
       dropOverlay.style.display = 'flex';
+      syncImageDropHint();
       origImgWrap.style.borderColor = '#2d8cf0';
       origImgWrap.style.background = 'rgba(108, 182, 255, 0.14)';
     });
     origImgWrap.addEventListener('dragleave', function (e) {
       dropOverlay.style.display = 'none';
+      syncImageDropHint();
       origImgWrap.style.borderColor = '';
       origImgWrap.style.background = '';
     });
     origImgWrap.addEventListener('drop', function (e) {
       e.preventDefault();
       dropOverlay.style.display = 'none';
+      syncImageDropHint();
       origImgWrap.style.borderColor = '';
       origImgWrap.style.background = '';
       if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
