@@ -276,8 +276,12 @@
       setImageDragOverlayActive(false);
     });
 
-    // Mouse/touch accessibility: click to upload or replace image
-    origImgWrap.addEventListener('click', function () {
+    // Mouse accessibility: click to upload.
+    // If click follows a canvas selection interaction, suppress file-open.
+    origImgWrap.addEventListener('click', function (e) {
+      if (performance.now() < suppressImagePickerUntil || e.target === selectCanvas) {
+        return;
+      }
       imgInput.click();
     });
 
@@ -429,6 +433,7 @@
     let selection = null; // {x, y, w, h}
     let isDraggingSelection = false;
     let dragOffset = { x: 0, y: 0 };
+    let suppressImagePickerUntil = 0;
 
     let imgLoaded = false;
 
@@ -1038,6 +1043,7 @@
 
     selectCanvas.addEventListener('mousedown', function (e) {
       if (!imgLoaded) return;
+      suppressImagePickerUntil = performance.now() + 300;
       const rect = selectCanvas.getBoundingClientRect();
       const mouseX = Math.max(0, Math.min(e.clientX - rect.left, selectCanvas.width));
       const mouseY = Math.max(0, Math.min(e.clientY - rect.top, selectCanvas.height));
