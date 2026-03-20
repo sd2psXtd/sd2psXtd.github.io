@@ -297,3 +297,4 @@ Practical notes
 - **@Mena / PhenomMods**: for providing hardware to some team members ❤️
 - **BitFunX**: for providing PSXMemcard and PSXMemcard Gen2 Hardware for dev ❤️
 - **All Testers**: ripto, Vapor, seewood, john3d, rippenbiest, ... ❤️
+- **@niemasd**: For his [*GameDB-PSX*](https://github.com/niemasd/GameDB-PSX) database - Game naming and ID on PS1 would not be possible without it! ❤️
