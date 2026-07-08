@@ -3,7 +3,7 @@
 
 # sd2psXtd Firmware
 
-*Latest stable Version:* **1.3**
+*Latest stable Version:* **1.4.0**
 
 sd2psXtd is an extended firmware for the popular *Multipurpose MemoryCard Emulator* sd2psx by developer @xyzz (see [here](https://github.com/sd2psx)). It combines cutting-edge extended functionality (like game ID switching, file system access, and dynamic mode selection) with the rock-solid performance of the original sd2psx firmware.
 
@@ -14,7 +14,7 @@ It provides the same functionality as the official stable firmware and extends i
 <a class="SideNav-item" href="#ps2-ps1-dynamic-mode-selection">{% include ps2tag.liquid %} PS1 dynamic mode selection</a>
 <a class="SideNav-item" href="#ps2-mmceman-and-mmcedrv-support">{% include ps2tag.liquid %} MMCEMAN and MMCEDRV support</a>
 <a class="SideNav-item" href="#ps2-instant-card-availability">{% include ps2tag.liquid %} Instant card availability</a>
-<a class="SideNav-item" href="#ps2-1-64-mb-card-size-support">{% include ps2tag.liquid %} 1-64 MB card size support</a>
+<a class="SideNav-item" href="#ps2-1-128-mb-card-size-support">{% include ps2tag.liquid %} 1-128 MB card size support</a>
 <a class="SideNav-item" href="#ps2-support-for-developer-arcade-and-prototype-ps2s">{% include ps2tag.liquid %} Support for developer, Arcade and Prototype PS2 models.</a>
 <a class="SideNav-item" href="#ps1-bootcard-mechanics">{% include ps1tag.liquid %} BootCard mechanics</a>
 <a class="SideNav-item" href="#ps1-psram-support">{% include ps1tag.liquid %} PSRAM support</a>
@@ -27,6 +27,7 @@ It provides the same functionality as the official stable firmware and extends i
 <a class="SideNav-item" href="#general-game2folder-mapping">{% include generaltag.liquid %} Game2Folder mapping</a>
 <a class="SideNav-item" href="#general-splash-screen-13">{% include generaltag.liquid %} Splash Screen</a>
 <a class="SideNav-item" href="#general-game-image-screen-13">{% include generaltag.liquid %} Game Image Screen</a>
+<a class="SideNav-item" href="#general-usb-cdc-command-interface">{% include generaltag.liquid %} USB-CDC command interface</a>
 
 </div>
 
@@ -87,9 +88,9 @@ Do not use *sd2psx* in dynamic mode on a PS1 multitap, as this **WILL damage** y
 If using 8MB cards, *sd2psXtd* firmware exposes the card to the PS2 while it is still being transferred to PSRAM. This enables using FMCB/PS2BBL at boot time without additional waiting scripts.
 Very helpful for PlayStation 2 models with simpler OSDSYS programs, that result on faster boot times (like PSX DESR and Arcade PS2)
 
-## PS2: 1-64 MB Card Size Support
+## PS2: 1-128 MB Card Size Support
 
-Support for card sizes between 1 and 64 MB has been added. Cards larger than 8 MB rely heavily on quick SD card access, so on older or lower-quality SD cards, these larger cards may become corrupt.
+Support for card sizes between 1 and 128 MB has been added. Cards larger than 8 MB rely heavily on quick SD card access, so on older or lower-quality SD cards, these larger cards may become corrupt.
 
 
 {% include toast_note.liquid %}
@@ -104,11 +105,11 @@ PS2 memory cards have been used in variations of PS2 like: *DevKits*, *TestKits*
 
 *sd2psXtd* firmware supports these devices by configuring the variant within the PS2 settings.
 
-These PlayStation 2 variations use different magicgate keysets to ensure their memory cards are inaccessible in other devices (eg: Opening developer memory card on normal PS2). that's why SD2PSX has to actively support them
+These PlayStation 2 variations use different magicgate keysets to ensure their memory cards are inaccessible in other devices (e.g., opening a developer memory card on a normal PS2). This is why SD2PSX must actively support them.
 
 {% include toast_note.liquid %}
 
-*Devkit/testkit owners:* as you may notice, SD2PSX has no `DEVELOPER` mode, this is because sd2psxtd is mimicking the behavior of licensed retail card. to use the device on developer hardware, set the card on `RETAIL` mode [^1]
+**Devkit/DTL-H owners**: as you may notice, SD2PSX has no `DEVELOPER` mode, this is because sd2psxtd is mimicking the behavior of licensed retail card. To use the device on developer hardware, set the card to `RETAIL` mode [^1]
 
 {% include toast_note_end.liquid %}
 
@@ -137,6 +138,8 @@ The following button combinations are used to perform card and channel switches:
 
 These mappings require that all four buttons (L1, R1, L2, R2) are held down in combination with one of the directional inputs.
 
+The Controller Combos can be activated by a setting in the PS1 Settings menu.
+
 ## PS1: Super fast FreePSXBoot
 
 *sd2psXtd* allows super fast booting of FreePSXBoot by using some non standard card communication.
@@ -145,6 +148,35 @@ Please note: This is only possible using a special FreePSXBoot Version provided 
 ## PS1: Net Yaroze Support
 
 *sd2psXtd* will act as a Net Yaroze Access Card, if used with the Net Yaroze Software.
+
+## General: USB-CDC Command Interface
+
+When the firmware is running, the device exposes a USB-CDC serial interface that accepts simple text commands. This can be used to change cards, channels, modes, PS2 variants, or to reboot the device without using the on-device controls.
+
+Commands are lowercase and submitted with Enter:
+
+```text
+help
+reset bl
+reset dev
+channel up
+channel down
+set channel <idx>
+card up
+card down
+set card <idx> [channel <idx>]
+set game <id> [channel <idx>]
+set mode <ps1|ps2>
+set variant <retail|proto|conquest|arcade>
+```
+
+`reset bl` resets to the bootloader. `reset dev` restarts the firmware. Card, channel, and game commands affect the currently active mode. Setting a PS2 variant also switches the device to PS2 mode.
+
+{% include toast_note.liquid %}
+
+Release builds accept commands over USB-CDC, but the interactive prompt and command output are only available in debug USB builds.
+
+{% include toast_note_end.liquid %}
 
 ## General: Settings File
 
@@ -159,11 +191,14 @@ FlippedScreen=OFF
 [PS1]
 Autoboot=ON
 GameID=ON
+EnableControllerCombo=ON
+MaxCardIdx=0
 [PS2]
 Autoboot=ON
 GameID=ON
 CardSize=16
 Variant=RETAIL
+MaxCardIdx=0
 ```
 
 Possible values are:
@@ -173,16 +208,20 @@ Possible values are:
 | Mode          | `PS1`, `PS2`                          |
 | AutoBoot      | `OFF`, `ON`                           |
 | GameID        | `OFF`, `ON`                           |
-| CardSize      | `1`, `2`, `4`, `8`, `16`, `32`, `64`  |
-| Variant       | `RETAIL`, `PROTO`, `ARCADE`           |
+| CardSize      | `1`, `2`, `4`, `8`, `16`, `32`, `64`, `128` |
+| Variant       | `RETAIL`, `PROTO`, `ARCADE`, `CONQUEST`     |
 | FlippedScreen | `ON`, `OFF`                           |
+| EnableControllerCombo | `ON`, `OFF`                   |
+| MaxCardIdx    | UINT8                                 |
+
+*Note: Make sure there is an empty line at the end of the ini file.*
 
 ## General: Support for Other RP2040-Based MMCE Devices
 
 Support for different MMCE devices that share the same MCU has been added:
 
 - **PicoMemcard+/PicoMemcardZero:** DIY devices by dangiu (see [here](https://github.com/dangiu/PicoMemcard?tab=readme-ov-file#picomemcard-using-memory-card)) without PSRAM. Use *PMC+* or *PMCZero* firmware variant.
-- **PSXMemCard:** A commercial device by BitFunX sharing the same architecture as *PMC+*. Use *PMC+* firmware variant.
+- **PSXMemCard:** A commercial device by BitFunX sharing the same architecture as *PMC+*. Use *psxmemcard* firmware variant.
 - **PSXMemCard Gen2:** A commercial device by BitFunX, sharing the same architecture as *sd2psx*. Use *sd2psx* firmware variant.
 
 For each device, follow the flashing instructions provided by the creator, using the corresponding *sd2psXtd* firmware file.
@@ -204,8 +243,9 @@ PMC+ and PMCZero now support using the onboard buttons. They are assigned in the
 
 There are some configuration values that can be modified on a per card base within a config file named  `CardX.ini` in a card folder, where `X` is the card index.
 
-*Note 1: The `CardSize` setting is only used for PS2 cards and can only be either of `1`, `2`, `4`, `8`, `16`, `32`, `64`.*
+*Note 1: The `CardSize` setting is only used for PS2 cards and can only be either of `1`, `2`, `4`, `8`, `16`, `32`, `64`, `128`.*
 *Note 2: The BOOT folder should contain a file named `BootCard.ini`*
+*Note 3: Make sure there is an empty line at the end of the ini file.*
 
 ```ini
 [ChannelName]
@@ -243,6 +283,8 @@ Be aware: Long folder names may not be displayed correctly and may result in stu
 
 {% include toast_note_end.liquid %}
 
+*Note 2: Make sure there is an empty line at the end of the ini file.*
+
 ## General: Splash Screen (1.3)
 
 By default, sd2psXtd comes with a special splash screen resembling the project's logo.
@@ -252,6 +294,8 @@ You can customize this by going to the [splashgen page](/splashgen/splashgen.htm
 From there, you can customize a splash screen to your needs. Once you are happy with the result displayed in the preview, press the **Download UF2** button. This will generate a UF2 file containing your splash screen.
 
 You can flash this splash screen just like any other firmware update.
+
+Alternatively, place a generated `splash.bin` in the root of the SD card. On startup, the firmware imports it into flash and removes `splash.bin` from the SD card.
 
 The flashed splash screen is maintained after a firmware update, so you probably only need to upload it once.
 
