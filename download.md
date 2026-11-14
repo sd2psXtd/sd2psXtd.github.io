@@ -1,6 +1,10 @@
 # Firmware Download
 
-> choose your device:
+Stable firmware **{{ site.firmware_version }}** — [release notes](https://github.com/sd2psXtd/firmware/releases/tag/{{ site.firmware_version }}).
+
+Choose the firmware matching your device below. **Firmware** is the normal build; **Debug Firmware** adds firmware logging over USB serial. Both builds support the USB-CDC commands in Serial mode.
+
+See [USB modes](index.md#general-usb-modes-150) for the new Mass storage and PS3 MCA features.
 
 <!--<div class="anim-hover-grow Box p-3">HELLO</div>-->
 <div class="border d-flex flex-column">
@@ -14,10 +18,9 @@
       <h2 class="text-normal lh-condensed">SD2PSX</h2>
       <p class="h4 color-fg-muted text-normal mb-2">a <a href="https://github.com/sd2psx/pcb">DIY SD2PSX</a> or by <a href="https://store.phenommod.com/?product=sd2psx">PhenomMods</a></p>
       <a class="color-fg-muted text-small">The classic one</a>
-      <!--<a class="" href="https://github.com/sd2psXtd/firmware/releases/download/1.2.1/sd2psx.uf2">Download firmware</a>--->
     <div class="BtnGroup d-block mb-2">
-      <a class="BtnGroup-item btn btn-outline" type="button"href="https://github.com/sd2psXtd/firmware/releases/download/1.4.0/sd2psx.uf2">Firmware</a>
-      <a class="BtnGroup-item btn btn-outline" type="button"href="https://github.com/sd2psXtd/firmware/releases/download/1.4.0/sd2psx-debug.uf2">Debug Firmware</a>
+      <a class="BtnGroup-item btn btn-outline" type="button" href="https://github.com/sd2psXtd/firmware/releases/download/{{ site.firmware_version }}/sd2psx.uf2">Firmware</a>
+      <a class="BtnGroup-item btn btn-outline" type="button" href="https://github.com/sd2psXtd/firmware/releases/download/{{ site.firmware_version }}/sd2psx-debug.uf2">Debug Firmware</a>
     </div>
   </div>
 </div>
@@ -34,8 +37,8 @@
       <p class="h4 color-fg-muted text-normal mb-2">SD2PSX: produced by BitFunx!</p>
       <a class="color-fg-muted text-small">Professional production by a company known to make quality PS2 peripherals</a>
     <div class="BtnGroup d-block mb-2">
-        <a class="BtnGroup-item btn btn-outline" type="button"href="https://github.com/sd2psXtd/firmware/releases/download/1.4.0/sd2psx.uf2">Firmware</a>
-        <a class="BtnGroup-item btn btn-outline" type="button"href="https://github.com/sd2psXtd/firmware/releases/download/1.4.0/sd2psx-debug.uf2">Debug Firmware</a>
+        <a class="BtnGroup-item btn btn-outline" type="button" href="https://github.com/sd2psXtd/firmware/releases/download/{{ site.firmware_version }}/sd2psx.uf2">Firmware</a>
+        <a class="BtnGroup-item btn btn-outline" type="button" href="https://github.com/sd2psXtd/firmware/releases/download/{{ site.firmware_version }}/sd2psx-debug.uf2">Debug Firmware</a>
     </div>
     </div>
 </div>
@@ -52,8 +55,8 @@
       <p class="h4 color-fg-muted text-normal mb-2">Made by bitfunx, enhanced by SD2PSX Firmware</p>
       <a class="color-fg-muted text-small">Same capabilities than SD2PSX. at a lower price, but without OLED, Buttons or PSRAM</a>
     <div class="BtnGroup d-block mb-2">
-        <a class="BtnGroup-item btn btn-outline" type="button"href="https://github.com/sd2psXtd/firmware/releases/download/1.4.0/psxmemcard.uf2">Firmware</a>
-        <a class="BtnGroup-item btn btn-outline" type="button"href="https://github.com/sd2psXtd/firmware/releases/download/1.4.0/psxmemcard-debug.uf2">Debug Firmware</a>
+        <a class="BtnGroup-item btn btn-outline" type="button" href="https://github.com/sd2psXtd/firmware/releases/download/{{ site.firmware_version }}/psxmemcard.uf2">Firmware</a>
+        <a class="BtnGroup-item btn btn-outline" type="button" href="https://github.com/sd2psXtd/firmware/releases/download/{{ site.firmware_version }}/psxmemcard-debug.uf2">Debug Firmware</a>
     </div>
     </div>
 </div>
@@ -70,12 +73,12 @@
       <p class="h4 color-fg-muted text-normal mb-2">Made by dangiu, enhanced by SD2PSX Firmware</p>
       <a class="color-fg-muted text-small">DIY project built on top of rp2040-zero</a>
     <div class="BtnGroup d-block mb-2">
-        <a class="BtnGroup-item btn btn-outline" type="button" href="https://github.com/sd2psXtd/firmware/releases/download/1.4.0/pmc+.uf2">Firmware Pico</a>
-        <a class="BtnGroup-item btn btn-outline" type="button" href="https://github.com/sd2psXtd/firmware/releases/download/1.4.0/pmczero.uf2">Firmware Zero</a>
+        <a class="BtnGroup-item btn btn-outline" type="button" href="https://github.com/sd2psXtd/firmware/releases/download/{{ site.firmware_version }}/pmc+.uf2">Firmware Pico</a>
+        <a class="BtnGroup-item btn btn-outline" type="button" href="https://github.com/sd2psXtd/firmware/releases/download/{{ site.firmware_version }}/pmczero.uf2">Firmware Zero</a>
     </div>
     <div class="BtnGroup d-block mb-2">
-        <a class="BtnGroup-item btn btn-outline" type="button" href="https://github.com/sd2psXtd/firmware/releases/download/1.4.0/pmc+-debug.uf2">Debug Firmware Pico</a>
-        <a class="BtnGroup-item btn btn-outline" type="button" href="https://github.com/sd2psXtd/firmware/releases/download/1.4.0/pmczero-debug.uf2">Debug Firmware Zero</a>
+        <a class="BtnGroup-item btn btn-outline" type="button" href="https://github.com/sd2psXtd/firmware/releases/download/{{ site.firmware_version }}/pmc+-debug.uf2">Debug Firmware Pico</a>
+        <a class="BtnGroup-item btn btn-outline" type="button" href="https://github.com/sd2psXtd/firmware/releases/download/{{ site.firmware_version }}/pmczero-debug.uf2">Debug Firmware Zero</a>
         <!--a class="BtnGroup-item btn btn-outline" type="button" href="https://github.com/dangiu/PicoMemcard?tab=readme-ov-file#picomemcard-vs-picomemcard">Project GitHub</a-->
     </div>
     </div>

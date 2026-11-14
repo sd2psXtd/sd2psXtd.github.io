@@ -3,7 +3,18 @@
 
 # sd2psXtd Firmware
 
-*Latest stable Version:* **1.4.0**
+*Latest stable version:* **{{ site.firmware_version }}** — [Download firmware](download.md)
+
+### New in 1.5.0
+
+- **USB Mass storage:** access the microSD card from a computer without removing it from the device.
+- **PS3 MCA emulation:** access the selected PS1 or PS2 card over USB with compatible Sony Memory Card Adaptor software.
+- **More SD card layouts:** GPT-partitioned cards and superfloppy layouts are now supported.
+- **Small PS2 cards:** newly created 1, 2, and 4 MB cards are automatically formatted.
+- **Channel limits:** configure the default channel count separately for PS1 and PS2, with per-card overrides.
+- **Reliability fixes:** improvements to card switching, PS1 communication, and flushing PS2 writes before switching to PS1.
+
+See the [1.5.0 release notes](https://github.com/sd2psXtd/firmware/releases/tag/1.5.0) for the full changelog.
 
 sd2psXtd is an extended firmware for the popular *Multipurpose MemoryCard Emulator* sd2psx by developer @xyzz (see [here](https://github.com/sd2psx)). It combines cutting-edge extended functionality (like game ID switching, file system access, and dynamic mode selection) with the rock-solid performance of the original sd2psx firmware.
 
@@ -21,12 +32,16 @@ It provides the same functionality as the official stable firmware and extends i
 <a class="SideNav-item" href="#ps1-card-switch-controller-combo-support">{% include ps1tag.liquid %} Card Switch Controller Combo Support </a>
 <a class="SideNav-item" href="#ps1-super-fast-freepsxboot">{% include ps1tag.liquid %} Super fast FreePSXBoot </a>
 <a class="SideNav-item" href="#ps1-net-yaroze-support">{% include ps1tag.liquid %} Net Yaroze Support </a>
+<a class="SideNav-item" href="#general-sd-card-layouts">{% include generaltag.liquid %} SD card layouts</a>
 <a class="SideNav-item" href="#general-settings-file">{% include generaltag.liquid %} Settings file</a>
 <a class="SideNav-item" href="#general-support-for-other-rp2040-based-mmce-devices">{% include generaltag.liquid %} Support for other RP2040-based MMCE devices</a>
 <a class="SideNav-item" href="#general-per-card-config">{% include generaltag.liquid %} Per Card Config</a>
 <a class="SideNav-item" href="#general-game2folder-mapping">{% include generaltag.liquid %} Game2Folder mapping</a>
 <a class="SideNav-item" href="#general-splash-screen-13">{% include generaltag.liquid %} Splash Screen</a>
 <a class="SideNav-item" href="#general-game-image-screen-13">{% include generaltag.liquid %} Game Image Screen</a>
+<a class="SideNav-item" href="#general-usb-modes-150">{% include generaltag.liquid %} USB modes</a>
+<a class="SideNav-item" href="#general-usb-mass-storage">{% include generaltag.liquid %} USB Mass storage</a>
+<a class="SideNav-item" href="#general-usb-ps3-memory-card-adaptor-emulation">{% include generaltag.liquid %} PS3 MCA emulation</a>
 <a class="SideNav-item" href="#general-usb-cdc-command-interface">{% include generaltag.liquid %} USB-CDC command interface</a>
 
 </div>
@@ -90,7 +105,7 @@ Very helpful for PlayStation 2 models with simpler OSDSYS programs, that result 
 
 ## PS2: 1-128 MB Card Size Support
 
-Support for card sizes between 1 and 128 MB has been added. Cards larger than 8 MB rely heavily on quick SD card access, so on older or lower-quality SD cards, these larger cards may become corrupt.
+Card sizes from 1 to 128 MB are supported. In 1.5.0, newly created 1, 2, and 4 MB cards are automatically formatted. Cards larger than 8 MB rely heavily on quick SD card access, so on older or lower-quality SD cards, these larger cards may become corrupt.
 
 
 {% include toast_note.liquid %}
@@ -149,14 +164,41 @@ Please note: This is only possible using a special FreePSXBoot Version provided 
 
 *sd2psXtd* will act as a Net Yaroze Access Card, if used with the Net Yaroze Software.
 
+## General: USB Modes (1.5.0)
+
+The **USB Mode** submenu on devices with a display offers **Serial**, **PS3 MCA**, and **Mass**. Serial and PS3 MCA are saved across restarts; Mass is a temporary mode.
+
+## General: USB Mass Storage
+
+Select **USB Mode → Mass** to access the entire microSD card from a computer. Card emulation stops while the USB icon is displayed, and buttons are ignored. Eject the drive on the computer to return to the previous console mode and USB profile. Suspension, inactivity, and unplugging the cable are not eject events; a reboot returns to the saved Serial or PS3 MCA profile.
+
+USB re-enumerates on entry and exit. CDC remains available in Mass mode for `help` and `version`; commands that access files or change device state are rejected while the computer owns the card.
+
+{% include toast_warning.liquid %}
+
+The RP2040 uses USB 1.1 Full Speed, limited to 12 Mbit/s before protocol and SD-card overhead. File transfers are substantially slower than this theoretical limit.
+
+{% include toast_warning_end.liquid %}
+
+## General: USB PS3 Memory Card Adaptor Emulation
+
+Select **USB Mode → PS3 MCA** to present the currently selected PS1 or PS2 card as a Sony PS3 Memory Card Adaptor. Compatible software can access that emulated card over USB. Select the appropriate console mode, card, and channel using the device controls.
+
+On devices without a display, set `MCA=ON` in the `[General]` section of `.sd2psx/settings.ini`, or enter `set mode mca` through USB-CDC. The serial interface disconnects when MCA starts. Return to **USB Mode → Serial**, or set `MCA=OFF` on the SD card and restart, to use CDC again.
+
+MCA exposes the selected memory card; Mass exposes the entire microSD card.
+
 ## General: USB-CDC Command Interface
 
-When the firmware is running, the device exposes a USB-CDC serial interface that accepts simple text commands. This can be used to change cards, channels, modes, PS2 variants, or to reboot the device without using the on-device controls.
+In **Serial** mode, the device exposes a USB-CDC serial interface that accepts simple text commands. This can be used to change cards, channels, modes, PS2 variants, or to reboot the device without using the on-device controls.
 
 Commands are lowercase and submitted with Enter:
 
 ```text
 help
+version
+ls [path]
+stat <path>
 reset bl
 reset dev
 channel up
@@ -166,7 +208,7 @@ card up
 card down
 set card <idx> [channel <idx>]
 set game <id> [channel <idx>]
-set mode <ps1|ps2>
+set mode <ps1|ps2|mca>
 set variant <retail|proto|conquest|arcade>
 ```
 
@@ -174,9 +216,13 @@ set variant <retail|proto|conquest|arcade>
 
 {% include toast_note.liquid %}
 
-Release builds accept commands over USB-CDC, but the interactive prompt and command output are only available in debug USB builds.
+Both normal and debug builds accept USB-CDC commands and report command output. Debug builds also send firmware logs over USB serial. `set mode mca` disconnects CDC and starts PS3 MCA emulation.
 
 {% include toast_note_end.liquid %}
+
+## General: SD Card Layouts
+
+In addition to MBR-partitioned cards, 1.5.0 supports GPT partition tables and superfloppy layouts, where the filesystem is directly on the card with no partition table.
 
 ## General: Settings File
 
@@ -188,17 +234,20 @@ A settings file has the following format:
 [General]
 Mode=PS2
 FlippedScreen=OFF
+MCA=OFF
 [PS1]
 Autoboot=ON
 GameID=ON
 EnableControllerCombo=ON
 MaxCardIdx=0
+MaxChannels=8
 [PS2]
 Autoboot=ON
 GameID=ON
 CardSize=16
 Variant=RETAIL
 MaxCardIdx=0
+MaxChannels=8
 ```
 
 Possible values are:
@@ -206,13 +255,19 @@ Possible values are:
 | Setting       | Values                                |
 |---------------|---------------------------------------|
 | Mode          | `PS1`, `PS2`                          |
-| AutoBoot      | `OFF`, `ON`                           |
+| Autoboot      | `OFF`, `ON`                           |
 | GameID        | `OFF`, `ON`                           |
 | CardSize      | `1`, `2`, `4`, `8`, `16`, `32`, `64`, `128` |
 | Variant       | `RETAIL`, `PROTO`, `ARCADE`, `CONQUEST`     |
 | FlippedScreen | `ON`, `OFF`                           |
+| MCA           | `ON`, `OFF`                           |
 | EnableControllerCombo | `ON`, `OFF`                   |
-| MaxCardIdx    | UINT8                                 |
+| MaxCardIdx    | `1`–`255`; `0` means unlimited        |
+| MaxChannels   | `1`–`255`                             |
+
+`MCA=ON` selects PS3 MCA; `MCA=OFF` selects Serial. Mass storage is temporary and is not saved in this setting.
+
+Set `MaxCardIdx` and `MaxChannels` separately in `[PS1]` and `[PS2]`. `MaxChannels` defaults to 8 and can be overridden per card. `MaxCardIdx=0` is the default unlimited setting; the parser only applies positive values, so entering `0` does not clear an existing limit.
 
 *Note: Make sure there is an empty line at the end of the ini file.*
 
@@ -246,6 +301,8 @@ There are some configuration values that can be modified on a per card base with
 *Note 1: The `CardSize` setting is only used for PS2 cards and can only be either of `1`, `2`, `4`, `8`, `16`, `32`, `64`, `128`.*
 *Note 2: The BOOT folder should contain a file named `BootCard.ini`*
 *Note 3: Make sure there is an empty line at the end of the ini file.*
+
+`MaxChannels` accepts `1`–`255` and overrides the default for the current PS1 or PS2 mode.
 
 ```ini
 [ChannelName]
@@ -340,4 +397,8 @@ Practical notes
 - **8BitMods Team**: for helping out with card formatting and providing lots of other useful information ❤️
 - **@Mena / PhenomMods**: for providing hardware to some team members ❤️
 - **BitFunX**: for providing PSXMemcard and PSXMemcard Gen2 Hardware for dev ❤️
+- **@mathewbeall**: for arcade fixes ❤️
+- **@wark**: for USB mass storage inspiration ❤️
+- **@max-las**: for SD-related fixes ❤️
 - **All Testers**: ripto, Vapor, seewood, john3d, rippenbiest, ... ❤️
+- **@niemasd**: for [GameDB-PSX](https://github.com/niemasd/GameDB-PSX), used for PS1 game names and IDs ❤️
