@@ -5,16 +5,16 @@
 
 *Latest stable version:* **{{ site.firmware_version }}** — [Download firmware](download.md)
 
-### New in 1.5.0
+### New in {{ site.firmware_version }}
 
-- **USB Mass storage:** access the microSD card from a computer without removing it from the device.
-- **PS3 MCA emulation:** access the selected PS1 or PS2 card over USB with compatible Sony Memory Card Adaptor software.
-- **More SD card layouts:** GPT-partitioned cards and superfloppy layouts are now supported.
-- **Small PS2 cards:** newly created 1, 2, and 4 MB cards are automatically formatted.
-- **Channel limits:** configure the default channel count separately for PS1 and PS2, with per-card overrides.
-- **Reliability fixes:** improvements to card switching, PS1 communication, and flushing PS2 writes before switching to PS1.
+- **Template cards** let you start new PS1 and PS2 cards with your own saves or tools.
+- **USB mass storage** can now be started with `set mode mass`, including on devices without buttons such as the PSXMemCard Gen1.
+- **Experimental PS2 mode switching** lets the device return to PS2 mode after temporarily switching to PS1 mode, for workflows such as DKWDRV and Free McBoot.
+- **PS3 MCA fixes** keep PS2 cards visible while loading and restore communication when the PS3 reopens the adapter.
+- **PS1 card fixes** prevent incomplete writes and writes with invalid checksums from changing card data and correct the order of reads and writes.
+- **Faster mode changes** restart USB only when the USB profile changes.
 
-See the [1.5.0 release notes](https://github.com/sd2psXtd/firmware/releases/tag/1.5.0) for the full changelog.
+[Full release notes](https://github.com/sd2psXtd/firmware/releases/tag/{{ site.firmware_version }})
 
 sd2psXtd is an extended firmware for the popular *Multipurpose MemoryCard Emulator* sd2psx by developer @xyzz (see [here](https://github.com/sd2psx)). It combines cutting-edge extended functionality (like game ID switching, file system access, and dynamic mode selection) with the rock-solid performance of the original sd2psx firmware.
 
@@ -36,6 +36,7 @@ It provides the same functionality as the official stable firmware and extends i
 <a class="SideNav-item" href="#general-settings-file">{% include generaltag.liquid %} Settings file</a>
 <a class="SideNav-item" href="#general-support-for-other-rp2040-based-mmce-devices">{% include generaltag.liquid %} Support for other RP2040-based MMCE devices</a>
 <a class="SideNav-item" href="#general-per-card-config">{% include generaltag.liquid %} Per Card Config</a>
+<a class="SideNav-item" href="#general-template-cards">{% include generaltag.liquid %} Template Cards</a>
 <a class="SideNav-item" href="#general-game2folder-mapping">{% include generaltag.liquid %} Game2Folder mapping</a>
 <a class="SideNav-item" href="#general-splash-screen-13">{% include generaltag.liquid %} Splash Screen</a>
 <a class="SideNav-item" href="#general-game-image-screen-13">{% include generaltag.liquid %} Game Image Screen</a>
@@ -71,6 +72,8 @@ This is done in two ways:
 
 When launching in PS2 mode, commands sent to *sd2psx* are monitored. Since PS1 sends controller messages on the same bus as memory card messages, if a controller message is detected, the *sd2psx* switches to PS1 mode.
 
+Firmware 1.5.1 adds experimental switching back to PS2 mode when a PS2 accesses the card after an automatic switch to PS1 mode. This can be used with DKWDRV and Free McBoot.
+
 While in general this should be safe behavior, if *sd2psx* is used mainly in PS1, manual mode selection is recommended.
 
 <div class="d-flex">
@@ -103,9 +106,11 @@ Do not use *sd2psx* in dynamic mode on a PS1 multitap, as this **WILL damage** y
 If using 8MB cards, *sd2psXtd* firmware exposes the card to the PS2 while it is still being transferred to PSRAM. This enables using FMCB/PS2BBL at boot time without additional waiting scripts.
 Very helpful for PlayStation 2 models with simpler OSDSYS programs, that result on faster boot times (like PSX DESR and Arcade PS2)
 
+A new PS2 card created from a [template](#general-template-cards) becomes available after the firmware finishes copying the image.
+
 ## PS2: 1-128 MB Card Size Support
 
-Card sizes from 1 to 128 MB are supported. In 1.5.0, newly created 1, 2, and 4 MB cards are automatically formatted. Cards larger than 8 MB rely heavily on quick SD card access, so on older or lower-quality SD cards, these larger cards may become corrupt.
+Card sizes from 1 to 128 MB are supported. Newly created 1, 2, and 4 MB cards are automatically formatted. Cards larger than 8 MB rely heavily on quick SD card access, so on older or lower-quality SD cards, these larger cards may become corrupt.
 
 
 {% include toast_note.liquid %}
@@ -170,9 +175,9 @@ The **USB Mode** submenu on devices with a display offers **Serial**, **PS3 MCA*
 
 ## General: USB Mass Storage
 
-Select **USB Mode → Mass** to access the entire microSD card from a computer. Card emulation stops while the USB icon is displayed, and buttons are ignored. Eject the drive on the computer to return to the previous console mode and USB profile. Suspension, inactivity, and unplugging the cable are not eject events; a reboot returns to the saved Serial or PS3 MCA profile.
+Select **USB Mode → Mass** or enter `set mode mass` in a USB serial terminal to access the entire microSD card from a computer. The serial command also works on devices without buttons. Mass mode stops card emulation and disables the device buttons. Eject the drive on the computer to return to the previous console mode and USB profile. Idle time, USB suspension, and cable disconnection leave the device in Mass mode. Rebooting returns it to the saved Serial or PS3 MCA profile.
 
-USB re-enumerates on entry and exit. CDC remains available in Mass mode for `help` and `version`; commands that access files or change device state are rejected while the computer owns the card.
+USB re-enumerates on entry and exit, so reopen the serial terminal after switching. While the computer owns the microSD card, CDC accepts only `help` and `version`.
 
 {% include toast_warning.liquid %}
 
@@ -208,7 +213,7 @@ card up
 card down
 set card <idx> [channel <idx>]
 set game <id> [channel <idx>]
-set mode <ps1|ps2|mca>
+set mode <ps1|ps2|mca|mass>
 set variant <retail|proto|conquest|arcade>
 ```
 
@@ -222,7 +227,7 @@ Both normal and debug builds accept USB-CDC commands and report command output. 
 
 ## General: SD Card Layouts
 
-In addition to MBR-partitioned cards, 1.5.0 supports GPT partition tables and superfloppy layouts, where the filesystem is directly on the card with no partition table.
+The firmware supports MBR and GPT partition tables as well as superfloppy layouts, where the filesystem is directly on the card with no partition table.
 
 ## General: Settings File
 
@@ -318,6 +323,19 @@ There are some configuration values that can be modified on a per card base with
 MaxChannels=8
 CardSize=8
 ```
+
+## General: Template Cards
+
+To give new memory cards a set of starting saves or tools, copy a raw `.mcd` image from `MemoryCards` to the `.sd2psx` folder at the root of the microSD card.
+
+| Mode | Template file | Required size |
+| --- | --- | --- |
+| PS1 | `.sd2psx/ps1.mcd` | 128 KB (131,072 bytes) |
+| PS2 | `.sd2psx/ps2.mcd` | A supported PS2 card size, such as 8 MB (8,388,608 bytes) |
+
+The firmware uses the template when creating a numbered card, channel, Game ID card, or BootCard. It also uses the template when recreating a PS2 card with an invalid image size. The PS2 template's size takes precedence over `CardSize` in the device and per-card settings. An invalid template size falls back to an empty card.
+
+[Template formats and behavior](https://github.com/sd2psXtd/firmware/blob/{{ site.firmware_version }}/doc/configuration.md#general-template-cards)
 
 ## General: Game2Folder mapping
 

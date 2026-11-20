@@ -2,9 +2,9 @@
 
 Stable firmware **{{ site.firmware_version }}** — [release notes](https://github.com/sd2psXtd/firmware/releases/tag/{{ site.firmware_version }}).
 
-Choose the firmware matching your device below. **Firmware** is the normal build; **Debug Firmware** adds firmware logging over USB serial. Both builds support the USB-CDC commands in Serial mode.
+Choose the firmware matching your device below. **Debug Firmware** adds firmware logging over USB serial. Both builds support the USB-CDC commands in Serial mode.
 
-See [USB modes](index.md#general-usb-modes-150) for the new Mass storage and PS3 MCA features.
+For microSD access over USB, use the device menu or the `set mode mass` serial command. [USB mass storage instructions](index.md#general-usb-mass-storage)
 
 <!--<div class="anim-hover-grow Box p-3">HELLO</div>-->
 <div class="border d-flex flex-column">
@@ -73,11 +73,11 @@ See [USB modes](index.md#general-usb-modes-150) for the new Mass storage and PS3
       <p class="h4 color-fg-muted text-normal mb-2">Made by dangiu, enhanced by SD2PSX Firmware</p>
       <a class="color-fg-muted text-small">DIY project built on top of rp2040-zero</a>
     <div class="BtnGroup d-block mb-2">
-        <a class="BtnGroup-item btn btn-outline" type="button" href="https://github.com/sd2psXtd/firmware/releases/download/{{ site.firmware_version }}/pmc+.uf2">Firmware Pico</a>
+        <a class="BtnGroup-item btn btn-outline" type="button" href="https://github.com/sd2psXtd/firmware/releases/download/{{ site.firmware_version }}/pmc%2B.uf2">Firmware Pico</a>
         <a class="BtnGroup-item btn btn-outline" type="button" href="https://github.com/sd2psXtd/firmware/releases/download/{{ site.firmware_version }}/pmczero.uf2">Firmware Zero</a>
     </div>
     <div class="BtnGroup d-block mb-2">
-        <a class="BtnGroup-item btn btn-outline" type="button" href="https://github.com/sd2psXtd/firmware/releases/download/{{ site.firmware_version }}/pmc+-debug.uf2">Debug Firmware Pico</a>
+        <a class="BtnGroup-item btn btn-outline" type="button" href="https://github.com/sd2psXtd/firmware/releases/download/{{ site.firmware_version }}/pmc%2B-debug.uf2">Debug Firmware Pico</a>
         <a class="BtnGroup-item btn btn-outline" type="button" href="https://github.com/sd2psXtd/firmware/releases/download/{{ site.firmware_version }}/pmczero-debug.uf2">Debug Firmware Zero</a>
         <!--a class="BtnGroup-item btn btn-outline" type="button" href="https://github.com/dangiu/PicoMemcard?tab=readme-ov-file#picomemcard-vs-picomemcard">Project GitHub</a-->
     </div>
