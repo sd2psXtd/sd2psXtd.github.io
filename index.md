@@ -7,12 +7,10 @@
 
 ### New in {{ site.firmware_version }}
 
-- **Template cards** let you start new PS1 and PS2 cards with your own saves or tools.
-- **USB mass storage** can now be started with `set mode mass`, including on devices without buttons such as the PSXMemCard Gen1.
-- **Experimental PS2 mode switching** lets the device return to PS2 mode after temporarily switching to PS1 mode, for workflows such as DKWDRV and Free McBoot.
-- **PS3 MCA fixes** keep PS2 cards visible while loading and restore communication when the PS3 reopens the adapter.
-- **PS1 card fixes** prevent incomplete writes and writes with invalid checksums from changing card data and correct the order of reads and writes.
-- **Faster mode changes** restart USB only when the USB profile changes.
+- **USB serial** can connect while the memory card is still loading.
+- **Windows support** restores automatic WinUSB driver binding for `picotool` reboot in Serial and USB mass storage modes.
+- **USB detection** starts earlier at boot and gives the host time to recognize the disconnect when switching USB profiles.
+- **Flash writes** are protected from interrupts when installing a PS2 CIV key or a custom boot splash.
 
 [Full release notes](https://github.com/sd2psXtd/firmware/releases/tag/{{ site.firmware_version }})
 
